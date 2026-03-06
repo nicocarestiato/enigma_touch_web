@@ -1,0 +1,49 @@
+ENIGMA.
+Una macchina che non spara, non fa rumore, non lascia tracce.
+Eppure, per anni, ha deciso le rotte delle navi, gli attacchi, i rifornimenti.
+Ha deciso il tempo. E, in guerra, il tempo è tutto.
+
+Siamo negli anni Quaranta. Ogni messaggio militare tedesco deve essere segreto.
+Enigma ci riesce con una logica semplice e spietata: rotori interni che cambiano posizione a ogni lettera.
+Questo significa che la cifratura non è mai uguale a se stessa.
+La stessa lettera, ripetuta, non genera lo stesso risultato.
+La macchina scatta, evolve, si muove.
+
+Per chi intercetta i segnali, il problema non è leggere un messaggio: è trovare la chiave del giorno.
+Rotori scelti, ordine dei rotori, posizione iniziale, impostazioni aggiuntive.
+Una quantità enorme di combinazioni.
+Troppo grande per “provare a caso”.
+
+E qui arriva la parte decisiva: la decifrazione non nasce da un colpo di fortuna.
+Nasce da metodo.
+Prima ancora della guerra, matematici polacchi iniziano a capire come entrare nel sistema.
+Poi, durante il conflitto, il lavoro si sposta a Bletchley Park, il centro britannico dell’intelligence.
+
+A Bletchley Park lavorano migliaia di persone: analisti, linguisti, operatori.
+E tra loro emerge un nome che oggi è diventato simbolo: Alan Turing.
+Turing non “indovina” le chiavi.
+Costruisce un approccio: sfrutta schemi probabili, abitudini umane, ripetizioni involontarie.
+Perché anche la macchina più sofisticata può cedere su un punto debole molto semplice: l’abitudine.
+
+Per accelerare la ricerca delle impostazioni vengono sviluppate macchine elettromeccaniche: le Bombe.
+Non sono computer moderni, ma sono strumenti progettati per testare rapidamente ipotesi,
+eliminando configurazioni impossibili.
+È un salto concettuale enorme:
+non si combatte più soltanto con armi e strategie, ma con calcolo e automazione.
+
+E il risultato è chiaro: leggere comunicazioni significa anticipare mosse.
+Ridurre l’incertezza.
+Salvare vite.
+Cambiare decisioni.
+
+Oggi Enigma è storia. Ma è anche una lezione.
+La sicurezza non è solo tecnologia: è disciplina, procedure, errori umani.
+E la decifrazione non è “genio isolato”: è un sistema di persone, strumenti, metodo.
+
+Enigma Touch nasce qui: non per imitare un oggetto d’epoca,
+ma per far vivere quella logica in un’interfaccia moderna.
+Prima la solidità.
+Poi la macchina vera.
+Poi un’esperienza da prodotto.
+
+Benvenuto in Enigma Touch.
