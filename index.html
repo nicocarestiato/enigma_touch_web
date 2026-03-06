@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enigma Touch Web</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="web.css">
+</head>
+<body>
+  <div id="app">
+    <img id="bg-image" src="ui/assets/sfondo.png" alt="">
+    <div id="bg-tint"></div>
+    <div id="brightness-layer"></div>
+
+    <aside id="top-buttons">
+      <button class="glass-btn" id="btn-fullscreen">FULLSCREEN</button>
+      <button class="glass-btn" id="btn-credits">CREDITS</button>
+      <button class="glass-btn" id="btn-settings">SETTINGS</button>
+    </aside>
+
+    <main id="pages">
+      <section class="page active" id="page-disclaimer">
+        <div class="center-column">
+          <h1>DISCLAIMER</h1>
+          <p>
+            Questo applicativo non si propone come ricostruzione storica perfetta.<br><br>
+            Enigma Touch e' una ricostruzione didattica e divulgativa: alcune parti sono semplificate per facilitare comprensione, utilizzo e apprendimento.<br><br>
+            Le configurazioni, i tempi operativi e alcune dinamiche narrative sono adattate per finalita' formative.<br><br>
+            Il progetto non intende glorificare eventi bellici: l'obiettivo e' spiegare principi storici e crittografici in modo accessibile.<br><br>
+            Essendo una ricostruzione indipendente a scopo didattico, possono verificarsi occasionali malfunzionamenti o comportamenti non previsti.
+          </p>
+          <button class="glass-btn primary big" id="btn-disclaimer-continue">CONTINUA</button>
+        </div>
+      </section>
+
+      <section class="page" id="page-soundtrack">
+        <div class="card wide">
+          <h2>SCEGLI ATMOSFERA SONORA</h2>
+          <p class="sub">Seleziona la colonna sonora con cui vuoi vivere l'esperienza.</p>
+          <div class="split">
+            <article class="card mini">
+              <h3>IMMERSIVA</h3>
+              <p>Scenario bellico, ambiente piu' intenso e drammatico.</p>
+              <button class="glass-btn primary" id="btn-theme-war">TRACCIA IMMERSIVA</button>
+            </article>
+            <article class="card mini">
+              <h3>CLASSICA</h3>
+              <p>Rivisitazione avventura piu' generica e meno impattante.</p>
+              <button class="glass-btn primary" id="btn-theme-classic">TRACCIA CLASSICA</button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-boot">
+        <div class="card boot-card">
+          <h2>ENIGMA TOUCH</h2>
+          <div id="boot-rings">
+            <span></span><span></span><span></span>
+          </div>
+          <div id="boot-dots">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div id="boot-bar">
+            <div id="boot-fill"></div>
+            <div id="boot-glow"></div>
+          </div>
+          <p id="boot-status">Inizializzazione interfaccia...</p>
+          <p id="boot-percent">0%</p>
+        </div>
+      </section>
+
+      <section class="page" id="page-intro">
+        <div class="card intro-card">
+          <h2>ENIGMA TOUCH</h2>
+          <p class="sub">Una reinterpretazione contemporanea della macchina Enigma. Interfaccia moderna, principio crittografico autentico.</p>
+          <div id="gallery-track"></div>
+          <button class="glass-btn primary big" id="btn-start-experience">INIZIA ESPERIENZA</button>
+        </div>
+      </section>
+
+      <section class="page" id="page-home">
+        <div class="card home-card">
+          <h2>ENIGMA TOUCH</h2>
+          <p class="sub">HOME</p>
+          <div class="split">
+            <article class="card mini">
+              <h3>MACCHINA</h3>
+              <p>Entra nella macchina: rotori, plugboard, cifratura e decifratura.</p>
+              <button class="glass-btn primary" id="btn-open-machine">APRI</button>
+            </article>
+            <article class="card mini">
+              <h3>STORIA</h3>
+              <p>Contesto storico, audio e video sincronizzati.</p>
+              <button class="glass-btn primary" id="btn-open-story">APRI</button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-machine">
+        <div class="card machine-card">
+          <div class="row top-row">
+            <h2>MACCHINA</h2>
+            <button class="glass-btn" id="btn-machine-home">HOME</button>
+          </div>
+
+          <div class="machine-grid">
+            <div class="card panel">
+              <h3>CONFIGURAZIONE</h3>
+              <label>Rotore sinistra
+                <select id="rotor-left"></select>
+              </label>
+              <label>Rotore centro
+                <select id="rotor-middle"></select>
+              </label>
+              <label>Rotore destra
+                <select id="rotor-right"></select>
+              </label>
+              <label>Reflector
+                <select id="reflector"></select>
+              </label>
+              <label>Posizioni iniziali (es. DDA)
+                <input id="positions" maxlength="3" value="AAA">
+              </label>
+              <div class="row">
+                <button class="glass-btn" id="btn-apply-config">APPLICA</button>
+                <button class="glass-btn" id="btn-reset-machine">RESET POSIZIONI</button>
+              </div>
+            </div>
+
+            <div class="card panel">
+              <h3>PLUGBOARD</h3>
+              <div class="row">
+                <input id="plug-a" maxlength="1" placeholder="A">
+                <input id="plug-b" maxlength="1" placeholder="M">
+                <button class="glass-btn" id="btn-add-pair">AGGIUNGI</button>
+              </div>
+              <div id="plugboard-list"></div>
+              <button class="glass-btn" id="btn-clear-pairs">AZZERA PLUGBOARD</button>
+            </div>
+
+            <div class="card panel">
+              <h3>CIFRATURA / DECIFRATURA</h3>
+              <label>Input
+                <textarea id="machine-input" rows="6" placeholder="Inserisci il testo..."></textarea>
+              </label>
+              <div class="row">
+                <button class="glass-btn primary" id="btn-encode">CIFRA</button>
+                <button class="glass-btn" id="btn-decode">DECIFRA</button>
+                <button class="glass-btn" id="btn-clear-streams">PULISCI</button>
+              </div>
+              <label>Output
+                <textarea id="machine-output" rows="6" readonly></textarea>
+              </label>
+              <p id="machine-status">Configurazione iniziale pronta.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-story">
+        <div class="card story-card">
+          <div class="row top-row">
+            <h2>STORIA</h2>
+            <button class="glass-btn" id="btn-story-home">HOME</button>
+          </div>
+          <div class="story-grid">
+            <div class="card panel scroll-panel">
+              <pre id="story-text">Caricamento story.txt...</pre>
+            </div>
+            <div class="card panel media-panel">
+              <video id="story-video" src="ui/assets/videostoria.mp4" controls playsinline preload="auto"></video>
+              <audio id="story-audio" src="ui/assets/audio1.mp3" controls preload="auto"></audio>
+              <div class="row">
+                <button class="glass-btn" id="btn-story-sync-play">PLAY SINCRONIZZATO</button>
+                <button class="glass-btn" id="btn-story-sync-stop">STOP</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="byline">by Nicolo Carestiato</div>
+
+    <div id="page-fade"></div>
+
+    <div id="disruption-overlay" class="hidden">
+      <div id="disruption-black"></div>
+      <div id="disruption-message" class="hidden">
+        <h2 id="disruption-title"></h2>
+        <hr>
+        <p id="disruption-text"></p>
+        <div class="dot-row"><span></span><span></span><span></span></div>
+        <small>Ripristino rete in corso...</small>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="credits-modal">
+      <div class="card modal-card">
+        <h3>CREDITS</h3>
+        <p>
+          ENIGMA TOUCH e' un progetto didattico e di design ispirato alla macchina Enigma e alla crittoanalisi del periodo 1930-1945.<br><br>
+          Sviluppo & Concept: Nicolo Carestiato<br>
+          Tecnologia: Python, PySide6, FastAPI, Web.
+        </p>
+        <button class="glass-btn" data-close-modal="credits-modal">CHIUDI</button>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="settings-modal">
+      <div class="card modal-card settings-card">
+        <h3>SETTINGS</h3>
+        <label class="switch-line">
+          <span>Musica sottofondo</span>
+          <input type="checkbox" id="settings-music-enabled" checked>
+        </label>
+        <div class="row">
+          <button class="glass-btn" id="settings-theme-classic">TEMA CLASSICO</button>
+          <button class="glass-btn" id="settings-theme-war">TEMA IMMERSIVO</button>
+        </div>
+        <label>Volume base: <span id="settings-volume-label">50%</span>
+          <input type="range" id="settings-volume" min="0" max="100" value="50">
+        </label>
+        <label>Riduzione in Storia: <span id="settings-duck-label">80%</span>
+          <input type="range" id="settings-ducking" min="15" max="100" value="20">
+        </label>
+        <label>Luminosita interfaccia: <span id="settings-brightness-label">100%</span>
+          <input type="range" id="settings-brightness" min="45" max="100" value="100">
+        </label>
+        <label class="switch-line">
+          <span>Evento narrativo dinamico</span>
+          <input type="checkbox" id="settings-disruption-enabled" checked>
+        </label>
+        <label>API base URL
+          <input id="settings-api-url" value="">
+        </label>
+        <div class="row">
+          <button class="glass-btn" id="settings-defaults">RIPRISTINA DEFAULT</button>
+          <button class="glass-btn" id="settings-save">SALVA</button>
+          <button class="glass-btn" data-close-modal="settings-modal">CHIUDI</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bg-music" preload="auto" loop></audio>
+  <script src="web.js"></script>
+</body>
+</html>
