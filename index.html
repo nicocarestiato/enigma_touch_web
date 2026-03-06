@@ -4,9 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Enigma Touch Web</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="web.css">
 </head>
 <body>
@@ -104,12 +101,12 @@
       <section class="page" id="page-machine">
         <div class="card machine-card">
           <div class="row top-row">
-            <h2>MACCHINA</h2>
+            <h2>SIMULAZIONE ENIGMA</h2>
             <button class="glass-btn" id="btn-machine-home">HOME</button>
           </div>
 
           <div class="machine-grid">
-            <div class="card panel">
+            <div class="card panel machine-config-panel">
               <h3>CONFIGURAZIONE</h3>
               <label>Rotore sinistra
                 <select id="rotor-left"></select>
@@ -130,21 +127,51 @@
                 <button class="glass-btn" id="btn-apply-config">APPLICA</button>
                 <button class="glass-btn" id="btn-reset-machine">RESET POSIZIONI</button>
               </div>
-            </div>
 
-            <div class="card panel">
-              <h3>PLUGBOARD</h3>
+              <div class="panel-sep"></div>
+
+              <h3 class="mini-title">PLUGBOARD</h3>
               <div class="row">
                 <input id="plug-a" maxlength="1" placeholder="A">
                 <input id="plug-b" maxlength="1" placeholder="M">
-                <button class="glass-btn" id="btn-add-pair">AGGIUNGI</button>
+                <button class="glass-btn" id="btn-add-pair">COLLEGA</button>
+              </div>
+              <div class="row">
+                <input id="plug-remove" maxlength="1" placeholder="Lettera da scollegare">
+                <button class="glass-btn" id="btn-remove-pair">RIMUOVI</button>
               </div>
               <div id="plugboard-list"></div>
-              <button class="glass-btn" id="btn-clear-pairs">AZZERA PLUGBOARD</button>
+              <button class="glass-btn" id="btn-clear-pairs">AZZERA PLUG</button>
             </div>
 
-            <div class="card panel">
-              <h3>CIFRATURA / DECIFRATURA</h3>
+            <div class="card panel machine-live-panel">
+              <div class="row live-top-row">
+                <h3>OPERATIVO</h3>
+                <p id="machine-live-summary">Posizioni: AAA | Reflector: B</p>
+              </div>
+
+              <div id="rotor-dials" class="rotor-dials">
+                <button class="rotor-dial" data-rotor-index="0">
+                  <span class="rotor-label">SINISTRA</span>
+                  <span class="rotor-window" id="rotor-char-0">A</span>
+                  <span class="rotor-name" id="rotor-name-0">I</span>
+                  <span class="rotor-hint">Rotella o click su/giu</span>
+                </button>
+                <button class="rotor-dial" data-rotor-index="1">
+                  <span class="rotor-label">CENTRO</span>
+                  <span class="rotor-window" id="rotor-char-1">A</span>
+                  <span class="rotor-name" id="rotor-name-1">II</span>
+                  <span class="rotor-hint">Rotella o click su/giu</span>
+                </button>
+                <button class="rotor-dial" data-rotor-index="2">
+                  <span class="rotor-label">DESTRA</span>
+                  <span class="rotor-window" id="rotor-char-2">A</span>
+                  <span class="rotor-name" id="rotor-name-2">III</span>
+                  <span class="rotor-hint">Rotella o click su/giu</span>
+                </button>
+              </div>
+
+              <h3 class="mini-title">CIFRATURA / DECIFRATURA</h3>
               <label>Input
                 <textarea id="machine-input" rows="6" placeholder="Inserisci il testo..."></textarea>
               </label>
@@ -156,6 +183,24 @@
               <label>Output
                 <textarea id="machine-output" rows="6" readonly></textarea>
               </label>
+
+              <div class="stream-grid">
+                <div class="stream-card">
+                  <h4>INPUT STREAM</h4>
+                  <pre id="machine-input-stream">In attesa di input...</pre>
+                </div>
+                <div class="stream-card">
+                  <h4>OUTPUT STREAM</h4>
+                  <pre id="machine-output-stream">Output non ancora generato.</pre>
+                </div>
+              </div>
+
+              <div class="trace-card">
+                <h4>TRACCIA</h4>
+                <p id="machine-last-step">Ultimo step: -</p>
+                <pre id="machine-trace-log">Traccia operativa vuota.</pre>
+              </div>
+
               <p id="machine-status">Configurazione iniziale pronta.</p>
             </div>
           </div>
@@ -169,14 +214,26 @@
             <button class="glass-btn" id="btn-story-home">HOME</button>
           </div>
           <div class="story-grid">
-            <div class="card panel scroll-panel">
-              <pre id="story-text">Caricamento story.txt...</pre>
+            <div class="card panel story-text-panel">
+              <div class="story-text-scroll" id="story-text-scroll">
+                <pre id="story-text">Caricamento story.txt...</pre>
+              </div>
+              <div class="story-text-progress-track">
+                <div id="story-text-progress-fill"></div>
+              </div>
             </div>
             <div class="card panel media-panel">
-              <video id="story-video" src="ui/assets/videostoria.mp4" controls playsinline preload="auto"></video>
-              <audio id="story-audio" src="ui/assets/audio1.mp3" controls preload="auto"></audio>
-              <div class="row">
-                <button class="glass-btn" id="btn-story-sync-play">PLAY SINCRONIZZATO</button>
+              <video id="story-video" src="ui/assets/videostoria.mp4" playsinline preload="auto"></video>
+              <audio id="story-audio" src="ui/assets/audio1.mp3" preload="auto"></audio>
+
+              <div class="story-time-row">
+                <span id="story-time-now">00:00</span>
+                <span id="story-time-total">00:00</span>
+              </div>
+              <input type="range" id="story-seek" min="0" max="1000" value="0">
+
+              <div class="row story-actions">
+                <button class="glass-btn primary" id="btn-story-play-toggle">PLAY</button>
                 <button class="glass-btn" id="btn-story-sync-stop">STOP</button>
               </div>
             </div>
@@ -197,6 +254,15 @@
         <p id="disruption-text"></p>
         <div class="dot-row"><span></span><span></span><span></span></div>
         <small>Ripristino rete in corso...</small>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="gallery-modal">
+      <div class="card gallery-modal-card">
+        <img id="gallery-modal-image" alt="Anteprima galleria">
+        <div class="row">
+          <button class="glass-btn" id="btn-gallery-close">CHIUDI</button>
+        </div>
       </div>
     </div>
 
