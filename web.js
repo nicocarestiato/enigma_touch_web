@@ -294,16 +294,26 @@
 
     const inner = document.createElement("div");
     inner.className = "gallery-inner";
+    inner.style.animation = "none";
     const sources = [];
     for (let i = 1; i <= 8; i += 1) {
       sources.push("ui/assets/gallery/" + i + ".png");
     }
 
+    let loaded = 0;
     const makeImage = (src) => {
       const img = document.createElement("img");
       img.src = src;
       img.alt = src.split("/").pop();
       img.addEventListener("click", () => openGalleryModal(src));
+      const onDone = () => {
+        loaded += 1;
+        if (loaded >= 2) {
+          window.setTimeout(recalc, 0);
+        }
+      };
+      img.addEventListener("load", onDone, { once: true });
+      img.addEventListener("error", onDone, { once: true });
       return img;
     };
 
@@ -316,7 +326,9 @@
       state.gallerySingleWidth = Math.max(1, inner.scrollWidth / 2);
     };
 
-    window.setTimeout(recalc, 250);
+    window.setTimeout(recalc, 120);
+    window.setTimeout(recalc, 700);
+    window.setTimeout(recalc, 1500);
     window.addEventListener("resize", recalc);
 
     track.addEventListener("mouseenter", () => {
@@ -1051,6 +1063,7 @@
 
   function initialize() {
     storyVideo.controls = false;
+    storyVideo.defaultMuted = true;
     storyVideo.muted = true;
     storyVideo.volume = 0;
     storyVideo.playsInline = true;
