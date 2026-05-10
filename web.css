@@ -126,10 +126,6 @@ body {
   height: 100vh;
 }
 
-#page-disclaimer.active {
-  position: relative;
-}
-
 h1,
 h2,
 h3,
