@@ -61,7 +61,7 @@ body {
   top: 14px;
   right: 16px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
   z-index: 600;
 }
@@ -364,6 +364,12 @@ h3 {
   flex-direction: column;
   gap: 12px;
   align-items: center;
+}
+
+#btn-start-experience {
+  width: min(1030px, 100%);
+  height: 70px;
+  flex-shrink: 0;
 }
 
 .intro-card h2 {
@@ -1139,6 +1145,8 @@ input[type="checkbox"] {
     flex-direction: row;
     top: 10px;
     right: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .glass-btn {
