@@ -1,11 +1,12 @@
 pragma ComponentBehavior: Bound
 
-import QtQuick 6.7
-import QtQuick.Controls 6.7
-import QtQuick.Layouts 6.7
-import QtQuick.Window 6.7
-import QtMultimedia 6.7
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Window
+import QtMultimedia
 import Qt5Compat.GraphicalEffects
+import "HelpCatalog.js" as HelpCatalog
 
 ApplicationWindow {
     id: win
@@ -48,6 +49,7 @@ ApplicationWindow {
 
     property var galleryAssetUrls: []
     property var simController: null
+    property var gpioBridge: null
     property url sfondoAssetUrl: ""
     property url audioAssetUrl: ""
     property url storyVideoAssetUrl: ""
@@ -62,11 +64,29 @@ ApplicationWindow {
     property real storyDuckingFactor: 0.20
     property bool storyAudioPlaying: false
     property real uiBrightness: 1.0
+    property real uiBrightnessBoost: Math.max(0.0, (win.uiBrightness - 0.75) / 0.25)
     property url sottofondoAssetUrl: Qt.resolvedUrl("assets/sottofondo.mp3")
     property url sottofondoSpariAssetUrl: Qt.resolvedUrl("assets/sottofondospari.mp3")
     property url bgMusicSourceUrl: soundtrackMode === "war" ? sottofondoSpariAssetUrl : sottofondoAssetUrl
     property bool galleryExpanded: false
     property url galleryExpandedSource: ""
+    property int gpioSelectedRotor: 0
+
+    function disruptionSecretWord() {
+        if (!win.disruptionTitle || win.disruptionTitle.length === 0) {
+            return ""
+        }
+        var parts = win.disruptionTitle.split(" ")
+        return parts.length > 0 ? parts[0] : win.disruptionTitle
+    }
+
+    function disruptionTitleRest() {
+        var first = win.disruptionSecretWord()
+        if (!first || win.disruptionTitle.length <= first.length) {
+            return ""
+        }
+        return win.disruptionTitle.substring(first.length + 1)
+    }
 
     function centerWindow() {
         try {
@@ -85,6 +105,122 @@ ApplicationWindow {
         var minutes = Math.floor(total / 60)
         var seconds = total % 60
         return minutes + ":" + (seconds < 10 ? "0" + seconds : seconds)
+    }
+
+    function syncStoryVideo(force) {
+        if (!(win.storyVideoAssetUrl && win.storyVideoAssetUrl.toString().length > 0)) {
+            return
+        }
+        if (story.videoPriming || storyPlayer.playbackState !== MediaPlayer.PlayingState) {
+            return
+        }
+
+        var target = storyPlayer.position
+        var drift = Math.abs(storyVideoPlayer.position - target)
+        var tolerance = force ? 120 : story.syncToleranceMs
+
+        if (storyVideoPlayer.playbackState !== MediaPlayer.PlayingState) {
+            storyVideoPlayer.position = target
+            storyVideoPlayer.play()
+            return
+        }
+
+        if (drift > tolerance) {
+            storyVideoPlayer.position = target
+        }
+    }
+
+    function gpioToggleStoryPlayback() {
+        if (win.page !== "story") {
+            return
+        }
+        if (storyPlayer.playbackState === MediaPlayer.PlayingState) {
+            storyPlayer.pause()
+            if (win.storyVideoAssetUrl && win.storyVideoAssetUrl.toString().length > 0) {
+                storyVideoPlayer.pause()
+            }
+        } else {
+            storyPlayer.play()
+            if (win.storyVideoAssetUrl && win.storyVideoAssetUrl.toString().length > 0) {
+                storyVideoPlayer.position = storyPlayer.position
+                storyVideoPlayer.play()
+            }
+        }
+    }
+
+    function stopStoryPlayback() {
+        win.storyAudioPlaying = false
+        storyPlayer.stop()
+        storyVideoPlayer.stop()
+    }
+
+    function gpioEncoderPress() {
+        if (win.page === "machine") {
+            win.gpioSelectedRotor = (win.gpioSelectedRotor + 1) % 3
+            return
+        }
+        if (win.page === "story") {
+            win.gpioToggleStoryPlayback()
+            return
+        }
+        win.gpioPrimaryAction()
+    }
+
+    function gpioPrimaryAction() {
+        if (win.page === "disclaimer") {
+            win.page = "soundtrack"
+            return
+        }
+        if (win.page === "soundtrack") {
+            win.beginWithSoundtrack("classic")
+            return
+        }
+        if (win.page === "intro") {
+            win.page = "home"
+            return
+        }
+        if (win.page === "home") {
+            win.page = "machine"
+            return
+        }
+        if (win.page === "machine") {
+            if (win.simController) {
+                win.simController.resetMachine()
+            }
+            return
+        }
+        if (win.page === "story") {
+            win.gpioToggleStoryPlayback()
+        }
+    }
+
+    function gpioSecondaryAction() {
+        if (win.page === "disclaimer") {
+            win.page = "soundtrack"
+            return
+        }
+        if (win.page === "soundtrack") {
+            win.beginWithSoundtrack("war")
+            return
+        }
+        if (win.page === "intro") {
+            win.page = "home"
+            return
+        }
+        if (win.page === "home") {
+            win.page = "story"
+            return
+        }
+        if (win.page === "machine") {
+            win.page = "home"
+            return
+        }
+        if (win.page === "story") {
+            win.storyAudioPlaying = false
+            storyPlayer.stop()
+            storyVideoPlayer.stop()
+            win.page = "home"
+        }
     }
 
     function bootStatusText() {
@@ -251,6 +387,15 @@ ApplicationWindow {
         win.disruptionResumeStoryVideo = false
     }
 
+    function dismissDisruptionQuick() {
+        if (!win.disruptionActive) {
+            return
+        }
+        disruptionBlackTimer.stop()
+        disruptionMessageTimer.stop()
+        win.finishDisruption()
+    }
+
     function setSoundtrack(mode, restartPlayback) {
         var m = mode
         if (m !== "classic" && m !== "war") {
@@ -306,6 +451,24 @@ ApplicationWindow {
         }
         win.page = "disclaimer"
         win.scheduleDisruption(true)
+    }
+
+    Shortcut {
+        sequences: ["Return", "Enter"]
+        enabled: win.disruptionActive
+        context: Qt.ApplicationShortcut
+        onActivated: win.dismissDisruptionQuick()
+    }
+
+    Connections {
+        target: win.gpioBridge
+        ignoreUnknownSignals: true
+
+        function onRotate(delta) {
+            if (win.page === "machine" && win.simController) {
+                win.simController.rotateRotor(win.gpioSelectedRotor, delta)
+            }
+        }
     }
 
     NumberAnimation {
@@ -427,6 +590,64 @@ ApplicationWindow {
         antialiasing: true
     }
 
+    component RoundedImagePanel : Rectangle {
+        id: imagePanel
+        property alias source: image.source
+        property string emptyLabel: "Immagine non disponibile"
+        radius: 22
+        color: Qt.rgba(0.14, 0.11, 0.09, 0.88)
+        border.width: 1
+        border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.26)
+        antialiasing: true
+
+        Item {
+            id: imageClip
+            anchors.fill: parent
+            anchors.margins: 1
+            layer.enabled: true
+            layer.smooth: true
+            layer.effect: OpacityMask {
+                maskSource: Rectangle {
+                    width: imageClip.width
+                    height: imageClip.height
+                    radius: imagePanel.radius - 1
+                    color: "black"
+                }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                color: Qt.rgba(0.08, 0.06, 0.05, 0.94)
+            }
+
+            Image {
+                id: image
+                anchors.fill: parent
+                fillMode: Image.PreserveAspectCrop
+                smooth: true
+                mipmap: true
+                asynchronous: true
+                visible: status === Image.Ready
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                color: Qt.rgba(0.05, 0.04, 0.03, 0.22)
+            }
+
+            Text {
+                anchors.centerIn: parent
+                width: parent.width - 30
+                visible: image.status !== Image.Ready
+                text: imagePanel.emptyLabel
+                color: win.textSub
+                font.pixelSize: 14
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+    }
+
     component GlassButton : Item {
         id: b
         property bool primary: false
@@ -543,22 +764,48 @@ ApplicationWindow {
     component GlassComboBox : ComboBox {
         id: cb
         font.pixelSize: 14
+        implicitHeight: 40
+        leftPadding: 12
+        rightPadding: 34
+        topPadding: 8
+        bottomPadding: 8
+
+        function itemLabel(value) {
+            if (value === undefined || value === null) {
+                return ""
+            }
+            if (typeof value === "object") {
+                if (cb.textRole && value[cb.textRole] !== undefined) {
+                    return value[cb.textRole]
+                }
+                if (value.label !== undefined) {
+                    return value.label
+                }
+                if (value.text !== undefined) {
+                    return value.text
+                }
+            }
+            return String(value)
+        }
 
         delegate: ItemDelegate {
             id: comboDelegate
             required property int index
             required property var modelData
             width: cb.width
-            text: modelData
+            text: cb.itemLabel(modelData)
             highlighted: cb.highlightedIndex === comboDelegate.index
+            height: 38
             contentItem: Text {
                 text: comboDelegate.text
                 color: win.textMain
                 font.pixelSize: 14
                 verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
             }
             background: Rectangle {
                 color: comboDelegate.highlighted ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.22) : Qt.rgba(0.11, 0.09, 0.08, 0.92)
+                radius: 10
             }
         }
 
@@ -609,15 +856,20 @@ ApplicationWindow {
         }
 
         popup: Popup {
-            y: cb.height + 4
+            parent: Overlay.overlay
+            x: cb.mapToItem(Overlay.overlay, 0, 0).x
+            y: cb.mapToItem(Overlay.overlay, 0, cb.height + 6).y
             width: cb.width
+            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
             implicitHeight: Math.min(contentItem.implicitHeight + 8, 260)
             padding: 4
             contentItem: ListView {
+                id: comboList
                 clip: true
                 implicitHeight: contentHeight
                 model: cb.delegateModel
                 currentIndex: cb.highlightedIndex
+                boundsBehavior: Flickable.StopAtBounds
             }
             background: Rectangle {
                 radius: 12
@@ -625,6 +877,63 @@ ApplicationWindow {
                 border.width: 1
                 border.color: Qt.rgba(1.0, 1.0, 1.0, 0.14)
             }
+        }
+    }
+
+    component ThemeScrollBar : ScrollBar {
+        id: bar
+        policy: ScrollBar.AsNeeded
+        interactive: true
+        implicitWidth: 10
+        implicitHeight: 10
+        padding: 2
+
+        contentItem: Rectangle {
+            implicitWidth: 7
+            implicitHeight: 7
+            radius: 4
+            color: bar.pressed
+                   ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.92)
+                   : Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.58)
+        }
+
+        background: Rectangle {
+            radius: 5
+            color: Qt.rgba(0.0, 0.0, 0.0, 0.20)
+            border.width: 1
+            border.color: Qt.rgba(1.0, 1.0, 1.0, 0.06)
+        }
+    }
+
+    component GlassSlider : Slider {
+        id: gs
+        implicitHeight: 32
+
+        background: Rectangle {
+            x: gs.leftPadding
+            y: gs.topPadding + gs.availableHeight / 2 - height / 2
+            width: gs.availableWidth
+            height: 8
+            radius: 4
+            color: Qt.rgba(1.0, 1.0, 1.0, 0.12)
+
+            Rectangle {
+                width: gs.visualPosition * parent.width
+                height: parent.height
+                radius: parent.radius
+                color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.90)
+            }
+        }
+
+        handle: Rectangle {
+            x: gs.leftPadding + gs.visualPosition * (gs.availableWidth - width)
+            y: gs.topPadding + gs.availableHeight / 2 - height / 2
+            implicitWidth: 18
+            implicitHeight: 18
+            radius: 9
+            color: gs.pressed ? Qt.darker(win.accent, 1.12) : Qt.lighter(win.accent, 1.04)
+            border.width: 1
+            border.color: Qt.rgba(0.0, 0.0, 0.0, 0.35)
         }
     }
 
@@ -638,13 +947,19 @@ ApplicationWindow {
 
     Rectangle {
         anchors.fill: parent
-        color: Qt.rgba(win.bgTint.r, win.bgTint.g, win.bgTint.b, 0.25)
+        color: Qt.rgba(win.bgTint.r, win.bgTint.g, win.bgTint.b, 0.25 - (win.uiBrightnessBoost * 0.13))
     }
 
     Rectangle {
         anchors.fill: parent
         color: "black"
         opacity: Math.max(0.0, (1.0 - win.uiBrightness) * 0.70)
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "white"
+        opacity: win.uiBrightnessBoost * 0.18
     }
 
     Column {
@@ -692,19 +1007,26 @@ ApplicationWindow {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         x: (win.width - width) / 2
         y: (win.height - height) / 2
-        width: Math.min(760, win.width - 80)
-        height: Math.min(620, win.height - 80)
-        background: GlassCard {}
+        width: Math.min(980, win.width - 48)
+        height: Math.min(720, win.height - 48)
+        Overlay.modal: Rectangle { color: Qt.rgba(0.0, 0.0, 0.0, 0.24) }
+        background: Rectangle {
+            radius: 26
+            color: Qt.rgba(0.20, 0.16, 0.13, 0.98)
+            border.width: 1
+            border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.30)
+            antialiasing: true
+        }
 
         contentItem: ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 22
-            spacing: 12
+            anchors.margins: 28
+            spacing: 16
 
             Text {
                 text: "CREDITS"
                 color: win.textMain
-                font.pixelSize: 22
+                font.pixelSize: 34
                 font.bold: true
             }
 
@@ -714,6 +1036,7 @@ ApplicationWindow {
                 clip: true
                 contentWidth: width
                 contentHeight: creditsBody.implicitHeight
+                ScrollBar.vertical: ThemeScrollBar {}
 
                 Text {
                     id: creditsBody
@@ -730,7 +1053,19 @@ ApplicationWindow {
                         + "Contatti / progetto: nico.carestiato@gmail.com"
                     color: win.textSub
                     wrapMode: Text.WordWrap
-                    font.pixelSize: 14
+                    font.pixelSize: 24
+                    lineHeight: 1.20
+                    Component.onCompleted: {
+                        text =
+                            "ENIGMA TOUCH e un progetto didattico e divulgativo ispirato alla macchina Enigma e alla crittoanalisi del periodo 1930-1945.\n"
+                            + "L'obiettivo e rendere tangibili configurazione, cifratura, reset e procedura operativa attraverso un'esperienza fisica e digitale unica.\n\n"
+                            + "Architettura software: Python con PySide6 / Qt Quick QML, logica di simulazione dedicata e sincronizzazione di audio, video e contenuti storici.\n"
+                            + "Piattaforma hardware: Raspberry Pi 5 con avvio diretto dell'applicazione, uscita HDMI e gestione nativa della postazione espositiva.\n"
+                            + "Controlli fisici: Raspberry Pi Pico RP2040 via USB, tre encoder rotativi indipendenti e pulsanti dedicati per navigazione, reset operativo e gestione power.\n"
+                            + "Componentistica: encoder incrementali, pulsanti momentanei, interfaccia touch / mouse, tastiera fisica per il testo e cablaggio pensato per demo continue.\n\n"
+                            + "Nota: Enigma Touch e una ricostruzione didattica. Alcune componenti e procedure sono semplificate per chiarezza espositiva e fluidita d'uso, senza sostituire fonti storiche specialistiche.\n\n"
+                            + "Contatti / progetto: nico.carestiato@gmail.com"
+                    }
                 }
             }
 
@@ -738,8 +1073,9 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Item { Layout.fillWidth: true }
                 GlassButton {
-                    w: 140
-                    h: 44
+                    w: 190
+                    h: 58
+                    textSize: 20
                     text: "CHIUDI"
                     onClicked: creditsPopup.close()
                 }
@@ -754,12 +1090,12 @@ ApplicationWindow {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         x: (win.width - width) / 2
         y: (win.height - height) / 2
-        width: Math.min(640, win.width - 70)
-        height: Math.min(620, win.height - 70)
-        Overlay.modal: Rectangle { color: Qt.rgba(0.0, 0.0, 0.0, 0.58) }
+        width: Math.min(980, win.width - 48)
+        height: Math.min(720, win.height - 48)
+        Overlay.modal: Rectangle { color: Qt.rgba(0.0, 0.0, 0.0, 0.24) }
         background: Rectangle {
             radius: 26
-            color: Qt.rgba(0.05, 0.04, 0.03, 0.95)
+            color: Qt.rgba(0.20, 0.16, 0.13, 0.98)
             border.width: 1
             border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.28)
             antialiasing: true
@@ -767,20 +1103,20 @@ ApplicationWindow {
 
         contentItem: ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 20
-            spacing: 8
+            anchors.margins: 28
+            spacing: 16
 
             Text {
                 text: "SETTINGS"
                 color: win.textMain
-                font.pixelSize: 24
+                font.pixelSize: 34
                 font.bold: true
             }
 
             Text {
                 text: "Audio, atmosfera e display"
                 color: win.textSub
-                font.pixelSize: 13
+                font.pixelSize: 24
             }
 
             Rectangle {
@@ -789,9 +1125,16 @@ ApplicationWindow {
                 color: Qt.rgba(1.0, 1.0, 1.0, 0.12)
             }
 
+            GridLayout {
+                Layout.fillWidth: true
+                columns: 2
+                columnSpacing: 16
+                rowSpacing: 16
+
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 156
+                    Layout.columnSpan: 2
+                    Layout.preferredHeight: 178
                 radius: 16
                 color: Qt.rgba(0.08, 0.07, 0.06, 0.94)
                 border.width: 1
@@ -799,17 +1142,17 @@ ApplicationWindow {
 
                 Column {
                     anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 7
+                        anchors.margins: 16
+                        spacing: 10
 
                     RowLayout {
                         width: parent.width
-                        spacing: 8
+                            spacing: 12
 
                         Text {
                             text: "Musica sottofondo"
                             color: win.textMain
-                            font.pixelSize: 14
+                                font.pixelSize: 24
                             font.bold: true
                         }
 
@@ -824,21 +1167,21 @@ ApplicationWindow {
                     Row {
                         id: settingsThemeRow
                         width: parent.width
-                        spacing: 8
+                            spacing: 12
 
                         GlassButton {
-                            w: Math.max(130, Math.floor((settingsThemeRow.width - settingsThemeRow.spacing) / 2))
-                            h: 38
-                            textSize: 12
+                                w: Math.max(220, Math.floor((settingsThemeRow.width - settingsThemeRow.spacing) / 2))
+                                h: 54
+                                textSize: 18
                             text: "TEMA CLASSICO"
                             primary: win.soundtrackMode === "classic"
                             onClicked: win.setSoundtrack("classic", true)
                         }
 
                         GlassButton {
-                            w: Math.max(130, Math.floor((settingsThemeRow.width - settingsThemeRow.spacing) / 2))
-                            h: 38
-                            textSize: 12
+                                w: Math.max(220, Math.floor((settingsThemeRow.width - settingsThemeRow.spacing) / 2))
+                                h: 54
+                                textSize: 18
                             text: "TEMA IMMERSIVO"
                             primary: win.soundtrackMode === "war"
                             onClicked: win.setSoundtrack("war", true)
@@ -848,10 +1191,10 @@ ApplicationWindow {
                     Text {
                         text: "Volume base: " + Math.round(win.bgMusicVolume * 100) + "%"
                         color: win.textSub
-                        font.pixelSize: 12
+                            font.pixelSize: 20
                     }
 
-                    Slider {
+                    GlassSlider {
                         width: parent.width
                         from: 0.0
                         to: 1.0
@@ -863,7 +1206,7 @@ ApplicationWindow {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 96
+                    Layout.preferredHeight: 152
                 radius: 16
                 color: Qt.rgba(0.08, 0.07, 0.06, 0.94)
                 border.width: 1
@@ -871,17 +1214,19 @@ ApplicationWindow {
 
                 Column {
                     anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 7
+                        anchors.margins: 16
+                        spacing: 16
 
                     Text {
                         text: "Riduzione in Storia: " + Math.round((1 - win.storyDuckingFactor) * 100) + "%"
                         color: win.textMain
-                        font.pixelSize: 14
+                            font.pixelSize: 22
                         font.bold: true
+                            wrapMode: Text.WordWrap
+                            width: parent.width
                     }
 
-                    Slider {
+                    GlassSlider {
                         width: parent.width
                         from: 0.15
                         to: 1.0
@@ -893,7 +1238,7 @@ ApplicationWindow {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 122
+                    Layout.preferredHeight: 152
                 radius: 16
                 color: Qt.rgba(0.08, 0.07, 0.06, 0.94)
                 border.width: 1
@@ -901,17 +1246,19 @@ ApplicationWindow {
 
                 Column {
                     anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 7
+                        anchors.margins: 16
+                        spacing: 16
 
                     Text {
                         text: "Luminosita interfaccia: " + Math.round(win.uiBrightness * 100) + "%"
                         color: win.textMain
-                        font.pixelSize: 14
+                            font.pixelSize: 22
                         font.bold: true
+                            wrapMode: Text.WordWrap
+                            width: parent.width
                     }
 
-                    Slider {
+                    GlassSlider {
                         width: parent.width
                         from: 0.45
                         to: 1.0
@@ -921,14 +1268,16 @@ ApplicationWindow {
 
                 }
             }
+            }
 
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
+                spacing: 16
 
                 GlassButton {
-                    w: 178
-                    h: 42
+                    w: 260
+                    h: 58
+                    textSize: 18
                     text: "RIPRISTINA DEFAULT"
                     onClicked: {
                         win.bgMusicVolume = 0.50
@@ -942,8 +1291,9 @@ ApplicationWindow {
                 Item { Layout.fillWidth: true }
 
                 GlassButton {
-                    w: 120
-                    h: 42
+                    w: 190
+                    h: 58
+                    textSize: 20
                     text: "CHIUDI"
                     onClicked: settingsPopup.close()
                 }
@@ -955,10 +1305,10 @@ ApplicationWindow {
         visible: win.page !== "intro" && win.page !== "machine" && win.page !== "disclaimer" && win.page !== "soundtrack"
         text: "by Nicolò Carestiato"
         color: Qt.rgba(win.textSub.r, win.textSub.g, win.textSub.b, 0.85)
-        font.pixelSize: 13
+        font.pixelSize: 17
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 10
+        anchors.bottomMargin: 14
     }
 
     Rectangle {
@@ -984,37 +1334,44 @@ ApplicationWindow {
 
         ColumnLayout {
             anchors.centerIn: parent
-            width: Math.min(920, win.width - 140)
-            spacing: 14
+            width: Math.min(1160, win.width - 56)
+            spacing: 24
             visible: !win.disruptionBlackPhase
 
             Text {
                 text: win.disruptionTitle
                 color: Qt.rgba(1.0, 0.94, 0.86, 0.98)
-                font.pixelSize: 30
+                font.pixelSize: Math.min(52, Math.max(38, win.width * 0.036))
                 font.bold: true
+                wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
                 Layout.fillWidth: true
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton
+                    onClicked: win.dismissDisruptionQuick()
+                }
             }
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 1
+                Layout.preferredHeight: 2
                 color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.55)
             }
 
             Text {
                 text: win.disruptionText
                 color: Qt.rgba(1.0, 1.0, 1.0, 0.90)
-                font.pixelSize: 18
-                lineHeight: 1.24
+                font.pixelSize: Math.min(34, Math.max(26, win.width * 0.023))
+                lineHeight: 1.30
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
                 Layout.fillWidth: true
             }
 
             Row {
-                spacing: 8
+                spacing: 14
                 Layout.alignment: Qt.AlignHCenter
 
                 Repeater {
@@ -1022,9 +1379,9 @@ ApplicationWindow {
                     Rectangle {
                         id: pulseDot
                         required property int index
-                        width: 9
-                        height: 9
-                        radius: 5
+                        width: 14
+                        height: 14
+                        radius: 7
                         color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.92)
 
                         SequentialAnimation on opacity {
@@ -1042,7 +1399,7 @@ ApplicationWindow {
             Text {
                 text: "Ripristino rete in corso..."
                 color: Qt.rgba(win.textSub.r, win.textSub.g, win.textSub.b, 0.92)
-                font.pixelSize: 13
+                font.pixelSize: 21
                 horizontalAlignment: Text.AlignHCenter
                 Layout.fillWidth: true
             }
@@ -1070,13 +1427,13 @@ ApplicationWindow {
 
         ColumnLayout {
             anchors.centerIn: parent
-            width: Math.min(900, win.width - 120)
-            spacing: 14
+            width: Math.min(1060, win.width - 120)
+            spacing: 22
 
             Text {
                 text: "DISCLAIMER"
                 color: Qt.rgba(1.0, 1.0, 1.0, 0.96)
-                font.pixelSize: 30
+                font.pixelSize: 44
                 font.bold: true
                 horizontalAlignment: Text.AlignHCenter
                 Layout.fillWidth: true
@@ -1085,8 +1442,8 @@ ApplicationWindow {
             Text {
                 text: "Questo applicativo non si propone come ricostruzione storica perfetta.\n\nEnigma Touch e' una ricostruzione didattica e divulgativa: alcune parti sono semplificate per facilitare comprensione, utilizzo e apprendimento.\n\nLe configurazioni, i tempi operativi e alcune dinamiche narrative sono adattate per finalita formative.\n\nIl progetto non intende glorificare eventi bellici: l'obiettivo e' spiegare principi storici e crittografici in modo accessibile.\n\nEssendo una ricostruzione indipendente a scopo didattico, possono verificarsi occasionali malfunzionamenti o comportamenti non previsti."
                 color: Qt.rgba(1.0, 1.0, 1.0, 0.85)
-                font.pixelSize: 17
-                lineHeight: 1.22
+                font.pixelSize: 24
+                lineHeight: 1.18
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
                 Layout.fillWidth: true
@@ -1095,8 +1452,9 @@ ApplicationWindow {
             GlassButton {
                 text: "CONTINUA"
                 primary: true
-                w: 210
-                h: 50
+                w: 270
+                h: 64
+                textSize: 22
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: win.page = "soundtrack"
             }
@@ -1115,19 +1473,19 @@ ApplicationWindow {
         }
 
         GlassCard {
-            width: Math.min(980, win.width - 120)
-            height: Math.min(500, win.height - 120)
+            width: Math.min(1040, win.width - 96)
+            height: Math.min(540, win.height - 96)
             anchors.centerIn: parent
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 22
-                spacing: 12
+                anchors.margins: 28
+                spacing: 16
 
                 Text {
                     text: "SCEGLI ATMOSFERA SONORA"
                     color: win.textMain
-                    font.pixelSize: 32
+                    font.pixelSize: 38
                     font.bold: true
                     horizontalAlignment: Text.AlignHCenter
                     Layout.fillWidth: true
@@ -1136,7 +1494,7 @@ ApplicationWindow {
                 Text {
                     text: "Seleziona la colonna sonora con cui vuoi vivere l'esperienza."
                     color: win.textSub
-                    font.pixelSize: 14
+                    font.pixelSize: 19
                     horizontalAlignment: Text.AlignHCenter
                     Layout.fillWidth: true
                 }
@@ -1145,7 +1503,7 @@ ApplicationWindow {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 16
+                    spacing: 18
 
                     GlassCard {
                         Layout.fillWidth: true
@@ -1155,20 +1513,20 @@ ApplicationWindow {
 
                         ColumnLayout {
                             anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 10
+                            anchors.margins: 20
+                            spacing: 12
 
                             Text {
                                 text: "IMMERSIVA"
                                 color: win.textMain
-                                font.pixelSize: 18
+                                font.pixelSize: 24
                                 font.bold: true
                             }
 
                             Text {
                                 text: "Scenario bellico: ambiente piu intenso e drammatico."
                                 color: win.textSub
-                                font.pixelSize: 13
+                                font.pixelSize: 18
                                 wrapMode: Text.WordWrap
                                 Layout.fillWidth: true
                             }
@@ -1178,8 +1536,9 @@ ApplicationWindow {
                             GlassButton {
                                 text: "TRACCIA IMMERSIVA"
                                 primary: true
-                                w: 240
-                                h: 44
+                                w: 280
+                                h: 58
+                                textSize: 18
                                 Layout.alignment: Qt.AlignHCenter
                                 onClicked: win.beginWithSoundtrack("war")
                             }
@@ -1194,20 +1553,20 @@ ApplicationWindow {
 
                         ColumnLayout {
                             anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 10
+                            anchors.margins: 20
+                            spacing: 12
 
                             Text {
                                 text: "CLASSICA"
                                 color: win.textMain
-                                font.pixelSize: 18
+                                font.pixelSize: 24
                                 font.bold: true
                             }
 
                             Text {
                                 text: "Rivisitazione avventura piu generica, meno impattante."
                                 color: win.textSub
-                                font.pixelSize: 13
+                                font.pixelSize: 18
                                 wrapMode: Text.WordWrap
                                 Layout.fillWidth: true
                             }
@@ -1217,8 +1576,9 @@ ApplicationWindow {
                             GlassButton {
                                 text: "TRACCIA CLASSICA"
                                 primary: true
-                                w: 220
-                                h: 44
+                                w: 260
+                                h: 58
+                                textSize: 18
                                 Layout.alignment: Qt.AlignHCenter
                                 onClicked: win.beginWithSoundtrack("classic")
                             }
@@ -1237,19 +1597,23 @@ ApplicationWindow {
         visible: win.page === "boot"
 
         GlassCard {
-            width: Math.min(900, win.width - 120)
-            height: 320
+            id: bootCard
+            width: Math.min(1140, win.width - 56)
+            height: Math.min(455, win.height - 72)
             anchors.centerIn: parent
 
             Column {
                 anchors.centerIn: parent
-                spacing: 16
+                width: bootCard.width - 120
+                spacing: 22
 
                 Text {
                     text: "ENIGMA TOUCH"
                     color: win.textMain
-                    font.pixelSize: 44
+                    font.pixelSize: Math.min(86, Math.max(64, bootCard.width * 0.072))
                     font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    width: parent.width
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     SequentialAnimation on scale {
@@ -1261,15 +1625,15 @@ ApplicationWindow {
 
                 Item {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    width: 180
-                    height: 78
+                    width: 280
+                    height: 112
 
                     Repeater {
                         model: 3
                         Rectangle {
                             id: ring
                             required property int index
-                            width: 64 + (index * 26)
+                            width: 92 + (index * 40)
                             height: width
                             radius: width / 2
                             anchors.centerIn: parent
@@ -1291,22 +1655,22 @@ ApplicationWindow {
 
                 Row {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: 10
+                    spacing: 12
 
                     Repeater {
                         model: 5
                         Rectangle {
                             id: dot
                             required property int index
-                            width: 10
-                            height: 10
-                            radius: 5
+                            width: 14
+                            height: 14
+                            radius: 7
                             color: win.textSub
 
                             SequentialAnimation on y {
                                 loops: Animation.Infinite
                                 PauseAnimation { duration: dot.index * 110 }
-                                NumberAnimation { to: -9; duration: 260; easing.type: Easing.OutCubic }
+                                NumberAnimation { to: -13; duration: 260; easing.type: Easing.OutCubic }
                                 NumberAnimation { to: 0; duration: 300; easing.type: Easing.InCubic }
                                 PauseAnimation { duration: 180 }
                             }
@@ -1315,9 +1679,9 @@ ApplicationWindow {
                 }
 
                 Rectangle {
-                    width: Math.min(620, bootPage.width - 220)
-                    height: 14
-                    radius: 7
+                    width: Math.min(880, parent.width - 70)
+                    height: 22
+                    radius: 11
                     anchors.horizontalCenter: parent.horizontalCenter
                     color: Qt.rgba(1.0, 1.0, 1.0, 0.12)
                     border.width: 1
@@ -1335,7 +1699,7 @@ ApplicationWindow {
                     }
 
                     Rectangle {
-                        width: 72
+                        width: 104
                         height: parent.height
                         radius: parent.radius
                         x: (parent.width + width) * win.bootProgress - width
@@ -1346,14 +1710,14 @@ ApplicationWindow {
                 Text {
                     text: win.bootStatusText()
                     color: win.textSub
-                    font.pixelSize: 14
+                    font.pixelSize: 19
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
                 Text {
                     text: Math.round(win.bootProgress * 100) + "%"
                     color: Qt.rgba(win.textMain.r, win.textMain.g, win.textMain.b, 0.92)
-                    font.pixelSize: 13
+                    font.pixelSize: 32
                     font.bold: true
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
@@ -1417,40 +1781,42 @@ ApplicationWindow {
 
         GlassCard {
             id: introCard
-            width: Math.min(980, win.width - 140)
-            height: Math.min(610, win.height - 120)
+            width: Math.min(1120, win.width - 72)
+            height: Math.min(660, win.height - 72)
             anchors.centerIn: parent
-            property int galleryHeight: Math.max(200, Math.min(260, Math.floor(height * 0.45)))
+            property int galleryHeight: Math.max(260, Math.min(340, Math.floor(height * 0.50)))
             property int galleryCardSize: galleryHeight
-            property int galleryGap: 12
-            property int galleryViewportWidth: Math.min(width - 36, Math.max(560, Math.floor(width * 0.90)))
+            property int galleryGap: 16
+            property int galleryViewportWidth: Math.min(width - 48, Math.max(760, Math.floor(width * 0.92)))
 
             Column {
                 anchors.fill: parent
-                anchors.margins: 20
-                spacing: 8
+                anchors.margins: 24
+                spacing: 12
 
                 Column {
                     width: parent.width
-                    spacing: 10
+                    spacing: 12
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     Text {
                         text: "ENIGMA TOUCH"
                         color: win.textMain
-                        font.pixelSize: win.fsTitle
+                        font.pixelSize: Math.min(70, Math.max(52, introCard.width * 0.058))
                         font.bold: true
+                        horizontalAlignment: Text.AlignHCenter
+                        width: parent.width
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
 
                     Text {
                         text: "Una reinterpretazione contemporanea della macchina Enigma.\nInterfaccia moderna, principio crittografico autentico."
                         color: win.textSub
-                        font.pixelSize: win.fsLabel + 1
+                        font.pixelSize: 18
                         wrapMode: Text.WordWrap
                         horizontalAlignment: Text.AlignHCenter
                         lineHeight: win.bodyLine
-                        width: Math.min(parent.width, 760)
+                        width: Math.min(parent.width, 900)
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
@@ -1478,7 +1844,7 @@ ApplicationWindow {
                                 width: introCard.galleryCardSize
                                 height: introCard.galleryCardSize
                                 property url cardSource: win.galleryAssetUrls[index]
-                                property int frameRadius: 22
+                                property int frameRadius: 28
 
                                 Rectangle {
                                     anchors.fill: parent
@@ -1573,7 +1939,8 @@ ApplicationWindow {
                     text: "INIZIA ESPERIENZA"
                     primary: true
                     w: galleryViewport.width
-                    h: 52
+                    h: 70
+                    textSize: 20
                     anchors.horizontalCenter: parent.horizontalCenter
                     onClicked: {
                         win.galleryExpanded = false
@@ -1711,6 +2078,15 @@ ApplicationWindow {
                                 color: win.textMain
                                 font.pixelSize: win.fsSection
                                 font.bold: true
+                                horizontalAlignment: Text.AlignHCenter
+                                Layout.fillWidth: true
+                            }
+
+                            RoundedImagePanel {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 152
+                                source: Qt.resolvedUrl("assets/help/configurazione-photo.jpg")
+                                emptyLabel: "Vista macchina"
                             }
 
                             Text {
@@ -1736,7 +2112,7 @@ ApplicationWindow {
                     }
 
                     GlassCard {
-                        Layout.preferredWidth: 420
+                        Layout.fillWidth: true
                         Layout.fillHeight: true
                         radius: 26
 
@@ -1750,6 +2126,15 @@ ApplicationWindow {
                                 color: win.textMain
                                 font.pixelSize: win.fsSection
                                 font.bold: true
+                                horizontalAlignment: Text.AlignHCenter
+                                Layout.fillWidth: true
+                            }
+
+                            RoundedImagePanel {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 152
+                                source: Qt.resolvedUrl("assets/gallery/1.png")
+                                emptyLabel: "Contesto storico"
                             }
 
                             Text {
@@ -1765,10 +2150,61 @@ ApplicationWindow {
 
                             GlassButton {
                                 text: "SCOPRI LA STORIA"
+                                primary: true
                                 w: 300
                                 h: 54
                                 Layout.alignment: Qt.AlignHCenter
                                 onClicked: win.page = "story"
+                            }
+                        }
+                    }
+
+                    GlassCard {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        radius: 26
+                        color: Qt.rgba(0.24, 0.18, 0.13, 0.42)
+                        border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.24)
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 22
+                            spacing: 12
+
+                            Text {
+                                text: "MISSIONE"
+                                color: win.textMain
+                                font.pixelSize: win.fsSection
+                                font.bold: true
+                                horizontalAlignment: Text.AlignHCenter
+                                Layout.fillWidth: true
+                            }
+
+                            RoundedImagePanel {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 152
+                                source: Qt.resolvedUrl("assets/help/plugboard-photo.jpg")
+                                emptyLabel: "Sfida operativa"
+                            }
+
+                            Text {
+                                text: "Sfida guidata: imposta la macchina, produci il cifrato target e valida il risultato."
+                                color: win.textSub
+                                font.pixelSize: win.fsLabel
+                                wrapMode: Text.WordWrap
+                                lineHeight: win.bodyLine
+                                Layout.fillWidth: true
+                            }
+
+                            Item { Layout.fillHeight: true }
+
+                            GlassButton {
+                                text: "AVVIA MISSIONE"
+                                primary: true
+                                w: 260
+                                h: 54
+                                Layout.alignment: Qt.AlignHCenter
+                                onClicked: machine.startMission()
                             }
                         }
                     }
@@ -1786,9 +2222,23 @@ ApplicationWindow {
         property var reflectorOptions: ["B", "C"]
         property var rotorLabels: ["SINISTRA", "CENTRO", "DESTRA"]
         property string helpTitle: ""
-        property string helpBody: ""
-        property string helpImageFile: ""
+        property string helpLeadHtml: ""
+        property string helpBodyHtml: ""
+        property string helpImagePath: ""
+        property string helpImageSide: "right"
+        property string helpImageCaption: ""
+        property var helpChecklistItems: []
+        property var helpChecklistStates: []
+        property var helpChecklistMemory: ({})
+        property var helpScenarioMemory: ({})
+        property var helpEntry: ({})
+        property var helpScenarioItems: []
+        property int helpScenarioIndex: 0
+        property bool helpScenarioMenuOpen: false
+        property string helpScenarioLabel: ""
+        property string helpCurrentKey: ""
         property url helpImageSource: ""
+        property string helpChecklistAlert: ""
 
         function rotorIndex(name) {
             var idx = rotorOptions.indexOf(name)
@@ -1852,13 +2302,169 @@ ApplicationWindow {
             positionsField.text = win.simController.startPositions
         }
 
-        function openHelp(title, body, imageFile) {
-            machine.helpTitle = title
-            machine.helpBody = body
-            machine.helpImageFile = imageFile ? imageFile : ""
-            machine.helpImageSource = machine.helpImageFile.length > 0
-                                     ? Qt.resolvedUrl("assets/help/" + machine.helpImageFile)
+        function startMission() {
+            if (!win.simController) {
+                return
+            }
+            win.simController.startChallenge()
+            win.page = "machine"
+            missionPopup.open()
+            machine.forceActiveFocus()
+        }
+
+        function openMission() {
+            if (!win.simController) {
+                return
+            }
+            if (!win.simController.challengeActive && !win.simController.challengeSolved) {
+                win.simController.startChallenge()
+            }
+            missionPopup.open()
+            machine.forceActiveFocus()
+        }
+
+        function submitMission() {
+            if (!win.simController) {
+                return
+            }
+            win.simController.submitChallenge()
+            machine.forceActiveFocus()
+        }
+
+        function revealMissionSolution() {
+            if (!win.simController) {
+                return
+            }
+            var solution = win.simController.revealChallengeSolution()
+            if (solution && solution !== "---") {
+                positionsField.text = solution
+            }
+            machine.forceActiveFocus()
+        }
+
+        function cancelMission() {
+            if (win.simController) {
+                win.simController.cancelChallenge()
+            }
+            missionPopup.close()
+            machine.forceActiveFocus()
+        }
+
+        function resetHelpChecklist() {
+            var states = []
+            for (var i = 0; i < machine.helpChecklistItems.length; i++) {
+                states.push(false)
+            }
+            machine.helpChecklistStates = states
+            if (machine.currentHelpStateKey().length > 0) {
+                var memory = machine.helpChecklistMemory
+                memory[machine.currentHelpStateKey()] = states.slice(0)
+                machine.helpChecklistMemory = memory
+            }
+        }
+
+        function currentHelpStateKey() {
+            if (machine.helpCurrentKey.length === 0) {
+                return ""
+            }
+            return machine.helpCurrentKey + "::" + machine.helpScenarioIndex
+        }
+
+        function helpChecklistCheckedCount() {
+            var count = 0
+            for (var i = 0; i < machine.helpChecklistStates.length; i++) {
+                if (machine.helpChecklistStates[i]) {
+                    count += 1
+                }
+            }
+            return count
+        }
+
+        function setHelpChecklistState(index, checked) {
+            var nextStates = machine.helpChecklistStates.slice(0)
+            while (nextStates.length < machine.helpChecklistItems.length) {
+                nextStates.push(false)
+            }
+            var targetChecked = checked
+            if (index < nextStates.length && nextStates[index] === checked) {
+                targetChecked = !checked
+            }
+            if (targetChecked) {
+                for (var p = 0; p < index; p++) {
+                    if (!nextStates[p]) {
+                        machine.helpChecklistAlert = "Completa prima il punto " + (p + 1) + ". La checklist va seguita in ordine."
+                        helpChecklistAlertTimer.restart()
+                        return
+                    }
+                }
+            }
+            nextStates[index] = targetChecked
+            if (!targetChecked) {
+                for (var n = index + 1; n < nextStates.length; n++) {
+                    nextStates[n] = false
+                }
+            }
+            machine.helpChecklistStates = nextStates
+
+            if (machine.currentHelpStateKey().length > 0) {
+                var memory = machine.helpChecklistMemory
+                memory[machine.currentHelpStateKey()] = nextStates.slice(0)
+                machine.helpChecklistMemory = memory
+            }
+        }
+
+        function applyHelpScenario(index) {
+            var source = machine.helpEntry
+            if (machine.helpScenarioItems.length > 0) {
+                var clamped = Math.max(0, Math.min(machine.helpScenarioItems.length - 1, index))
+                machine.helpScenarioIndex = clamped
+                if (machine.helpCurrentKey.length > 0) {
+                    var scenarioMemory = machine.helpScenarioMemory
+                    scenarioMemory[machine.helpCurrentKey] = clamped
+                    machine.helpScenarioMemory = scenarioMemory
+                }
+                source = machine.helpScenarioItems[clamped]
+            } else {
+                machine.helpScenarioIndex = 0
+            }
+            machine.helpScenarioMenuOpen = false
+
+            machine.helpTitle = machine.helpEntry.title ? machine.helpEntry.title : ""
+            machine.helpLeadHtml = source.leadHtml ? source.leadHtml : ""
+            machine.helpBodyHtml = source.bodyHtml ? source.bodyHtml : ""
+            machine.helpImagePath = source.imagePath ? source.imagePath : ""
+            machine.helpImageSide = source.imageSide ? source.imageSide : "right"
+            machine.helpImageCaption = source.imageCaption ? source.imageCaption : ""
+            machine.helpScenarioLabel = source.label ? source.label : ""
+            machine.helpChecklistItems = source.checklist ? source.checklist.slice(0) : []
+            machine.helpImageSource = machine.helpImagePath.length > 0
+                                     ? Qt.resolvedUrl(machine.helpImagePath)
                                      : ""
+
+            if (machine.helpChecklistItems.length > 0) {
+                var memory = machine.helpChecklistMemory
+                var key = machine.currentHelpStateKey()
+                if (memory[key] && memory[key].length === machine.helpChecklistItems.length) {
+                    machine.helpChecklistStates = memory[key].slice(0)
+                } else {
+                    machine.resetHelpChecklist()
+                }
+            } else {
+                machine.helpChecklistStates = []
+            }
+        }
+
+        function openHelpKey(helpKey) {
+            var entry = HelpCatalog.getEntry(helpKey)
+            machine.helpCurrentKey = helpKey ? helpKey : ""
+            machine.helpEntry = entry
+            machine.helpScenarioItems = entry.scenarios ? entry.scenarios.slice(0) : []
+            var rememberedScenario = 0
+            if (machine.helpCurrentKey.length > 0 && machine.helpScenarioMemory[machine.helpCurrentKey] !== undefined) {
+                rememberedScenario = machine.helpScenarioMemory[machine.helpCurrentKey]
+            }
+            machine.helpScenarioMenuOpen = false
+            machine.applyHelpScenario(rememberedScenario)
             helpPopup.open()
         }
 
@@ -1866,6 +2472,16 @@ ApplicationWindow {
             if (visible) {
                 syncFromController()
                 machine.forceActiveFocus()
+            }
+        }
+
+        Connections {
+            target: win.simController
+
+            function onStateChanged() {
+                if (machine.visible) {
+                    positionsField.text = win.simController.startPositions
+                }
             }
         }
 
@@ -1904,6 +2520,359 @@ ApplicationWindow {
             }
         }
 
+        Timer {
+            id: missionHeartbeatTimer
+            interval: 1000
+            repeat: true
+            running: win.simController && win.simController.challengeActive
+            onTriggered: win.simController.challengeHeartbeat()
+        }
+
+        Timer {
+            id: helpChecklistAlertTimer
+            interval: 2400
+            repeat: false
+            onTriggered: machine.helpChecklistAlert = ""
+        }
+
+        Popup {
+            id: missionPopup
+            modal: true
+            focus: true
+            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+            x: (win.width - width) / 2
+            y: (win.height - height) / 2
+            width: Math.min(860, win.width - 80)
+            height: Math.min(640, win.height - 70)
+            padding: 0
+            Overlay.modal: Rectangle {
+                color: Qt.rgba(0.0, 0.0, 0.0, 0.50)
+            }
+            background: Rectangle {
+                radius: 28
+                antialiasing: true
+                color: Qt.rgba(0.20, 0.15, 0.11, 0.98)
+                border.width: 1
+                border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.34)
+            }
+
+            contentItem: ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 22
+                spacing: 16
+
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 4
+
+                        Text {
+                            text: "MISSIONE ENIGMA"
+                            color: win.textMain
+                            font.pixelSize: 28
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: "Usa la simulazione per produrre il cifrato target con la configurazione richiesta."
+                            color: win.textSub
+                            font.pixelSize: 14
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                        }
+                    }
+
+                    GlassButton {
+                        w: 116
+                        h: 36
+                        textSize: 13
+                        text: "CHIUDI"
+                        onClicked: missionPopup.close()
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    Rectangle {
+                        Layout.preferredWidth: 160
+                        Layout.preferredHeight: 40
+                        radius: 14
+                        color: win.simController && win.simController.challengeActive
+                               ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.22)
+                               : Qt.rgba(1.0, 1.0, 1.0, 0.07)
+                        border.width: 1
+                        border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.25)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: win.simController && win.simController.challengeSolved ? "COMPLETATA"
+                                  : (win.simController && win.simController.challengeActive ? "ATTIVA" : "NON ATTIVA")
+                            color: win.textMain
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.preferredWidth: 150
+                        Layout.preferredHeight: 40
+                        radius: 14
+                        color: Qt.rgba(0.0, 0.0, 0.0, 0.16)
+                        border.width: 1
+                        border.color: Qt.rgba(1.0, 1.0, 1.0, 0.10)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "TENTATIVI: " + (win.simController ? win.simController.challengeAttempts : 0)
+                            color: win.textMain
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.preferredWidth: 130
+                        Layout.preferredHeight: 40
+                        radius: 14
+                        color: Qt.rgba(0.0, 0.0, 0.0, 0.16)
+                        border.width: 1
+                        border.color: Qt.rgba(1.0, 1.0, 1.0, 0.10)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "TEMPO: " + (win.simController ? win.simController.challengeElapsed : 0) + "s"
+                            color: win.textMain
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.preferredWidth: 130
+                        Layout.preferredHeight: 40
+                        radius: 14
+                        color: Qt.rgba(0.0, 0.0, 0.0, 0.16)
+                        border.width: 1
+                        border.color: Qt.rgba(1.0, 1.0, 1.0, 0.10)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "SCORE: " + (win.simController ? win.simController.challengeScore : 0)
+                            color: win.textMain
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+
+                    Item { Layout.fillWidth: true }
+                }
+
+                ScrollView {
+                    id: missionScroll
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    contentWidth: availableWidth
+                    ScrollBar.vertical: ThemeScrollBar {}
+
+                    Column {
+                        width: missionScroll.availableWidth - 4
+                        spacing: 14
+
+                        Row {
+                            width: parent.width
+                            spacing: 14
+
+                            Rectangle {
+                                width: (parent.width - 14) / 2
+                                implicitHeight: plainTargetText.implicitHeight + 46
+                                radius: 22
+                                color: Qt.rgba(0.38, 0.29, 0.22, 0.42)
+                                border.width: 1
+                                border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.24)
+
+                                Column {
+                                    anchors.fill: parent
+                                    anchors.margins: 16
+                                    spacing: 8
+
+                                    Text {
+                                        text: "PLAINTEXT DA DIGITARE"
+                                        color: win.textSub
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        id: plainTargetText
+                                        width: parent.width
+                                        text: win.simController && win.simController.challengePlain.length > 0
+                                              ? win.simController.challengePlain
+                                              : "Premi NUOVA MISSIONE"
+                                        color: win.textMain
+                                        font.pixelSize: 30
+                                        font.bold: true
+                                        wrapMode: Text.WrapAnywhere
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                width: (parent.width - 14) / 2
+                                implicitHeight: cipherTargetText.implicitHeight + 46
+                                radius: 22
+                                color: Qt.rgba(0.38, 0.29, 0.22, 0.42)
+                                border.width: 1
+                                border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.24)
+
+                                Column {
+                                    anchors.fill: parent
+                                    anchors.margins: 16
+                                    spacing: 8
+
+                                    Text {
+                                        text: "CIFRATO TARGET"
+                                        color: win.textSub
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        id: cipherTargetText
+                                        width: parent.width
+                                        text: win.simController && win.simController.challengeCipher.length > 0
+                                              ? win.simController.challengeCipher
+                                              : "---"
+                                        color: win.accent
+                                        font.pixelSize: 30
+                                        font.bold: true
+                                        wrapMode: Text.WrapAnywhere
+                                    }
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            implicitHeight: missionConfigText.implicitHeight + 42
+                            radius: 22
+                            color: Qt.rgba(0.0, 0.0, 0.0, 0.18)
+                            border.width: 1
+                            border.color: Qt.rgba(1.0, 1.0, 1.0, 0.10)
+
+                            Column {
+                                anchors.fill: parent
+                                anchors.margins: 16
+                                spacing: 8
+
+                                Text {
+                                    text: "CONFIGURAZIONE BLOCCATA"
+                                    color: win.textSub
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    id: missionConfigText
+                                    width: parent.width
+                                    text: win.simController ? win.simController.challengeConfig : "Controller non disponibile."
+                                    color: win.textMain
+                                    font.pixelSize: 15
+                                    wrapMode: Text.WordWrap
+                                    lineHeight: 1.28
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            implicitHeight: missionRulesText.implicitHeight + 42
+                            radius: 22
+                            color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.10)
+                            border.width: 1
+                            border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.18)
+
+                            Text {
+                                id: missionRulesText
+                                anchors.fill: parent
+                                anchors.margins: 16
+                                text:
+                                    "<b>Come si gioca:</b><br>"
+                                    + "1. Imposta una posizione iniziale e premi APPLICA.<br>"
+                                    + "2. Digita esattamente il plaintext indicato.<br>"
+                                    + "3. Premi VALIDA: se l'output coincide con il cifrato target, la missione e completata.<br>"
+                                    + "4. Se vuoi fare una prova veloce, MOSTRA SOLUZIONE inserisce la posizione corretta nel campo posizioni."
+                                textFormat: Text.RichText
+                                color: win.textMain
+                                font.pixelSize: 15
+                                wrapMode: Text.WordWrap
+                                lineHeight: 1.30
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            implicitHeight: missionStatusText.implicitHeight + 34
+                            radius: 18
+                            color: Qt.rgba(0.13, 0.10, 0.08, 0.62)
+                            border.width: 1
+                            border.color: Qt.rgba(1.0, 1.0, 1.0, 0.10)
+
+                            Text {
+                                id: missionStatusText
+                                anchors.fill: parent
+                                anchors.margins: 14
+                                text: win.simController ? win.simController.challengeStatus : "Controller non disponibile."
+                                color: win.textMain
+                                font.pixelSize: 15
+                                wrapMode: Text.WordWrap
+                            }
+                        }
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    GlassButton {
+                        w: 170
+                        h: 42
+                        text: "NUOVA MISSIONE"
+                        primary: true
+                        onClicked: machine.startMission()
+                    }
+
+                    GlassButton {
+                        w: 130
+                        h: 42
+                        text: "VALIDA"
+                        onClicked: machine.submitMission()
+                    }
+
+                    GlassButton {
+                        w: 170
+                        h: 42
+                        text: "MOSTRA SOL."
+                        onClicked: machine.revealMissionSolution()
+                    }
+
+                    Item { Layout.fillWidth: true }
+
+                    GlassButton {
+                        w: 120
+                        h: 42
+                        text: "ANNULLA"
+                        onClicked: machine.cancelMission()
+                    }
+                }
+            }
+        }
+
         Popup {
             id: helpPopup
             modal: true
@@ -1911,33 +2880,33 @@ ApplicationWindow {
             closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
             x: (win.width - width) / 2
             y: (win.height - height) / 2
-            width: Math.min(700, win.width - 90)
-            height: Math.min(560, win.height - 90)
+            width: Math.min(1000, win.width - 70)
+            height: Math.min(720, win.height - 60)
             padding: 0
             Overlay.modal: Rectangle {
-                color: Qt.rgba(0.0, 0.0, 0.0, 0.62)
+                color: Qt.rgba(0.0, 0.0, 0.0, 0.52)
             }
             background: Rectangle {
-                radius: 22
+                radius: 26
                 antialiasing: true
-                color: Qt.rgba(0.09, 0.07, 0.06, 0.94)
+                color: Qt.rgba(0.20, 0.16, 0.13, 0.98)
                 border.width: 1
-                border.color: Qt.rgba(1.0, 1.0, 1.0, 0.18)
+                border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.30)
 
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: 1
-                    radius: 21
+                    radius: 25
                     color: "transparent"
                     border.width: 1
-                    border.color: Qt.rgba(0.0, 0.0, 0.0, 0.35)
+                    border.color: Qt.rgba(1.0, 1.0, 1.0, 0.06)
                 }
             }
 
             contentItem: ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 20
-                spacing: 12
+                anchors.margins: 22
+                spacing: 16
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -1945,7 +2914,7 @@ ApplicationWindow {
                     Text {
                         text: machine.helpTitle
                         color: win.textMain
-                        font.pixelSize: 24
+                        font.pixelSize: 28
                         font.bold: true
                     }
 
@@ -1960,64 +2929,628 @@ ApplicationWindow {
                     }
                 }
 
-                Rectangle {
+                ColumnLayout {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 220
-                    radius: 16
-                    color: Qt.rgba(0.0, 0.0, 0.0, 0.42)
-                    border.width: 1
-                    border.color: Qt.rgba(1.0, 1.0, 1.0, 0.14)
-                    antialiasing: true
-                    clip: true
+                    visible: machine.helpScenarioItems.length > 0
+                    spacing: 10
 
-                    Image {
-                        id: helpImage
-                        anchors.fill: parent
-                        anchors.margins: 8
-                        source: machine.helpImageSource
-                        fillMode: Image.PreserveAspectFit
-                        smooth: true
-                        mipmap: true
-                        visible: machine.helpImageFile.length > 0 && status === Image.Ready
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        Text {
+                            text: "SCENARIO DI TEST"
+                            color: win.textSub
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        Rectangle {
+                            Layout.preferredWidth: 420
+                            Layout.preferredHeight: 42
+                            radius: 14
+                            color: Qt.rgba(0.15, 0.11, 0.09, 0.74)
+                            border.width: 1
+                            border.color: machine.helpScenarioMenuOpen
+                                          ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.42)
+                                          : Qt.rgba(1.0, 1.0, 1.0, 0.13)
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.margins: 12
+                                spacing: 10
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: machine.helpScenarioLabel.length > 0
+                                          ? machine.helpScenarioLabel
+                                          : "Scegli una prova"
+                                    color: win.textMain
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    elide: Text.ElideRight
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+
+                                Text {
+                                    text: machine.helpScenarioMenuOpen ? "^" : "v"
+                                    color: win.textSub
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: machine.helpScenarioMenuOpen = !machine.helpScenarioMenuOpen
+                            }
+                        }
+
+                        Item { Layout.fillWidth: true }
+
+                        Rectangle {
+                            radius: 12
+                            color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.18)
+                            border.width: 1
+                            border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.30)
+                            Layout.preferredWidth: 170
+                            Layout.preferredHeight: 34
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: (machine.helpScenarioIndex + 1) + " / " + machine.helpScenarioItems.length
+                                color: win.textMain
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
                     }
 
-                    Text {
-                        anchors.centerIn: parent
-                        width: parent.width - 26
-                        horizontalAlignment: Text.AlignHCenter
-                        wrapMode: Text.WordWrap
-                        color: win.textSub
-                        font.pixelSize: 14
-                        text: machine.helpImageFile.length > 0
-                              ? ("Immagine guida non trovata.\nAggiungi " + machine.helpImageFile + " in ui/assets/help")
-                              : "Area immagine facoltativa.\nSe vuoi, qui mostriamo un esempio visivo."
-                        visible: !helpImage.visible
+                    Rectangle {
+                        Layout.preferredWidth: 420
+                        Layout.fillWidth: false
+                        visible: machine.helpScenarioMenuOpen
+                        implicitHeight: Math.min(helpScenarioMenuColumn.implicitHeight + 10, 270)
+                        radius: 18
+                        color: Qt.rgba(0.11, 0.09, 0.08, 0.96)
+                        border.width: 1
+                        border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.22)
+
+                        Flickable {
+                            anchors.fill: parent
+                            anchors.margins: 5
+                            clip: true
+                            contentWidth: width
+                            contentHeight: helpScenarioMenuColumn.implicitHeight
+                            boundsBehavior: Flickable.StopAtBounds
+
+                            Column {
+                                id: helpScenarioMenuColumn
+                                width: parent.width
+                                spacing: 4
+
+                                Repeater {
+                                    model: machine.helpScenarioItems
+
+                                    delegate: Rectangle {
+                                        id: scenarioItem
+                                        required property int index
+                                        required property var modelData
+                                        width: parent.width
+                                        height: helpScenarioRow.implicitHeight + 18
+                                        radius: 12
+                                        color: scenarioItem.index === machine.helpScenarioIndex
+                                               ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.22)
+                                               : "transparent"
+                                        border.width: scenarioItem.index === machine.helpScenarioIndex ? 1 : 0
+                                        border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.28)
+
+                                        RowLayout {
+                                            id: helpScenarioRow
+                                            anchors.fill: parent
+                                            anchors.margins: 10
+                                            spacing: 10
+
+                                            Rectangle {
+                                                Layout.preferredWidth: 26
+                                                Layout.preferredHeight: 26
+                                                radius: 13
+                                                color: scenarioItem.index === machine.helpScenarioIndex
+                                                       ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.92)
+                                                       : Qt.rgba(1.0, 1.0, 1.0, 0.08)
+
+                                                Text {
+                                                    anchors.centerIn: parent
+                                                    text: scenarioItem.index + 1
+                                                    color: scenarioItem.index === machine.helpScenarioIndex
+                                                           ? Qt.rgba(0.15, 0.11, 0.08, 0.98)
+                                                           : win.textMain
+                                                    font.pixelSize: 12
+                                                    font.bold: true
+                                                }
+                                            }
+
+                                            Text {
+                                                Layout.fillWidth: true
+                                                text: scenarioItem.modelData && scenarioItem.modelData.label ? scenarioItem.modelData.label : ("Scenario " + (scenarioItem.index + 1))
+                                                color: win.textMain
+                                                font.pixelSize: 14
+                                                font.bold: scenarioItem.index === machine.helpScenarioIndex
+                                                wrapMode: Text.WordWrap
+                                            }
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: machine.applyHelpScenario(scenarioItem.index)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    radius: 14
-                    color: Qt.rgba(0.0, 0.0, 0.0, 0.34)
+                    visible: machine.helpScenarioLabel.length > 0
+                    implicitHeight: scenarioLabelRow.implicitHeight + 22
+                    radius: 18
+                    color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.14)
                     border.width: 1
-                    border.color: Qt.rgba(1.0, 1.0, 1.0, 0.10)
+                    border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.28)
 
-                    Flickable {
+                    RowLayout {
+                        id: scenarioLabelRow
                         anchors.fill: parent
                         anchors.margins: 12
-                        clip: true
-                        contentWidth: width
-                        contentHeight: helpBodyText.implicitHeight
+                        spacing: 10
+
+                        Rectangle {
+                            Layout.preferredWidth: 84
+                            Layout.preferredHeight: 28
+                            radius: 12
+                            color: Qt.rgba(0.14, 0.10, 0.08, 0.68)
+                            border.width: 1
+                            border.color: Qt.rgba(1.0, 1.0, 1.0, 0.10)
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "PROVA"
+                                color: win.textMain
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
 
                         Text {
-                            id: helpBodyText
-                            width: parent.width
-                            text: machine.helpBody
-                            color: Qt.rgba(1.0, 1.0, 1.0, 0.95)
+                            Layout.fillWidth: true
+                            text: machine.helpScenarioLabel
+                            color: win.textMain
                             font.pixelSize: 16
+                            font.bold: true
                             wrapMode: Text.WordWrap
-                            lineHeight: 1.3
+                        }
+                    }
+                }
+
+                ScrollView {
+                    id: helpScroll
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    ScrollBar.vertical: ThemeScrollBar {}
+
+                    contentWidth: availableWidth
+
+                    Column {
+                        width: helpScroll.availableWidth - 4
+                        spacing: 16
+
+                        Rectangle {
+                            id: helpIntroCard
+                            width: parent.width
+                            implicitHeight: helpIntroLayout.implicitHeight + 36
+                            radius: 24
+                            color: Qt.rgba(0.31, 0.25, 0.20, 0.44)
+                            border.width: 1
+                            border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.22)
+
+                            ColumnLayout {
+                                id: helpIntroLayout
+                                anchors.fill: parent
+                                anchors.margins: 18
+                                spacing: 14
+
+                                RowLayout {
+                                    id: helpIntroRow
+                                    Layout.fillWidth: true
+                                    spacing: 18
+
+                                    Rectangle {
+                                        Layout.preferredWidth: machine.helpImagePath.length > 0 && machine.helpImageSide === "left" ? 334 : 0
+                                        Layout.preferredHeight: machine.helpImagePath.length > 0 && machine.helpImageSide === "left" ? 280 : 0
+                                        visible: machine.helpImagePath.length > 0 && machine.helpImageSide === "left"
+                                        radius: 22
+                                        color: Qt.rgba(0.14, 0.11, 0.09, 0.88)
+                                        border.width: 1
+                                        border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.30)
+
+                                        Item {
+                                            id: helpImageLeftClip
+                                            anchors.fill: parent
+                                            anchors.margins: 1
+                                            layer.enabled: true
+                                            layer.smooth: true
+                                            layer.effect: OpacityMask {
+                                                maskSource: Rectangle {
+                                                    width: helpImageLeftClip.width
+                                                    height: helpImageLeftClip.height
+                                                    radius: 21
+                                                    color: "black"
+                                                }
+                                            }
+
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                color: Qt.rgba(0.08, 0.06, 0.05, 0.94)
+                                            }
+
+                                            Image {
+                                                id: helpImageLeftRaw
+                                                anchors.fill: parent
+                                                source: machine.helpImageSource
+                                                fillMode: Image.PreserveAspectCrop
+                                                smooth: true
+                                                mipmap: true
+                                                asynchronous: true
+                                                visible: status === Image.Ready
+                                            }
+
+                                            Rectangle {
+                                                anchors.left: parent.left
+                                                anchors.right: parent.right
+                                                anchors.bottom: parent.bottom
+                                                height: parent.height * 0.42
+                                                color: Qt.rgba(0.04, 0.03, 0.02, 0.18)
+                                            }
+
+                                            Column {
+                                                anchors.centerIn: parent
+                                                width: parent.width - 32
+                                                spacing: 8
+                                                visible: machine.helpImagePath.length > 0 && helpImageLeftRaw.status !== Image.Ready
+
+                                                Text {
+                                                    width: parent.width
+                                                    text: "Immagine non disponibile"
+                                                    color: win.textMain
+                                                    font.pixelSize: 18
+                                                    font.bold: true
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                }
+
+                                                Text {
+                                                    width: parent.width
+                                                    text: machine.helpImagePath
+                                                    color: win.textSub
+                                                    font.pixelSize: 13
+                                                    wrapMode: Text.WordWrap
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                }
+                                            }
+
+                                            Rectangle {
+                                                anchors.left: parent.left
+                                                anchors.right: parent.right
+                                                anchors.bottom: parent.bottom
+                                                anchors.margins: 12
+                                                radius: 16
+                                                visible: machine.helpImageCaption.length > 0
+                                                color: Qt.rgba(0.10, 0.08, 0.06, 0.84)
+                                                border.width: 1
+                                                border.color: Qt.rgba(1.0, 1.0, 1.0, 0.08)
+
+                                                Text {
+                                                    anchors.fill: parent
+                                                    anchors.margins: 10
+                                                    text: machine.helpImageCaption
+                                                    color: Qt.rgba(1.0, 1.0, 1.0, 0.88)
+                                                    font.pixelSize: 12
+                                                    wrapMode: Text.WordWrap
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        Layout.fillWidth: true
+                                        Layout.fillHeight: machine.helpImagePath.length > 0
+                                        Layout.minimumHeight: machine.helpImagePath.length > 0 ? 220 : 0
+                                        Layout.preferredHeight: machine.helpImagePath.length > 0
+                                                                ? 280
+                                                                : helpLeadText.implicitHeight + 36
+                                        radius: 20
+                                        color: Qt.rgba(0.92, 0.87, 0.79, 0.08)
+                                        border.width: 1
+                                        border.color: Qt.rgba(1.0, 1.0, 1.0, 0.08)
+
+                                        Text {
+                                            id: helpLeadText
+                                            anchors.fill: parent
+                                            anchors.margins: 18
+                                            text: machine.helpLeadHtml
+                                            textFormat: Text.RichText
+                                            color: Qt.rgba(1.0, 1.0, 1.0, 0.96)
+                                            font.pixelSize: 18
+                                            wrapMode: Text.WordWrap
+                                            lineHeight: 1.38
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        Layout.preferredWidth: machine.helpImagePath.length > 0 && machine.helpImageSide === "right" ? 334 : 0
+                                        Layout.preferredHeight: machine.helpImagePath.length > 0 && machine.helpImageSide === "right" ? 280 : 0
+                                        visible: machine.helpImagePath.length > 0 && machine.helpImageSide === "right"
+                                        radius: 22
+                                        color: Qt.rgba(0.14, 0.11, 0.09, 0.88)
+                                        border.width: 1
+                                        border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.30)
+
+                                        Item {
+                                            id: helpImageRightClip
+                                            anchors.fill: parent
+                                            anchors.margins: 1
+                                            layer.enabled: true
+                                            layer.smooth: true
+                                            layer.effect: OpacityMask {
+                                                maskSource: Rectangle {
+                                                    width: helpImageRightClip.width
+                                                    height: helpImageRightClip.height
+                                                    radius: 21
+                                                    color: "black"
+                                                }
+                                            }
+
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                color: Qt.rgba(0.08, 0.06, 0.05, 0.94)
+                                            }
+
+                                            Image {
+                                                id: helpImageRightRaw
+                                                anchors.fill: parent
+                                                source: machine.helpImageSource
+                                                fillMode: Image.PreserveAspectCrop
+                                                smooth: true
+                                                mipmap: true
+                                                asynchronous: true
+                                                visible: status === Image.Ready
+                                            }
+
+                                            Rectangle {
+                                                anchors.left: parent.left
+                                                anchors.right: parent.right
+                                                anchors.bottom: parent.bottom
+                                                height: parent.height * 0.42
+                                                color: Qt.rgba(0.04, 0.03, 0.02, 0.18)
+                                            }
+
+                                            Column {
+                                                anchors.centerIn: parent
+                                                width: parent.width - 32
+                                                spacing: 8
+                                                visible: machine.helpImagePath.length > 0 && helpImageRightRaw.status !== Image.Ready
+
+                                                Text {
+                                                    width: parent.width
+                                                    text: "Immagine non disponibile"
+                                                    color: win.textMain
+                                                    font.pixelSize: 18
+                                                    font.bold: true
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                }
+
+                                                Text {
+                                                    width: parent.width
+                                                    text: machine.helpImagePath
+                                                    color: win.textSub
+                                                    font.pixelSize: 13
+                                                    wrapMode: Text.WordWrap
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                }
+                                            }
+
+                                            Rectangle {
+                                                anchors.left: parent.left
+                                                anchors.right: parent.right
+                                                anchors.bottom: parent.bottom
+                                                anchors.margins: 12
+                                                radius: 16
+                                                visible: machine.helpImageCaption.length > 0
+                                                color: Qt.rgba(0.10, 0.08, 0.06, 0.84)
+                                                border.width: 1
+                                                border.color: Qt.rgba(1.0, 1.0, 1.0, 0.08)
+
+                                                Text {
+                                                    anchors.fill: parent
+                                                    anchors.margins: 10
+                                                    text: machine.helpImageCaption
+                                                    color: Qt.rgba(1.0, 1.0, 1.0, 0.88)
+                                                    font.pixelSize: 12
+                                                    wrapMode: Text.WordWrap
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            id: helpBodyCard
+                            width: parent.width
+                            visible: machine.helpBodyHtml.length > 0
+                            implicitHeight: helpBodyColumn.implicitHeight + 40
+                            radius: 24
+                            color: Qt.rgba(0.34, 0.27, 0.22, 0.48)
+                            border.width: 1
+                            border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.18)
+
+                            Column {
+                                id: helpBodyColumn
+                                anchors.fill: parent
+                                anchors.margins: 20
+
+                                Text {
+                                    id: helpBodyText
+                                    width: parent.width
+                                    text: machine.helpBodyHtml
+                                    textFormat: Text.RichText
+                                    color: Qt.rgba(1.0, 1.0, 1.0, 0.95)
+                                    font.pixelSize: 17
+                                    wrapMode: Text.WordWrap
+                                    lineHeight: 1.42
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            id: helpChecklistCard
+                            width: parent.width
+                            visible: machine.helpChecklistItems.length > 0
+                            implicitHeight: helpChecklistColumn.implicitHeight + 40
+                            radius: 24
+                            color: Qt.rgba(0.45, 0.35, 0.27, 0.30)
+                            border.width: 1
+                            border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.26)
+
+                            ColumnLayout {
+                                id: helpChecklistColumn
+                                anchors.fill: parent
+                                anchors.margins: 20
+                                spacing: 14
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+
+                                    Text {
+                                        text: "CHECKLIST OPERATIVA"
+                                        color: win.textMain
+                                        font.pixelSize: 18
+                                        font.bold: true
+                                    }
+
+                                    Rectangle {
+                                        radius: 12
+                                        color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.18)
+                                        border.width: 1
+                                        border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.30)
+                                        Layout.preferredWidth: 140
+                                        Layout.preferredHeight: 34
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: machine.helpChecklistCheckedCount() + " / " + machine.helpChecklistItems.length + " completati"
+                                            color: win.textMain
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                    }
+
+                                    Item { Layout.fillWidth: true }
+
+                                    GlassButton {
+                                        w: 130
+                                        h: 34
+                                        textSize: 12
+                                        text: "AZZERA"
+                                        onClicked: machine.resetHelpChecklist()
+                                    }
+                                }
+
+                                Rectangle {
+                                    Layout.fillWidth: true
+                                    visible: machine.helpChecklistAlert.length > 0
+                                    implicitHeight: helpChecklistAlertText.implicitHeight + 18
+                                    radius: 14
+                                    color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.16)
+                                    border.width: 1
+                                    border.color: Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.28)
+
+                                    Text {
+                                        id: helpChecklistAlertText
+                                        anchors.fill: parent
+                                        anchors.margins: 9
+                                        text: machine.helpChecklistAlert
+                                        color: win.textMain
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                        wrapMode: Text.WordWrap
+                                    }
+                                }
+
+                                Repeater {
+                                    model: machine.helpChecklistItems
+
+                                    delegate: CheckBox {
+                                        id: helpCheck
+                                        required property int index
+                                        required property string modelData
+                                        Layout.fillWidth: true
+                                        checked: index < machine.helpChecklistStates.length ? machine.helpChecklistStates[index] : false
+                                        opacity: (index === 0 || checked || (index - 1 < machine.helpChecklistStates.length && machine.helpChecklistStates[index - 1])) ? 1.0 : 0.42
+                                        hoverEnabled: false
+
+                                        onToggled: {
+                                            machine.setHelpChecklistState(index, checked)
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: machine.setHelpChecklistState(helpCheck.index, helpCheck.checked)
+                                        }
+
+                                        indicator: Rectangle {
+                                            implicitWidth: 28
+                                            implicitHeight: 28
+                                            radius: 9
+                                            y: helpCheck.topPadding + 2
+                                            color: helpCheck.checked
+                                                   ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.92)
+                                                   : Qt.rgba(1.0, 1.0, 1.0, 0.05)
+                                            border.width: 1
+                                            border.color: helpCheck.checked
+                                                          ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.95)
+                                                          : Qt.rgba(1.0, 1.0, 1.0, 0.16)
+
+                                            Text {
+                                                anchors.centerIn: parent
+                                                visible: helpCheck.checked
+                                                text: "✓"
+                                                color: Qt.rgba(0.16, 0.11, 0.08, 0.98)
+                                                font.pixelSize: 17
+                                                font.bold: true
+                                            }
+                                        }
+
+                                        contentItem: Text {
+                                            text: (helpCheck.index + 1) + ". " + helpCheck.modelData
+                                            color: win.textMain
+                                            font.pixelSize: 16
+                                            wrapMode: Text.WordWrap
+                                            leftPadding: helpCheck.indicator.width + 14
+                                            rightPadding: 4
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -2048,6 +3581,21 @@ ApplicationWindow {
                     }
 
                     Item { Layout.fillWidth: true }
+
+                    GlassButton {
+                        w: 160
+                        h: 44
+                        text: "MISSIONE"
+                        primary: win.simController && (win.simController.challengeActive || win.simController.challengeSolved)
+                        onClicked: machine.openMission()
+                    }
+
+                    GlassButton {
+                        w: 220
+                        h: 44
+                        text: "PROVA GUIDATA"
+                        onClicked: machine.openHelpKey("simulationWalkthrough")
+                    }
 
                     GlassButton {
                         w: 160
@@ -2084,11 +3632,7 @@ ApplicationWindow {
                                 }
 
                                 InfoChip {
-                                    onClicked: machine.openHelp(
-                                        "Configurazione macchina",
-                                        "Qui imposti tutti i parametri iniziali della simulazione: ordine dei rotori, tipo di reflector, posizioni di partenza e plugboard.\n\nOgni modifica influisce sulla cifratura finale.",
-                                        "configurazione.png"
-                                    )
+                                    onClicked: machine.openHelpKey("configuration")
                                 }
 
                                 Item { Layout.fillWidth: true }
@@ -2138,13 +3682,35 @@ ApplicationWindow {
                                 font.bold: true
                             }
 
-                            GlassComboBox {
+                            Item {
                                 id: reflectorBox
-                                model: machine.reflectorOptions
                                 Layout.fillWidth: true
-                                onActivated: {
-                                    if (win.simController) {
+                                implicitHeight: 40
+                                property int currentIndex: 0
+                                property string currentText: machine.reflectorOptions[currentIndex]
+
+                                onCurrentIndexChanged: {
+                                    if (win.simController && win.simController.reflector !== currentText) {
                                         win.simController.setReflector(currentText)
+                                    }
+                                }
+
+                                RowLayout {
+                                    anchors.fill: parent
+                                    spacing: 8
+
+                                    Repeater {
+                                        model: machine.reflectorOptions
+
+                                        delegate: GlassButton {
+                                            required property int index
+                                            required property var modelData
+                                            Layout.fillWidth: true
+                                            h: 38
+                                            text: modelData
+                                            primary: reflectorBox.currentIndex === index
+                                            onClicked: reflectorBox.currentIndex = index
+                                        }
                                     }
                                 }
                             }
@@ -2197,11 +3763,7 @@ ApplicationWindow {
                                 }
 
                                 InfoChip {
-                                    onClicked: machine.openHelp(
-                                        "Plugboard",
-                                        "Il plugboard scambia coppie di lettere prima e dopo i rotori.\n\nEsempio: A-B significa che A diventa B e B diventa A.\nE' uno dei fattori che aumentano molto la complessita della chiave.",
-                                        "infoplugboard.png"
-                                    )
+                                    onClicked: machine.openHelpKey("plugboard")
                                 }
 
                                 Item { Layout.fillWidth: true }
@@ -2329,26 +3891,6 @@ ApplicationWindow {
                                 }
                             }
 
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 44
-                                radius: 12
-                                color: Qt.rgba(0.0, 0.0, 0.0, 0.18)
-                                border.width: 1
-                                border.color: Qt.rgba(1.0, 1.0, 1.0, 0.10)
-                                clip: true
-
-                                Text {
-                                    anchors.fill: parent
-                                    anchors.margins: 8
-                                    text: win.simController ? win.simController.statusMessage : "Controller non disponibile."
-                                    color: win.textSub
-                                    wrapMode: Text.WordWrap
-                                    maximumLineCount: 2
-                                    elide: Text.ElideRight
-                                    font.pixelSize: 12
-                                }
-                            }
                         }
                     }
 
@@ -2375,11 +3917,7 @@ ApplicationWindow {
                                 }
 
                                 InfoChip {
-                                    onClicked: machine.openHelp(
-                                        "Stato in tempo reale",
-                                        "Qui vedi la posizione corrente dei rotori durante la digitazione.\n\nA destra vedi anche il reflector attivo.",
-                                        "stato.png"
-                                    )
+                                    onClicked: machine.openHelpKey("liveState")
                                 }
 
                                 Item { Layout.fillWidth: true }
@@ -2407,11 +3945,7 @@ ApplicationWindow {
                                 }
 
                                 InfoChip {
-                                    onClicked: machine.openHelp(
-                                        "Comandi rapidi",
-                                        "Rotori: passa sopra il disco e usa la rotellina del mouse, oppure clicca nella meta alta/bassa per ruotare.\nTastiera fisica: ogni lettera inserita avanza i rotori e genera output.\nESC: torna alla Home.",
-                                        "controlli.png"
-                                    )
+                                    onClicked: machine.openHelpKey("controls")
                                 }
                             }
 
@@ -2455,6 +3989,7 @@ ApplicationWindow {
                                                     text: machine.rotorLabels[rotorDial.index]
                                                     color: win.textSub
                                                     font.pixelSize: 12
+                                                    font.bold: true
                                                     anchors.horizontalCenter: parent.horizontalCenter
                                                 }
 
@@ -2464,9 +3999,9 @@ ApplicationWindow {
                                                     height: 176
                                                     radius: width / 2
                                                     scale: rotorMouse.containsMouse ? 1.03 : 1.0
-                                                    border.width: 1
+                                                    border.width: rotorMouse.containsMouse ? 2 : 1
                                                     border.color: rotorMouse.containsMouse
-                                                                  ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.55)
+                                                                  ? Qt.rgba(win.accent.r, win.accent.g, win.accent.b, 0.65)
                                                                   : Qt.rgba(1.0, 1.0, 1.0, 0.20)
                                                     antialiasing: true
                                                     gradient: Gradient {
@@ -2621,9 +4156,10 @@ ApplicationWindow {
                                                 }
 
                                                 Text {
-                                                    text: "Rotella o click (su/giu)"
-                                                    color: win.textSub
+                                                    text: "Encoder attivo"
+                                                    color: win.accent
                                                     font.pixelSize: 11
+                                                    font.bold: true
                                                     anchors.horizontalCenter: parent.horizontalCenter
                                                 }
                                             }
@@ -2662,11 +4198,7 @@ ApplicationWindow {
 
                                             InfoChip {
                                                 size: 20
-                                                onClicked: machine.openHelp(
-                                                    "Input stream",
-                                                    "Qui compare il testo inserito con la tastiera fisica.\n\nIl pulsante SVUOTA cancella solo l'input mostrato, senza cambiare configurazione della macchina.",
-                                                    "input-stream.png"
-                                                )
+                                                onClicked: machine.openHelpKey("inputStream")
                                             }
 
                                             Item { Layout.fillWidth: true }
@@ -2727,11 +4259,7 @@ ApplicationWindow {
 
                                             InfoChip {
                                                 size: 20
-                                                onClicked: machine.openHelp(
-                                                    "Output stream",
-                                                    "Qui compare la cifratura prodotta in tempo reale.\n\nCOPIA mette l'output negli appunti per incollarlo dove vuoi.",
-                                                    "output-stream.png"
-                                                )
+                                                onClicked: machine.openHelpKey("outputStream")
                                             }
 
                                             Item { Layout.fillWidth: true }
@@ -2799,11 +4327,7 @@ ApplicationWindow {
 
                                         InfoChip {
                                             size: 20
-                                            onClicked: machine.openHelp(
-                                                "Traccia e ultimo step",
-                                                "Ultimo step mostra la trasformazione piu recente.\n\nLa traccia sotto registra gli eventi principali: cambi configurazione, step di cifratura e reset.",
-                                                "traccia.png"
-                                            )
+                                            onClicked: machine.openHelpKey("trace")
                                         }
 
                                         Item { Layout.fillWidth: true }
@@ -2826,11 +4350,20 @@ ApplicationWindow {
                                     }
 
                                     Flickable {
+                                        id: traceFlick
                                         Layout.fillWidth: true
                                         Layout.fillHeight: true
                                         clip: true
                                         contentWidth: width
                                         contentHeight: traceText.implicitHeight
+                                        ScrollBar.vertical: ThemeScrollBar {}
+
+                                        function scrollToLatest() {
+                                            contentY = Math.max(0, contentHeight - height)
+                                        }
+
+                                        Component.onCompleted: Qt.callLater(scrollToLatest)
+                                        onContentHeightChanged: Qt.callLater(scrollToLatest)
 
                                         Text {
                                             id: traceText
@@ -2839,6 +4372,7 @@ ApplicationWindow {
                                             color: win.textMain
                                             font.pixelSize: 12
                                             wrapMode: Text.WordWrap
+                                            onTextChanged: Qt.callLater(traceFlick.scrollToLatest)
                                         }
                                     }
                                 }
@@ -2856,6 +4390,43 @@ ApplicationWindow {
         visible: win.page === "story"
         property bool manualSeek: false
         property bool videoPriming: false
+        property int syncToleranceMs: 900
+        property real pendingSeekPosition: 0
+
+        function updateTextScroll(position) {
+            if (storyPlayer.duration <= 0 || !flick) {
+                return
+            }
+            var maxScroll = Math.max(0, flick.contentHeight - flick.height)
+            var t = Math.max(0.0, Math.min(1.0, position / storyPlayer.duration))
+            flick.contentY = maxScroll * t
+        }
+
+        function seekTo(position) {
+            var target = Math.max(0, Math.min(position, storyPlayer.duration > 0 ? storyPlayer.duration : position))
+            var wasPlaying = storyPlayer.playbackState === MediaPlayer.PlayingState
+            storyPlayer.position = target
+            storySeek.value = target
+            story.updateTextScroll(target)
+            if (win.storyVideoAssetUrl && win.storyVideoAssetUrl.toString().length > 0) {
+                story.videoPriming = false
+                storyVideoPlayer.position = target
+                if (wasPlaying) {
+                    storyVideoPlayer.play()
+                } else {
+                    storyVideoPlayer.pause()
+                }
+            }
+        }
+
+        function previewSeek(position) {
+            var target = Math.max(0, Math.min(position, storyPlayer.duration > 0 ? storyPlayer.duration : position))
+            story.pendingSeekPosition = target
+            storySeek.value = target
+            story.updateTextScroll(target)
+            storySeekPreviewTimer.restart()
+        }
+
         onVisibleChanged: {
             if (visible) {
                 win.storyAudioPlaying = false
@@ -2885,6 +4456,7 @@ ApplicationWindow {
             id: storyVideoPlayer
             source: win.storyVideoAssetUrl
             audioOutput: storyVideoOut
+            activeAudioTrack: -1
             videoOutput: storyVideoOutput
         }
 
@@ -2901,20 +4473,39 @@ ApplicationWindow {
             }
         }
 
+        Timer {
+            id: storySeekPreviewTimer
+            interval: 180
+            repeat: false
+            onTriggered: {
+                if (story.manualSeek) {
+                    story.seekTo(story.pendingSeekPosition)
+                }
+            }
+        }
+
         Connections {
             target: storyPlayer
 
             function onPositionChanged() {
                 if (!story.manualSeek) {
                     storySeek.value = storyPlayer.position
+                    story.updateTextScroll(storyPlayer.position)
                 }
+                win.syncStoryVideo(false)
             }
 
             function onPlaybackStateChanged() {
                 if (!story.manualSeek) {
                     storySeek.value = storyPlayer.position
+                    story.updateTextScroll(storyPlayer.position)
                 }
                 win.storyAudioPlaying = storyPlayer.playbackState === MediaPlayer.PlayingState
+                if (storyPlayer.playbackState === MediaPlayer.PlayingState) {
+                    win.syncStoryVideo(true)
+                } else if (!story.videoPriming && storyVideoPlayer.playbackState === MediaPlayer.PlayingState) {
+                    storyVideoPlayer.pause()
+                }
             }
         }
 
@@ -2923,6 +4514,12 @@ ApplicationWindow {
 
             function onMediaStatusChanged() {
                 if (!story.videoPriming) {
+                    if (storyPlayer.playbackState === MediaPlayer.PlayingState
+                            && (storyVideoPlayer.mediaStatus === MediaPlayer.BufferedMedia
+                                || storyVideoPlayer.mediaStatus === MediaPlayer.LoadedMedia
+                                || storyVideoPlayer.mediaStatus === MediaPlayer.StalledMedia)) {
+                        win.syncStoryVideo(true)
+                    }
                     return
                 }
                 if (storyVideoPlayer.mediaStatus === MediaPlayer.LoadedMedia
@@ -2989,6 +4586,7 @@ ApplicationWindow {
                             clip: true
                             contentWidth: width
                             contentHeight: storyTextItem.implicitHeight
+                            ScrollBar.vertical: ThemeScrollBar {}
 
                             Text {
                                 id: storyTextItem
@@ -3040,27 +4638,12 @@ ApplicationWindow {
                                 border.width: 1
                                 border.color: Qt.rgba(1.0, 1.0, 1.0, 0.14)
                                 antialiasing: true
+                                clip: true
 
                                 VideoOutput {
                                     id: storyVideoOutput
                                     anchors.fill: parent
                                     fillMode: VideoOutput.PreserveAspectFit
-                                    visible: false
-                                }
-
-                                Rectangle {
-                                    id: storyVideoMask
-                                    anchors.fill: parent
-                                    radius: videoClip.radius
-                                    color: "black"
-                                    visible: false
-                                    antialiasing: true
-                                }
-
-                                OpacityMask {
-                                    anchors.fill: storyVideoOutput
-                                    source: storyVideoOutput
-                                    maskSource: storyVideoMask
                                 }
 
                                 Text {
@@ -3109,13 +4692,15 @@ ApplicationWindow {
                             if (pressed) {
                                 story.manualSeek = true
                             } else {
-                                storyPlayer.position = value
+                                storySeekPreviewTimer.stop()
+                                story.seekTo(value)
                                 story.manualSeek = false
+                                win.syncStoryVideo(true)
                             }
                         }
 
                         onMoved: {
-                            storyPlayer.position = value
+                            story.previewSeek(value)
                         }
 
                         background: Rectangle {
@@ -3178,22 +4763,12 @@ ApplicationWindow {
         }
 
         Timer {
-            interval: 90
+            interval: 650
             running: storyPlayer.playbackState === MediaPlayer.PlayingState
             repeat: true
             onTriggered: {
-                if (win.storyVideoAssetUrl && win.storyVideoAssetUrl.toString().length > 0
-                        && storyVideoPlayer.playbackState === MediaPlayer.PlayingState) {
-                    var drift = Math.abs(storyVideoPlayer.position - storyPlayer.position)
-                    if (drift > 120) {
-                        storyVideoPlayer.position = storyPlayer.position
-                    }
-                }
-                if (storyPlayer.duration > 0) {
-                    var maxScroll = Math.max(0, flick.contentHeight - flick.height)
-                    var t = storyPlayer.position / storyPlayer.duration
-                    flick.contentY = maxScroll * t
-                }
+                win.syncStoryVideo(false)
+                story.updateTextScroll(storyPlayer.position)
             }
         }
     }

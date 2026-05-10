@@ -819,6 +819,15 @@
   function finishDisruption() {
     if (!state.disruptionActive) return;
 
+    if (state.disruptionBlackTimer) {
+      window.clearTimeout(state.disruptionBlackTimer);
+      state.disruptionBlackTimer = null;
+    }
+    if (state.disruptionMessageTimer) {
+      window.clearTimeout(state.disruptionMessageTimer);
+      state.disruptionMessageTimer = null;
+    }
+
     state.disruptionActive = false;
     setDisruptionOverlay(false, false);
 
@@ -1058,6 +1067,13 @@
 
     ["settings-volume", "settings-ducking", "settings-brightness"].forEach((id) => {
       q(id).addEventListener("input", syncSettingsPreviewLabels);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (state.disruptionActive && event.key === "Enter") {
+        event.preventDefault();
+        finishDisruption();
+      }
     });
   }
 

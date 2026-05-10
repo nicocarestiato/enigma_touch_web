@@ -20,7 +20,7 @@
 
     <main id="pages">
       <section class="page active" id="page-disclaimer">
-        <div class="center-column">
+        <div class="center-column disclaimer-copy">
           <h1>DISCLAIMER</h1>
           <p>
             Questo applicativo non si propone come ricostruzione storica perfetta.<br><br>
@@ -271,12 +271,17 @@
     </div>
 
     <div class="modal hidden" id="credits-modal">
-      <div class="card modal-card">
+      <div class="card modal-card credits-card">
         <h3>CREDITS</h3>
         <p>
-          ENIGMA TOUCH e' un progetto didattico e di design ispirato alla macchina Enigma e alla crittoanalisi del periodo 1930-1945.<br><br>
-          Sviluppo & Concept: Nicolo Carestiato<br>
-          Tecnologia: Python, PySide6, FastAPI, Web.
+          ENIGMA TOUCH e un progetto didattico e divulgativo ispirato alla macchina Enigma e alla crittoanalisi del periodo 1930-1945.<br>
+          L'obiettivo e rendere tangibili configurazione, cifratura, reset e procedura operativa attraverso un'esperienza fisica e digitale unica.<br><br>
+          Architettura software: Python con PySide6 / Qt Quick QML, logica di simulazione dedicata e sincronizzazione di audio, video e contenuti storici.<br>
+          Piattaforma hardware: Raspberry Pi 5 con avvio diretto dell'applicazione, uscita HDMI e gestione nativa della postazione espositiva.<br>
+          Controlli fisici: Raspberry Pi Pico RP2040 via USB, tre encoder rotativi indipendenti e pulsanti dedicati per navigazione, reset operativo e gestione power.<br>
+          Componentistica: encoder incrementali, pulsanti momentanei, interfaccia touch / mouse, tastiera fisica per il testo e cablaggio pensato per demo continue.<br><br>
+          Nota: Enigma Touch e una ricostruzione didattica. Alcune componenti e procedure sono semplificate per chiarezza espositiva e fluidita d'uso, senza sostituire fonti storiche specialistiche.<br><br>
+          Contatti / progetto: nico.carestiato@gmail.com
         </p>
         <button class="glass-btn" data-close-modal="credits-modal">CHIUDI</button>
       </div>
@@ -285,31 +290,41 @@
     <div class="modal hidden" id="settings-modal">
       <div class="card modal-card settings-card">
         <h3>SETTINGS</h3>
-        <label class="switch-line">
-          <span>Musica sottofondo</span>
-          <input type="checkbox" id="settings-music-enabled" checked>
-        </label>
-        <div class="row">
-          <button class="glass-btn" id="settings-theme-classic">TEMA CLASSICO</button>
-          <button class="glass-btn" id="settings-theme-war">TEMA IMMERSIVO</button>
+        <p class="settings-subtitle">Audio, atmosfera e display</p>
+        <div class="settings-separator"></div>
+
+        <div class="settings-grid">
+          <section class="settings-panel settings-panel-wide">
+            <label class="switch-line settings-heading">
+              <span>Musica sottofondo</span>
+              <input type="checkbox" id="settings-music-enabled" checked>
+            </label>
+            <div class="row settings-theme-row">
+              <button class="glass-btn" id="settings-theme-classic">TEMA CLASSICO</button>
+              <button class="glass-btn" id="settings-theme-war">TEMA IMMERSIVO</button>
+            </div>
+            <label>Volume base: <span id="settings-volume-label">50%</span>
+              <input type="range" id="settings-volume" min="0" max="100" value="50">
+            </label>
+          </section>
+
+          <section class="settings-panel">
+            <label>Riduzione in Storia: <span id="settings-duck-label">80%</span>
+              <input type="range" id="settings-ducking" min="15" max="100" value="20">
+            </label>
+          </section>
+
+          <section class="settings-panel">
+            <label>Luminosita interfaccia: <span id="settings-brightness-label">100%</span>
+              <input type="range" id="settings-brightness" min="45" max="100" value="100">
+            </label>
+          </section>
         </div>
-        <label>Volume base: <span id="settings-volume-label">50%</span>
-          <input type="range" id="settings-volume" min="0" max="100" value="50">
-        </label>
-        <label>Riduzione in Storia: <span id="settings-duck-label">80%</span>
-          <input type="range" id="settings-ducking" min="15" max="100" value="20">
-        </label>
-        <label>Luminosita interfaccia: <span id="settings-brightness-label">100%</span>
-          <input type="range" id="settings-brightness" min="45" max="100" value="100">
-        </label>
-        <label class="switch-line">
-          <span>Evento narrativo dinamico</span>
-          <input type="checkbox" id="settings-disruption-enabled" checked>
-        </label>
-        <label>API base URL
-          <input id="settings-api-url" value="">
-        </label>
-        <div class="row">
+
+        <input type="checkbox" id="settings-disruption-enabled" checked hidden>
+        <input id="settings-api-url" value="" hidden>
+
+        <div class="row settings-actions">
           <button class="glass-btn" id="settings-defaults">RIPRISTINA DEFAULT</button>
           <button class="glass-btn" id="settings-save">SALVA</button>
           <button class="glass-btn" data-close-modal="settings-modal">CHIUDI</button>

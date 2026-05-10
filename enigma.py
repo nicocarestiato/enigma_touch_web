@@ -1,4 +1,4 @@
-﻿# enigma.py
+# enigma.py
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
@@ -164,34 +164,93 @@ class Enigma:
         right.step()
 
     def encode_char(self, c: str) -> str:
+        out, _ = self.encode_char_trace(c)
+        return out
+
+    def encode_char_trace(self, c: str) -> Tuple[str, Dict[str, object]]:
         c = c.upper()
         if c not in ALPHABET:
-            return c
+            return c, {
+                "input": c,
+                "output": c,
+                "positions_before": self.get_positions(),
+                "positions_after": self.get_positions(),
+                "plug_in": c,
+                "plug_out": c,
+                "forward": [],
+                "backward": [],
+                "reflector_in": c,
+                "reflector_out": c,
+                "reflector_name": self.reflector_name,
+            }
 
+        positions_before = self.get_positions()
         self._step_rotors()
+        positions_after = self.get_positions()
 
         # plugboard in
-        c = self.plugboard.swap(c)
-        i = char_to_i(c)
+        plug_in = self.plugboard.swap(c)
+        i = char_to_i(plug_in)
+        forward_trace: List[Dict[str, object]] = []
 
         # forward through rotors (right to left)
-        i = self.rotors[2].forward(i)
-        i = self.rotors[1].forward(i)
-        i = self.rotors[0].forward(i)
+        for rotor in (self.rotors[2], self.rotors[1], self.rotors[0]):
+            in_i = i
+            shifted = (in_i + rotor.pos) % 26
+            wired_c = rotor.wiring[shifted]
+            wired_i = char_to_i(wired_c)
+            out_i = (wired_i - rotor.pos) % 26
+            forward_trace.append(
+                {
+                    "rotor": rotor.name,
+                    "position": i_to_char(rotor.pos),
+                    "in": i_to_char(in_i),
+                    "out": i_to_char(out_i),
+                }
+            )
+            i = out_i
 
         # reflector
-        i = char_to_i(self._reflector[i])
+        reflector_in = i_to_char(i)
+        reflector_out = self._reflector[i]
+        i = char_to_i(reflector_out)
+        backward_trace: List[Dict[str, object]] = []
 
         # backward through rotors (left to right)
-        i = self.rotors[0].backward(i)
-        i = self.rotors[1].backward(i)
-        i = self.rotors[2].backward(i)
+        for rotor in (self.rotors[0], self.rotors[1], self.rotors[2]):
+            in_i = i
+            shifted = (in_i + rotor.pos) % 26
+            target_c = i_to_char(shifted)
+            inv_index = rotor.wiring.index(target_c)
+            out_i = (inv_index - rotor.pos) % 26
+            backward_trace.append(
+                {
+                    "rotor": rotor.name,
+                    "position": i_to_char(rotor.pos),
+                    "in": i_to_char(in_i),
+                    "out": i_to_char(out_i),
+                }
+            )
+            i = out_i
 
         out = i_to_char(i)
 
         # plugboard out
-        out = self.plugboard.swap(out)
-        return out
+        plug_out = self.plugboard.swap(out)
+        trace = {
+            "input": c,
+            "output": plug_out,
+            "positions_before": positions_before,
+            "positions_after": positions_after,
+            "plug_in": plug_in,
+            "plug_out": plug_out,
+            "forward": forward_trace,
+            "backward": backward_trace,
+            "reflector_in": reflector_in,
+            "reflector_out": reflector_out,
+            "reflector_name": self.reflector_name,
+        }
+        return plug_out, trace
 
     def encode_text(self, text: str) -> str:
         res = []
