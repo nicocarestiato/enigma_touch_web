@@ -117,6 +117,19 @@ body {
   display: flex;
 }
 
+#page-disclaimer {
+  background: #000;
+  z-index: 450;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#page-disclaimer.active {
+  position: relative;
+}
+
 h1,
 h2,
 h3,
