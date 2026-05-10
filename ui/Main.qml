@@ -1134,7 +1134,7 @@ ApplicationWindow {
             Rectangle {
                 Layout.fillWidth: true
                     Layout.columnSpan: 2
-                    Layout.preferredHeight: 178
+                    Layout.preferredHeight: 224
                 radius: 16
                 color: Qt.rgba(0.08, 0.07, 0.06, 0.94)
                 border.width: 1

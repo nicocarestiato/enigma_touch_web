@@ -958,6 +958,7 @@ textarea {
 .settings-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: minmax(224px, auto) minmax(152px, 1fr);
   gap: 16px;
   flex: 1;
   min-height: 0;
@@ -977,6 +978,7 @@ textarea {
 .settings-panel-wide {
   grid-column: 1 / -1;
   justify-content: flex-start;
+  min-height: 224px;
 }
 
 .settings-panel label {
