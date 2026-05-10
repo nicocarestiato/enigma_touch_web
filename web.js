@@ -932,6 +932,11 @@
     q("btn-start-experience").addEventListener("click", () => setPage("home"));
     q("btn-open-machine").addEventListener("click", () => setPage("machine"));
     q("btn-open-story").addEventListener("click", () => setPage("story"));
+    q("btn-open-mission").addEventListener("click", () => {
+      setPage("machine");
+      setMachineStatus("Missione guidata pronta: configura la macchina e valida il risultato.");
+      pushTrace("Missione guidata avviata dalla schermata Home.");
+    });
 
     q("btn-machine-home").addEventListener("click", () => setPage("home"));
 

@@ -357,19 +357,33 @@ h3 {
 }
 
 .intro-card {
-  width: min(980px, 95%);
-  padding: 20px;
+  width: min(1120px, calc(100% - 72px));
+  height: min(660px, calc(100% - 72px));
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-items: center;
 }
 
+.intro-card h2 {
+  font-size: clamp(52px, 5.8vw, 70px);
+  line-height: 1.05;
+}
+
+.intro-card > .sub {
+  max-width: 900px;
+  text-align: center;
+  line-height: 1.28;
+  font-size: 18px;
+  margin: 0;
+}
+
 #gallery-track {
-  width: min(880px, 100%);
-  height: 234px;
+  width: min(1030px, 100%);
+  height: clamp(260px, 50vh, 340px);
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(0, 0, 0, 0.14);
   position: relative;
@@ -378,18 +392,18 @@ h3 {
 #gallery-track .gallery-inner {
   position: absolute;
   left: 0;
-  top: 6px;
+  top: 0;
   display: flex;
-  gap: 10px;
+  gap: 16px;
   will-change: transform;
   animation: glide 32s linear infinite;
 }
 
 #gallery-track img {
-  width: 220px;
-  height: 220px;
-  border-radius: 16px;
-  object-fit: cover;
+  width: clamp(260px, 50vh, 340px);
+  height: clamp(260px, 50vh, 340px);
+  border-radius: 28px;
+  object-fit: contain;
   border: 1px solid rgba(255, 255, 255, 0.16);
   cursor: zoom-in;
   transition: transform 0.15s ease, border-color 0.15s ease;
@@ -409,6 +423,73 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.home-card {
+  width: min(1100px, calc(100% - 120px));
+  height: min(640px, calc(100% - 140px));
+  padding: 26px;
+  gap: 18px;
+}
+
+.home-card h2 {
+  font-size: 40px;
+  text-align: center;
+}
+
+.home-card > .sub {
+  margin: -12px 0 0;
+  text-align: center;
+  font-size: 14px;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  flex: 1;
+  min-height: 0;
+}
+
+.home-option {
+  min-height: 0;
+  padding: 22px;
+  border-radius: 26px;
+}
+
+.home-option h3 {
+  text-align: center;
+  font-size: 30px;
+}
+
+.home-option p {
+  font-size: 14px;
+  line-height: 1.28;
+}
+
+.home-panel-image {
+  width: 100%;
+  height: 152px;
+  border-radius: 18px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.home-option .glass-btn {
+  align-self: center;
+  min-width: 260px;
+  height: 54px;
+  font-size: 16px;
+}
+
+.home-option:nth-child(2) .glass-btn {
+  min-width: 300px;
+}
+
+.mission-option {
+  background: rgba(61, 46, 33, 0.42);
+  border-color: rgba(197, 141, 77, 0.24);
 }
 
 .row {
@@ -1035,6 +1116,7 @@ input[type="checkbox"] {
   .machine-grid,
   .story-grid,
   .split,
+  .home-grid,
   .stream-grid,
   .rotor-dials {
     grid-template-columns: 1fr;
@@ -1045,6 +1127,10 @@ input[type="checkbox"] {
   .story-card {
     width: min(1120px, 99%);
     height: 96%;
+  }
+
+  .home-card {
+    overflow: auto;
   }
 
   #top-buttons {

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Enigma Touch Web</title>
-  <link rel="stylesheet" href="web.css?v=20260510-pi5c">
+  <link rel="stylesheet" href="web.css?v=20260510-pi5d">
 </head>
 <body>
   <div id="app">
@@ -73,7 +73,7 @@
       <section class="page" id="page-intro">
         <div class="card intro-card">
           <h2>ENIGMA TOUCH</h2>
-          <p class="sub">Una reinterpretazione contemporanea della macchina Enigma. Interfaccia moderna, principio crittografico autentico.</p>
+          <p class="sub">Una reinterpretazione contemporanea della macchina Enigma.<br>Interfaccia moderna, principio crittografico autentico.</p>
           <div id="gallery-track"></div>
           <button class="glass-btn primary big" id="btn-start-experience">INIZIA ESPERIENZA</button>
         </div>
@@ -83,16 +83,24 @@
         <div class="card home-card">
           <h2>ENIGMA TOUCH</h2>
           <p class="sub">HOME</p>
-          <div class="split">
-            <article class="card mini">
+          <div class="home-grid">
+            <article class="card mini home-option">
               <h3>MACCHINA</h3>
-              <p>Entra nella macchina: rotori, plugboard, cifratura e decifratura.</p>
+              <img class="home-panel-image" src="ui/assets/help/configurazione-photo.jpg" alt="">
+              <p>Entra nella macchina: rotori, plugboard, cifratura.</p>
               <button class="glass-btn primary" id="btn-open-machine">APRI</button>
             </article>
-            <article class="card mini">
+            <article class="card mini home-option">
               <h3>STORIA</h3>
-              <p>Contesto storico, audio e video sincronizzati.</p>
-              <button class="glass-btn primary" id="btn-open-story">APRI</button>
+              <img class="home-panel-image" src="ui/assets/gallery/1.png" alt="">
+              <p>Scopri il contesto storico di Enigma, la decifrazione e l'impatto sul conflitto.</p>
+              <button class="glass-btn primary" id="btn-open-story">SCOPRI LA STORIA</button>
+            </article>
+            <article class="card mini home-option mission-option">
+              <h3>MISSIONE</h3>
+              <img class="home-panel-image" src="ui/assets/help/plugboard-photo.jpg" alt="">
+              <p>Sfida guidata: imposta la macchina, produci il cifrato target e valida il risultato.</p>
+              <button class="glass-btn primary" id="btn-open-mission">AVVIA MISSIONE</button>
             </article>
           </div>
         </div>
@@ -334,6 +342,6 @@
   </div>
 
   <audio id="bg-music" preload="auto" loop></audio>
-  <script src="web.js?v=20260510-pi5c"></script>
+  <script src="web.js?v=20260510-pi5d"></script>
 </body>
 </html>
