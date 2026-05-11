@@ -570,14 +570,14 @@ h3 {
   padding: 14px;
   border-radius: 22px;
   gap: 8px;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .machine-live-panel {
   padding: 18px;
   border-radius: 22px;
   gap: 10px;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .machine-config-panel .row,
