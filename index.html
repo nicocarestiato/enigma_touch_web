@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Enigma Touch Web</title>
-  <link rel="stylesheet" href="web.css?v=20260511-appscale2">
+  <link rel="stylesheet" href="web.css?v=20260511-homeapp1">
 </head>
 <body>
   <div id="app">
@@ -278,6 +278,64 @@
       </div>
     </div>
 
+    <div class="modal hidden" id="mission-modal">
+      <div class="card mission-modal-card">
+        <div class="row mission-modal-top">
+          <div>
+            <h3>MISSIONE ENIGMA</h3>
+            <p>Usa la simulazione per produrre il cifrato target con la configurazione richiesta.</p>
+          </div>
+          <button class="glass-btn" data-close-modal="mission-modal">CHIUDI</button>
+        </div>
+
+        <div class="mission-stats">
+          <div class="mission-pill accent">NON ATTIVA</div>
+          <div class="mission-pill">TENTATIVI: 0</div>
+          <div class="mission-pill">TEMPO: 0s</div>
+          <div class="mission-pill">SCORE: 0</div>
+        </div>
+
+        <div class="mission-scroll">
+          <div class="mission-target-row">
+            <section class="mission-target-card">
+              <h4>PLAINTEXT DA DIGITARE</h4>
+              <strong>Premi NUOVA MISSIONE</strong>
+            </section>
+            <section class="mission-target-card">
+              <h4>CIFRATO TARGET</h4>
+              <strong class="accent-text">---</strong>
+            </section>
+          </div>
+
+          <section class="mission-info-card">
+            <h4>CONFIGURAZIONE BLOCCATA</h4>
+            <p>Rotori I-II-III | Reflector B | Plugboard nessuna coppia</p>
+          </section>
+
+          <section class="mission-rules-card">
+            <p><b>Come si gioca:</b><br>
+              1. Imposta una posizione iniziale e premi APPLICA.<br>
+              2. Digita esattamente il plaintext indicato.<br>
+              3. Premi VALIDA: se l'output coincide con il cifrato target, la missione e completata.<br>
+              4. MOSTRA SOLUZIONE inserisce la posizione corretta nel campo posizioni.
+            </p>
+          </section>
+
+          <section class="mission-status-card">
+            <p>Nessuna missione attiva.</p>
+          </section>
+        </div>
+
+        <div class="row mission-actions">
+          <button class="glass-btn primary" id="btn-mission-new">NUOVA MISSIONE</button>
+          <button class="glass-btn" id="btn-mission-validate">VALIDA</button>
+          <button class="glass-btn" id="btn-mission-solution">MOSTRA SOL.</button>
+          <span></span>
+          <button class="glass-btn" data-close-modal="mission-modal">ANNULLA</button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal hidden" id="credits-modal">
       <div class="card modal-card credits-card">
         <h3>CREDITS</h3>
@@ -342,6 +400,6 @@
   </div>
 
   <audio id="bg-music" preload="auto" loop></audio>
-  <script src="web.js?v=20260511-appscale2"></script>
+  <script src="web.js?v=20260511-homeapp1"></script>
 </body>
 </html>

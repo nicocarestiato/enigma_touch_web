@@ -82,6 +82,7 @@
   const settingsModal = q("settings-modal");
   const galleryModal = q("gallery-modal");
   const galleryModalImage = q("gallery-modal-image");
+  const missionModal = q("mission-modal");
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -892,9 +893,7 @@
     q("btn-open-machine").addEventListener("click", () => setPage("machine"));
     q("btn-open-story").addEventListener("click", () => setPage("story"));
     q("btn-open-mission").addEventListener("click", () => {
-      setPage("machine");
-      setMachineStatus("Missione guidata pronta: configura la macchina e valida il risultato.");
-      pushTrace("Missione guidata avviata dalla schermata Home.");
+      showModal(missionModal);
     });
 
     q("btn-machine-home").addEventListener("click", () => setPage("home"));
@@ -1009,6 +1008,26 @@
     galleryModal.addEventListener("click", (ev) => {
       if (ev.target === galleryModal) hideModal(galleryModal);
     });
+    missionModal.addEventListener("click", (ev) => {
+      if (ev.target === missionModal) hideModal(missionModal);
+    });
+
+    q("btn-mission-new").addEventListener("click", () => {
+      hideModal(missionModal);
+      setPage("machine");
+      setMachineStatus("Missione guidata pronta: configura la macchina e valida il risultato.");
+      pushTrace("Missione guidata avviata dalla schermata Home.");
+    });
+    q("btn-mission-validate").addEventListener("click", () => {
+      hideModal(missionModal);
+      setPage("machine");
+      setMachineStatus("Valida la missione dalla simulazione dopo aver cifrato il plaintext.");
+    });
+    q("btn-mission-solution").addEventListener("click", () => {
+      hideModal(missionModal);
+      setPage("machine");
+      setMachineStatus("Mostra soluzione disponibile nella missione originale dell'app.");
+    });
 
     q("settings-theme-classic").addEventListener("click", () => setSoundtrack("classic", true));
     q("settings-theme-war").addEventListener("click", () => setSoundtrack("war", true));
@@ -1074,6 +1093,9 @@
       pages.get(state.page).classList.add("active");
       updateOverlayVisibility();
       if (state.page === "story") startStoryTicker();
+    }
+    if (params.get("mission") === "1") {
+      showModal(missionModal);
     }
   }
 
