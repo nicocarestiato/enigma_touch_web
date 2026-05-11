@@ -62,13 +62,13 @@ body {
   right: 16px;
   display: flex;
   flex-direction: row;
-  gap: 8px;
+  gap: 10px;
   z-index: 600;
 }
 
 .glass-btn {
   border: 1px solid var(--glass-stroke);
-  border-radius: 12px;
+  border-radius: 18px;
   background: rgba(24, 19, 15, 0.62);
   color: var(--text-main);
   min-width: 118px;
@@ -79,6 +79,12 @@ body {
   letter-spacing: 0.2px;
   cursor: pointer;
   transition: transform 0.08s ease, filter 0.12s ease, background-color 0.12s ease;
+}
+
+#top-buttons .glass-btn {
+  width: 170px;
+  height: 40px;
+  font-size: 16px;
 }
 
 .glass-btn:hover {
@@ -146,7 +152,7 @@ h3 {
 }
 
 .card {
-  border-radius: 18px;
+  border-radius: 26px;
   border: 1px solid var(--glass-stroke);
   background: var(--glass);
   backdrop-filter: blur(7px);
@@ -154,29 +160,30 @@ h3 {
 }
 
 .card.wide {
-  width: min(980px, 95%);
-  min-height: min(430px, calc(100vh - 96px));
-  padding: 22px;
+  width: min(1040px, calc(100vw - 96px));
+  height: min(540px, calc(100vh - 96px));
+  padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .card.wide > h2 {
-  font-size: clamp(1.8rem, 3vw, 2.25rem);
+  font-size: 38px;
   text-align: center;
 }
 
 .card.wide > .sub {
   margin: 0;
-  font-size: 17px;
+  font-size: 19px;
   text-align: center;
 }
 
 .card.mini {
   flex: 1;
   min-height: 180px;
-  padding: 16px;
+  padding: 20px;
+  border-radius: 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -184,24 +191,30 @@ h3 {
 }
 
 .card.mini h3 {
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .card.mini p {
   margin: 0;
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.28;
   color: var(--text-sub);
 }
 
 .card.mini .glass-btn {
-  min-width: 180px;
-  height: 44px;
-  font-size: 15px;
+  width: 260px;
+  min-width: 0;
+  height: 58px;
+  font-size: 18px;
+  align-self: center;
+}
+
+#btn-theme-war {
+  width: 280px;
 }
 
 .center-column {
-  width: min(980px, 94%);
+  width: min(1060px, calc(100vw - 120px));
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -209,14 +222,14 @@ h3 {
 }
 
 .center-column h1 {
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: 44px;
   line-height: 1.08;
 }
 
 .center-column p {
   margin: 0;
   line-height: 1.16;
-  font-size: clamp(1rem, 2vw, 1.42rem);
+  font-size: 24px;
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -231,20 +244,24 @@ h3 {
 }
 
 .boot-card {
-  width: min(960px, 92%);
-  padding: 32px 38px;
+  width: min(1140px, calc(100vw - 56px));
+  height: min(455px, calc(100vh - 72px));
+  padding: 0 60px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .boot-card h2 {
   margin-bottom: 18px;
-  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-size: clamp(64px, 7.2vw, 86px);
   letter-spacing: 1px;
 }
 
 #boot-rings {
-  width: 188px;
-  height: 86px;
+  width: 280px;
+  height: 112px;
   margin: 0 auto 12px;
   position: relative;
 }
@@ -259,22 +276,22 @@ h3 {
 }
 
 #boot-rings span:nth-child(1) {
-  width: 70px;
-  height: 70px;
+  width: 92px;
+  height: 92px;
   bottom: 0;
 }
 
 #boot-rings span:nth-child(2) {
-  width: 96px;
-  height: 96px;
-  bottom: -14px;
+  width: 132px;
+  height: 132px;
+  bottom: -20px;
   animation-direction: reverse;
 }
 
 #boot-rings span:nth-child(3) {
-  width: 126px;
-  height: 126px;
-  bottom: -27px;
+  width: 172px;
+  height: 172px;
+  bottom: -38px;
 }
 
 #boot-dots {
@@ -285,9 +302,9 @@ h3 {
 }
 
 #boot-dots span {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
   background: var(--text-sub);
   animation: bounce 1.05s ease-in-out infinite;
 }
@@ -309,9 +326,9 @@ h3 {
 }
 
 #boot-bar {
-  width: min(780px, 92%);
-  height: 18px;
-  border-radius: 10px;
+  width: min(880px, calc(100% - 70px));
+  height: 22px;
+  border-radius: 11px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -348,11 +365,11 @@ h3 {
 }
 
 .intro-card {
-  width: min(1320px, calc(100vw - 150px));
-  height: min(680px, calc(100vh - 104px));
-  min-height: min(620px, calc(100vh - 104px));
-  max-height: calc(100vh - 104px);
-  padding: 28px;
+  width: min(1120px, calc(100vw - 72px));
+  height: min(660px, calc(100vh - 72px));
+  min-height: min(600px, calc(100vh - 72px));
+  max-height: calc(100vh - 72px);
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -361,7 +378,7 @@ h3 {
 }
 
 .intro-card h2 {
-  font-size: clamp(58px, 4.2vw, 78px);
+  font-size: clamp(52px, 5.8vw, 70px);
   line-height: 1;
 }
 
@@ -374,7 +391,7 @@ h3 {
 }
 
 #gallery-track {
-  width: min(1240px, 100%);
+  width: min(100%, 1036px);
   height: 340px;
   overflow: hidden;
   border-radius: 14px;
@@ -413,9 +430,9 @@ h3 {
 }
 
 .intro-card .glass-btn.big {
-  width: min(1240px, 100%);
-  height: 64px;
-  font-size: 22px;
+  width: min(100%, 1036px);
+  height: 70px;
+  font-size: 20px;
 }
 
 .home-card,
@@ -471,6 +488,24 @@ h3 {
   max-height: calc(100vh - 140px);
   padding: 26px;
   gap: 18px;
+}
+
+.story-card {
+  width: min(1100px, calc(100vw - 120px));
+  height: min(640px, calc(100vh - 140px));
+  max-height: calc(100vh - 140px);
+  padding: 26px;
+  gap: 14px;
+}
+
+.story-card > .top-row h2 {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.story-card #btn-story-home {
+  width: 160px;
+  height: 44px;
 }
 
 .home-card > h2 {
@@ -734,8 +769,8 @@ textarea {
 
 .rotor-dials {
   width: 100%;
-  min-height: 238px;
-  height: 238px;
+  min-height: 232px;
+  height: 232px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
@@ -807,7 +842,7 @@ textarea {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  min-height: 116px;
+  min-height: 108px;
 }
 
 .stream-card,
@@ -816,7 +851,7 @@ textarea {
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.16);
   padding: 10px;
-  min-height: 116px;
+  min-height: 98px;
 }
 
 .stream-card h4,
@@ -852,6 +887,10 @@ textarea {
   overflow: auto;
 }
 
+.trace-card pre {
+  max-height: 42px;
+}
+
 #machine-last-step {
   margin: 0 0 6px;
   color: var(--text-sub);
@@ -867,13 +906,15 @@ textarea {
 
 .story-grid {
   display: grid;
-  grid-template-columns: 1fr minmax(300px, 340px);
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 44%);
+  gap: 14px;
   flex: 1;
   min-height: 0;
 }
 
 .story-text-panel {
+  border-radius: 22px;
+  padding: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -883,7 +924,7 @@ textarea {
 .story-text-scroll {
   flex: 1 1 auto;
   overflow: auto;
-  padding-right: 6px;
+  padding-right: 0;
   min-height: 0;
 }
 
@@ -891,7 +932,7 @@ textarea {
   margin: 0;
   white-space: pre-wrap;
   line-height: 1.22;
-  font-size: 0.95rem;
+  font-size: 18px;
   color: var(--text-main);
 }
 
@@ -910,6 +951,8 @@ textarea {
 }
 
 .media-panel {
+  border-radius: 22px;
+  padding: 10px;
   justify-content: flex-start;
   overflow: hidden;
   min-height: 0;
@@ -918,7 +961,7 @@ textarea {
 .video-square {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 12px;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(0, 0, 0, 0.42);
   overflow: hidden;
@@ -969,7 +1012,8 @@ textarea {
 }
 
 .story-actions .glass-btn {
-  min-width: 150px;
+  min-width: 200px;
+  height: 52px;
 }
 
 #byline {
@@ -1056,7 +1100,7 @@ textarea {
 .modal {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.62);
+  background: rgba(0, 0, 0, 0.24);
   z-index: 1100;
   display: flex;
   align-items: center;
@@ -1066,7 +1110,7 @@ textarea {
 .modal-card {
   width: min(980px, calc(100% - 48px));
   height: min(720px, calc(100% - 48px));
-  padding: 22px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1079,7 +1123,7 @@ textarea {
 }
 
 .modal-card h3 {
-  font-size: 28px;
+  font-size: 34px;
 }
 
 .credits-card p {
@@ -1087,15 +1131,15 @@ textarea {
   overflow: auto;
   margin: 0;
   color: var(--text-sub);
-  font-size: 18px;
+  font-size: 24px;
   line-height: 1.2;
 }
 
 .modal-card > .glass-btn,
 .settings-actions .glass-btn {
   min-width: 190px;
-  height: 48px;
-  font-size: 16px;
+  height: 58px;
+  font-size: 20px;
 }
 
 .modal-card > .glass-btn {
@@ -1105,7 +1149,7 @@ textarea {
 .settings-subtitle {
   margin: -4px 0 0;
   color: var(--text-sub);
-  font-size: 18px;
+  font-size: 24px;
 }
 
 .settings-separator {
@@ -1126,7 +1170,7 @@ textarea {
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(20, 17, 15, 0.94);
-  padding: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1139,7 +1183,7 @@ textarea {
 }
 
 .settings-panel label {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-main);
   gap: 16px;
@@ -1150,7 +1194,7 @@ textarea {
 }
 
 .settings-heading {
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .settings-theme-row {
@@ -1159,9 +1203,9 @@ textarea {
 
 .settings-theme-row .glass-btn {
   flex: 1;
-  height: 44px;
-  min-width: 180px;
-  font-size: 15px;
+  height: 54px;
+  min-width: 220px;
+  font-size: 18px;
 }
 
 input[type="range"] {
@@ -1527,6 +1571,20 @@ input[type="checkbox"] {
     gap: 14px;
   }
 
+  .machine-live-panel {
+    padding: 14px;
+    gap: 8px;
+  }
+
+  .machine-hint {
+    min-height: 30px;
+  }
+
+  .rotor-dials {
+    min-height: 210px;
+    height: 210px;
+  }
+
   .home-card {
     width: min(1100px, calc(100vw - 80px));
     height: min(640px, calc(100vh - 88px));
@@ -1552,9 +1610,9 @@ input[type="checkbox"] {
   }
 
   .rotor-window {
-    width: 176px;
-    height: 176px;
-    font-size: 46px;
+    width: 156px;
+    height: 156px;
+    font-size: 42px;
   }
 
   textarea {
