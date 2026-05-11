@@ -348,30 +348,33 @@ h3 {
 }
 
 .intro-card {
-  width: min(920px, 92%);
-  max-height: 100%;
-  padding: 18px 20px;
+  width: min(1120px, calc(100vw - 120px));
+  height: min(660px, calc(100vh - 112px));
+  max-height: calc(100vh - 112px);
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
+  justify-content: center;
 }
 
 .intro-card h2 {
-  font-size: clamp(1.7rem, 3vw, 2.15rem);
+  font-size: clamp(52px, 3.6vw, 70px);
+  line-height: 1;
 }
 
 .intro-card .sub {
-  max-width: 760px;
+  max-width: 900px;
   margin: 0;
   text-align: center;
-  font-size: clamp(0.95rem, 1.45vw, 1.08rem);
+  font-size: 18px;
   line-height: 1.25;
 }
 
 #gallery-track {
-  width: min(820px, 100%);
-  height: clamp(128px, 20vh, 172px);
+  width: min(1040px, 100%);
+  height: clamp(260px, 42vh, 340px);
   overflow: hidden;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -384,7 +387,7 @@ h3 {
   left: 0;
   top: 8px;
   display: flex;
-  gap: 10px;
+  gap: 16px;
   will-change: transform;
   animation: gallery-scroll 26s linear infinite;
 }
@@ -394,8 +397,8 @@ h3 {
 }
 
 #gallery-track img {
-  width: clamp(116px, 18vh, 156px);
-  height: clamp(116px, 18vh, 156px);
+  width: clamp(244px, 40vh, 324px);
+  height: clamp(244px, 40vh, 324px);
   border-radius: 12px;
   object-fit: cover;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -406,6 +409,12 @@ h3 {
 #gallery-track img:hover {
   transform: scale(1.02);
   border-color: rgba(197, 141, 77, 0.65);
+}
+
+.intro-card .glass-btn.big {
+  width: min(1040px, 100%);
+  height: 64px;
+  font-size: 22px;
 }
 
 .home-card,
@@ -1216,22 +1225,33 @@ input[type="checkbox"] {
   }
 
   .intro-card {
-    width: min(840px, 92%);
-    padding: 14px 16px;
-    gap: 9px;
+    width: min(1120px, calc(100vw - 72px));
+    height: min(660px, calc(100vh - 78px));
+    max-height: calc(100vh - 78px);
+    padding: 18px 22px;
+    gap: 12px;
   }
 
   .intro-card h2 {
-    font-size: 1.7rem;
+    font-size: clamp(42px, 5.8vh, 58px);
+  }
+
+  .intro-card .sub {
+    font-size: 17px;
   }
 
   #gallery-track {
-    height: 126px;
+    height: clamp(230px, 43vh, 310px);
   }
 
   #gallery-track img {
-    width: 110px;
-    height: 110px;
+    width: clamp(214px, 41vh, 294px);
+    height: clamp(214px, 41vh, 294px);
+  }
+
+  .intro-card .glass-btn.big {
+    height: 56px;
+    font-size: 20px;
   }
 }
 
