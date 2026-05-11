@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Enigma Touch Web</title>
-  <link rel="stylesheet" href="web.css?v=20260511-homeapp1">
+  <link rel="stylesheet" href="web.css?v=20260511-machineapp1">
 </head>
 <body>
   <div id="app">
@@ -110,35 +110,34 @@
         <div class="card machine-card">
           <div class="row top-row">
             <h2>SIMULAZIONE ENIGMA</h2>
-            <button class="glass-btn" id="btn-machine-home">HOME</button>
+            <div class="row machine-top-actions">
+              <button class="glass-btn" id="btn-machine-mission">MISSIONE</button>
+              <button class="glass-btn" id="btn-machine-help">PROVA GUIDATA</button>
+              <button class="glass-btn" id="btn-machine-home">HOME</button>
+            </div>
           </div>
 
           <div class="machine-grid">
             <div class="card panel machine-config-panel">
               <h3>CONFIGURAZIONE</h3>
-              <label>Rotore sinistra
+              <div class="panel-sep"></div>
+              <h4>ROTORI (SINISTRA - CENTRO - DESTRA)</h4>
+              <div class="row machine-three-selects">
                 <select id="rotor-left"></select>
-              </label>
-              <label>Rotore centro
                 <select id="rotor-middle"></select>
-              </label>
-              <label>Rotore destra
                 <select id="rotor-right"></select>
-              </label>
-              <label>Reflector
-                <select id="reflector"></select>
-              </label>
-              <label>Posizioni iniziali (es. DDA)
-                <input id="positions" maxlength="3" value="AAA">
-              </label>
+              </div>
+              <h4>REFLECTOR</h4>
+              <select id="reflector"></select>
+              <h4>POSIZIONI INIZIALI (ES. DDA)</h4>
               <div class="row">
+                <input id="positions" maxlength="3" value="AAA">
                 <button class="glass-btn" id="btn-apply-config">APPLICA</button>
-                <button class="glass-btn" id="btn-reset-machine">RESET POSIZIONI</button>
               </div>
 
               <div class="panel-sep"></div>
 
-              <h3 class="mini-title">PLUGBOARD</h3>
+              <h4>PLUGBOARD</h4>
               <div class="row">
                 <input id="plug-a" maxlength="1" placeholder="A">
                 <input id="plug-b" maxlength="1" placeholder="M">
@@ -148,57 +147,59 @@
                 <input id="plug-remove" maxlength="1" placeholder="Lettera da scollegare">
                 <button class="glass-btn" id="btn-remove-pair">RIMUOVI</button>
               </div>
-              <div id="plugboard-list"></div>
               <button class="glass-btn" id="btn-clear-pairs">AZZERA PLUG</button>
+              <div id="plugboard-list"></div>
+
+              <div class="panel-sep"></div>
+
+              <h4>AZIONI RAPIDE</h4>
+              <div class="row">
+                <button class="glass-btn" id="btn-reset-machine">RESET MACCHINA</button>
+                <button class="glass-btn" id="btn-clear-streams">PULISCI STREAM</button>
+              </div>
             </div>
 
             <div class="card panel machine-live-panel">
               <div class="row live-top-row">
-                <h3>OPERATIVO</h3>
                 <p id="machine-live-summary">Posizioni: AAA | Reflector: B</p>
+                <p id="machine-reflector-summary">Reflector: B</p>
               </div>
+              <p class="machine-hint">Passa col mouse sui rotori e usa la rotellina per cambiare lettera. Digita con la tastiera fisica.</p>
 
               <div id="rotor-dials" class="rotor-dials">
                 <button class="rotor-dial" data-rotor-index="0">
                   <span class="rotor-label">SINISTRA</span>
                   <span class="rotor-window" id="rotor-char-0">A</span>
                   <span class="rotor-name" id="rotor-name-0">I</span>
-                  <span class="rotor-hint">Rotella o click su/giu</span>
+                  <span class="rotor-hint">Encoder attivo</span>
                 </button>
                 <button class="rotor-dial" data-rotor-index="1">
                   <span class="rotor-label">CENTRO</span>
                   <span class="rotor-window" id="rotor-char-1">A</span>
                   <span class="rotor-name" id="rotor-name-1">II</span>
-                  <span class="rotor-hint">Rotella o click su/giu</span>
+                  <span class="rotor-hint">Encoder attivo</span>
                 </button>
                 <button class="rotor-dial" data-rotor-index="2">
                   <span class="rotor-label">DESTRA</span>
                   <span class="rotor-window" id="rotor-char-2">A</span>
                   <span class="rotor-name" id="rotor-name-2">III</span>
-                  <span class="rotor-hint">Rotella o click su/giu</span>
+                  <span class="rotor-hint">Encoder attivo</span>
                 </button>
               </div>
 
-              <h3 class="mini-title">CIFRATURA / DECIFRATURA</h3>
-              <label>Input
-                <textarea id="machine-input" rows="6" placeholder="Inserisci il testo..."></textarea>
-              </label>
-              <div class="row">
-                <button class="glass-btn primary" id="btn-encode">CIFRA</button>
-                <button class="glass-btn" id="btn-decode">DECIFRA</button>
-                <button class="glass-btn" id="btn-clear-streams">PULISCI</button>
-              </div>
-              <label>Output
-                <textarea id="machine-output" rows="6" readonly></textarea>
-              </label>
-
               <div class="stream-grid">
                 <div class="stream-card">
-                  <h4>INPUT STREAM</h4>
+                  <div class="row stream-head">
+                    <h4>INPUT STREAM</h4>
+                    <button class="glass-btn" id="btn-clear-input-stream">SVUOTA</button>
+                  </div>
                   <pre id="machine-input-stream">In attesa di input...</pre>
                 </div>
                 <div class="stream-card">
-                  <h4>OUTPUT STREAM</h4>
+                  <div class="row stream-head">
+                    <h4>OUTPUT STREAM</h4>
+                    <button class="glass-btn" id="btn-copy-output-stream">COPIA</button>
+                  </div>
                   <pre id="machine-output-stream">Output non ancora generato.</pre>
                 </div>
               </div>
@@ -210,6 +211,10 @@
               </div>
 
               <p id="machine-status">Configurazione iniziale pronta.</p>
+              <textarea id="machine-input" class="machine-hidden-field" aria-hidden="true"></textarea>
+              <textarea id="machine-output" class="machine-hidden-field" aria-hidden="true" readonly></textarea>
+              <button class="machine-hidden-field" id="btn-encode" type="button">CIFRA</button>
+              <button class="machine-hidden-field" id="btn-decode" type="button">DECIFRA</button>
             </div>
           </div>
         </div>
@@ -400,6 +405,6 @@
   </div>
 
   <audio id="bg-music" preload="auto" loop></audio>
-  <script src="web.js?v=20260511-homeapp1"></script>
+  <script src="web.js?v=20260511-machineapp1"></script>
 </body>
 </html>

@@ -419,7 +419,6 @@ h3 {
 }
 
 .home-card,
-.machine-card,
 .story-card {
   width: min(1160px, 99%);
   height: calc(100vh - 92px);
@@ -429,6 +428,41 @@ h3 {
   flex-direction: column;
   gap: 10px;
   overflow: hidden;
+}
+
+.machine-card {
+  width: min(1140px, calc(100vw - 90px));
+  height: min(700px, calc(100vh - 36px));
+  max-height: calc(100vh - 36px);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.machine-card > .top-row h2 {
+  font-size: 38px;
+  line-height: 1;
+}
+
+.machine-top-actions {
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+
+.machine-top-actions .glass-btn {
+  height: 44px;
+  font-size: 14px;
+}
+
+#btn-machine-mission,
+#btn-machine-home {
+  width: 160px;
+}
+
+#btn-machine-help {
+  width: 220px;
 }
 
 .home-card {
@@ -517,8 +551,8 @@ h3 {
 
 .machine-grid {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 10px;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 14px;
   flex: 1;
   min-height: 0;
 }
@@ -533,10 +567,16 @@ h3 {
 }
 
 .machine-config-panel {
+  padding: 14px;
+  border-radius: 22px;
+  gap: 8px;
   overflow: auto;
 }
 
 .machine-live-panel {
+  padding: 18px;
+  border-radius: 22px;
+  gap: 10px;
   overflow: auto;
 }
 
@@ -545,13 +585,40 @@ h3 {
   flex-wrap: wrap;
 }
 
-.machine-config-panel .glass-btn,
-.machine-live-panel .glass-btn {
-  min-width: 120px;
+.machine-config-panel h3,
+.machine-live-panel h3 {
+  font-size: 22px;
+  line-height: 1;
 }
 
-.machine-config-panel .row .glass-btn {
+.machine-config-panel h4,
+.machine-live-panel h4 {
+  margin: 0;
+  color: var(--text-sub);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
+.machine-three-selects {
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+.machine-three-selects select {
+  min-width: 0;
   flex: 1 1 0;
+}
+
+.machine-config-panel select,
+.machine-config-panel input {
+  height: 40px;
+}
+
+.machine-config-panel .glass-btn {
+  min-width: 126px;
+  height: 36px;
+  font-size: 13px;
 }
 
 .machine-config-panel .row input {
@@ -564,21 +631,40 @@ h3 {
   height: 32px;
 }
 
-#machine-input,
-#machine-output {
-  height: 78px;
-  min-height: 58px;
-  resize: none;
+.machine-hidden-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .live-top-row {
   justify-content: space-between;
 }
 
-#machine-live-summary {
+#machine-live-summary,
+#machine-reflector-summary {
   margin: 0;
+}
+
+#machine-live-summary {
+  color: var(--text-main);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+#machine-reflector-summary,
+.machine-hint {
   color: var(--text-sub);
-  font-size: 0.94rem;
+  font-size: 14px;
+}
+
+.machine-hint {
+  margin: 0;
+  min-height: 38px;
+  line-height: 1.28;
 }
 
 .panel-sep {
@@ -627,7 +713,7 @@ textarea {
 }
 
 #plugboard-list {
-  min-height: 42px;
+  min-height: 28px;
   max-height: 90px;
   overflow: auto;
   display: flex;
@@ -648,81 +734,109 @@ textarea {
 
 .rotor-dials {
   width: 100%;
+  min-height: 238px;
+  height: 238px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(120px, 1fr));
-  gap: 8px;
-  margin-bottom: 4px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 8px;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(46, 36, 31, 0.28);
 }
 
 .rotor-dial {
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: linear-gradient(180deg, rgba(50, 38, 30, 0.9), rgba(20, 15, 11, 0.96));
-  border-radius: 14px;
+  border: 0;
+  background: transparent;
+  border-radius: 18px;
   color: var(--text-main);
-  min-height: 124px;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 10px 8px 8px;
+  justify-content: center;
+  gap: 6px;
+  padding: 0;
   cursor: ns-resize;
 }
 
 .rotor-dial:hover {
-  border-color: rgba(197, 141, 77, 0.65);
+  background: rgba(197, 141, 77, 0.08);
 }
 
 .rotor-label {
   color: var(--text-sub);
-  font-size: 0.76rem;
-  letter-spacing: 0.45px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
 }
 
 .rotor-window {
-  width: 66px;
-  height: 66px;
+  width: 176px;
+  height: 176px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: radial-gradient(circle at 50% 40%, rgba(54, 43, 34, 0.96), rgba(15, 11, 8, 0.98));
+  background:
+    radial-gradient(circle at 50% 50%, rgba(17, 13, 10, 0.98) 0 31%, transparent 32%),
+    repeating-conic-gradient(from -7deg, rgba(255,255,255,0.38) 0 1.2deg, transparent 1.2deg 13.85deg),
+    radial-gradient(circle at 50% 40%, rgba(56, 45, 37, 0.96), rgba(17, 13, 10, 0.98) 68%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.65rem;
+  font-size: 46px;
   font-weight: 700;
+  box-shadow: inset 0 0 0 38px rgba(24, 19, 15, 0.58), inset 0 0 0 78px rgba(255,255,255,0.04);
 }
 
 .rotor-name {
-  color: var(--text-main);
-  font-size: 0.9rem;
+  color: var(--text-sub);
+  font-size: 12px;
   font-weight: 700;
+  line-height: 1;
+  min-height: 14px;
 }
 
 .rotor-hint {
-  color: rgba(216, 202, 188, 0.82);
-  font-size: 0.68rem;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .stream-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
+  min-height: 116px;
 }
 
 .stream-card,
 .trace-card {
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.18);
-  padding: 8px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.16);
+  padding: 10px;
+  min-height: 116px;
 }
 
 .stream-card h4,
 .trace-card h4 {
   color: var(--text-sub);
-  font-size: 0.82rem;
+  font-size: 12px;
   letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.stream-head {
+  justify-content: space-between;
   margin-bottom: 6px;
+}
+
+.stream-head .glass-btn {
+  min-width: 64px;
+  width: 76px;
+  height: 28px;
+  font-size: 11px;
 }
 
 .stream-card pre,
@@ -734,7 +848,7 @@ textarea {
   font-size: 0.82rem;
   line-height: 1.26;
   color: var(--text-main);
-  max-height: 72px;
+  max-height: 70px;
   overflow: auto;
 }
 
@@ -747,7 +861,8 @@ textarea {
 #machine-status {
   color: var(--text-sub);
   min-height: 22px;
-  margin: 2px 0 0;
+  margin: 0;
+  font-size: 13px;
 }
 
 .story-grid {
@@ -1295,7 +1410,7 @@ input[type="checkbox"] {
 
 @media (max-width: 1200px) {
   .machine-grid {
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 360px minmax(0, 1fr);
   }
 }
 
@@ -1313,9 +1428,14 @@ input[type="checkbox"] {
   }
 
   .home-card,
-  .machine-card,
   .story-card {
     width: min(1120px, 99%);
+    height: calc(100vh - 88px);
+    max-height: calc(100vh - 88px);
+  }
+
+  .machine-card {
+    width: min(1140px, calc(100vw - 32px));
     height: calc(100vh - 88px);
     max-height: calc(100vh - 88px);
   }
@@ -1392,12 +1512,19 @@ input[type="checkbox"] {
   }
 
   .home-card,
-  .machine-card,
   .story-card {
     padding: 12px;
     gap: 8px;
     height: calc(100vh - 68px);
     max-height: calc(100vh - 68px);
+  }
+
+  .machine-card {
+    width: min(1140px, calc(100vw - 90px));
+    height: min(700px, calc(100vh - 36px));
+    max-height: calc(100vh - 36px);
+    padding: 22px;
+    gap: 14px;
   }
 
   .home-card {
@@ -1421,15 +1548,13 @@ input[type="checkbox"] {
   }
 
   .rotor-dial {
-    min-height: 106px;
     gap: 5px;
-    padding: 7px 6px;
   }
 
   .rotor-window {
-    width: 56px;
-    height: 56px;
-    font-size: 1.45rem;
+    width: 176px;
+    height: 176px;
+    font-size: 46px;
   }
 
   textarea {

@@ -503,7 +503,9 @@
 
   function updateMachineLivePanel() {
     q("machine-live-summary").textContent =
-      "Posizioni: " + state.positions + " | Reflector: " + state.reflector;
+      "Posizioni: " + state.positions;
+    const reflectorSummary = q("machine-reflector-summary");
+    if (reflectorSummary) reflectorSummary.textContent = "Reflector: " + state.reflector;
 
     for (let i = 0; i < 3; i += 1) {
       const rotorChar = q("rotor-char-" + String(i));
@@ -893,9 +895,15 @@
     q("btn-open-machine").addEventListener("click", () => setPage("machine"));
     q("btn-open-story").addEventListener("click", () => setPage("story"));
     q("btn-open-mission").addEventListener("click", () => {
-      showModal(missionModal);
+      setPage("machine");
+      window.setTimeout(() => showModal(missionModal), 140);
     });
 
+    q("btn-machine-mission").addEventListener("click", () => showModal(missionModal));
+    q("btn-machine-help").addEventListener("click", () => {
+      setMachineStatus("Prova guidata: configura i rotori, digita dalla tastiera fisica e osserva gli stream.");
+      pushTrace("Prova guidata aperta.");
+    });
     q("btn-machine-home").addEventListener("click", () => setPage("home"));
 
     q("btn-story-home").addEventListener("click", () => {
@@ -953,6 +961,17 @@
       refreshStreamUi();
       setMachineStatus("Stream puliti.");
       pushTrace("Stream input/output puliti.");
+    });
+    q("btn-clear-input-stream").addEventListener("click", () => {
+      q("machine-input").value = "";
+      state.inputStream = "";
+      refreshStreamUi();
+      setMachineStatus("Input stream svuotato.");
+      pushTrace("Input stream svuotato.");
+    });
+    q("btn-copy-output-stream").addEventListener("click", async () => {
+      await navigator.clipboard?.writeText(state.outputStream || "").catch(() => {});
+      setMachineStatus("Output copiato negli appunti.");
     });
 
     q("btn-encode").addEventListener("click", () => runEncode("/encode"));
@@ -1013,18 +1032,15 @@
     });
 
     q("btn-mission-new").addEventListener("click", () => {
-      hideModal(missionModal);
       setPage("machine");
       setMachineStatus("Missione guidata pronta: configura la macchina e valida il risultato.");
       pushTrace("Missione guidata avviata dalla schermata Home.");
     });
     q("btn-mission-validate").addEventListener("click", () => {
-      hideModal(missionModal);
       setPage("machine");
       setMachineStatus("Valida la missione dalla simulazione dopo aver cifrato il plaintext.");
     });
     q("btn-mission-solution").addEventListener("click", () => {
-      hideModal(missionModal);
       setPage("machine");
       setMachineStatus("Mostra soluzione disponibile nella missione originale dell'app.");
     });
@@ -1056,6 +1072,11 @@
       if (state.disruptionActive && event.key === "Enter") {
         event.preventDefault();
         finishDisruption();
+      }
+      if (state.page === "machine" && !event.ctrlKey && !event.altKey && !event.metaKey && /^[a-zA-Z]$/.test(event.key)) {
+        const letter = event.key.toUpperCase();
+        q("machine-input").value = letter;
+        runEncode("/encode");
       }
     });
   }
@@ -1095,6 +1116,12 @@
       if (state.page === "story") startStoryTicker();
     }
     if (params.get("mission") === "1") {
+      if (state.page !== "machine") {
+        pages.get(state.page).classList.remove("active");
+        state.page = "machine";
+        pages.get(state.page).classList.add("active");
+        updateOverlayVisibility();
+      }
       showModal(missionModal);
     }
   }
