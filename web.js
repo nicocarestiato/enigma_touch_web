@@ -40,6 +40,7 @@
       "https://enigma-touch-web-api.onrender.com",
     galleryOffset: 0,
     gallerySingleWidth: 0,
+    galleryLastTick: 0,
     galleryPaused: false,
     galleryRaf: null,
     storySeekManual: false,
@@ -135,6 +136,7 @@
     const hideByline =
       state.page === "intro" ||
       state.page === "machine" ||
+      state.page === "story" ||
       state.page === "disclaimer" ||
       state.page === "soundtrack";
     byline.style.display = hideByline ? "none" : "block";
@@ -294,26 +296,16 @@
 
     const inner = document.createElement("div");
     inner.className = "gallery-inner";
-    inner.style.animation = "none";
     const sources = [];
     for (let i = 1; i <= 8; i += 1) {
       sources.push("ui/assets/gallery/" + i + ".png");
     }
 
-    let loaded = 0;
     const makeImage = (src) => {
       const img = document.createElement("img");
       img.src = src;
       img.alt = src.split("/").pop();
       img.addEventListener("click", () => openGalleryModal(src));
-      const onDone = () => {
-        loaded += 1;
-        if (loaded >= 2) {
-          window.setTimeout(recalc, 0);
-        }
-      };
-      img.addEventListener("load", onDone, { once: true });
-      img.addEventListener("error", onDone, { once: true });
       return img;
     };
 
@@ -321,39 +313,6 @@
     sources.forEach((src) => inner.appendChild(makeImage(src)));
 
     track.appendChild(inner);
-
-    const recalc = () => {
-      state.gallerySingleWidth = Math.max(1, inner.scrollWidth / 2);
-    };
-
-    window.setTimeout(recalc, 120);
-    window.setTimeout(recalc, 700);
-    window.setTimeout(recalc, 1500);
-    window.addEventListener("resize", recalc);
-
-    track.addEventListener("mouseenter", () => {
-      state.galleryPaused = true;
-    });
-    track.addEventListener("mouseleave", () => {
-      state.galleryPaused = false;
-    });
-
-    if (state.galleryRaf) {
-      cancelAnimationFrame(state.galleryRaf);
-      state.galleryRaf = null;
-    }
-
-    const tick = () => {
-      if (state.page === "intro" && !state.galleryPaused && state.gallerySingleWidth > 1) {
-        state.galleryOffset += 0.35;
-        if (state.galleryOffset >= state.gallerySingleWidth) {
-          state.galleryOffset -= state.gallerySingleWidth;
-        }
-        inner.style.transform = "translateX(" + String(-state.galleryOffset) + "px)";
-      }
-      state.galleryRaf = requestAnimationFrame(tick);
-    };
-    state.galleryRaf = requestAnimationFrame(tick);
   }
 
   function loadStoryText() {
@@ -1106,6 +1065,16 @@
     updateStoryUiFromTime();
     startStoryTicker();
     scheduleDisruption(true);
+
+    const params = new URLSearchParams(window.location.search);
+    const debugPage = params.get("page");
+    if (debugPage && pages.has(debugPage)) {
+      pages.get(state.page).classList.remove("active");
+      state.page = debugPage;
+      pages.get(state.page).classList.add("active");
+      updateOverlayVisibility();
+      if (state.page === "story") startStoryTicker();
+    }
   }
 
   initialize();

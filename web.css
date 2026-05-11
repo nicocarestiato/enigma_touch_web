@@ -58,23 +58,23 @@ body {
 
 #top-buttons {
   position: absolute;
-  top: 14px;
+  top: 8px;
   right: 16px;
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 8px;
   z-index: 600;
 }
 
 .glass-btn {
   border: 1px solid var(--glass-stroke);
-  border-radius: 16px;
+  border-radius: 12px;
   background: rgba(24, 19, 15, 0.62);
   color: var(--text-main);
-  min-width: 160px;
-  height: 40px;
+  min-width: 118px;
+  height: 34px;
   padding: 0 14px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.2px;
   cursor: pointer;
@@ -96,13 +96,13 @@ body {
 }
 
 .glass-btn.big {
-  min-width: 270px;
-  height: 64px;
-  font-size: 22px;
+  min-width: 220px;
+  height: 48px;
+  font-size: 17px;
 }
 
 #pages {
-  padding: 72px 44px 48px;
+  padding: 48px 26px 26px;
 }
 
 .page {
@@ -115,15 +115,6 @@ body {
 
 .page.active {
   display: flex;
-}
-
-#page-disclaimer {
-  background: #000;
-  z-index: 450;
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
 }
 
 h1,
@@ -155,7 +146,7 @@ h3 {
 }
 
 .card {
-  border-radius: 24px;
+  border-radius: 18px;
   border: 1px solid var(--glass-stroke);
   background: var(--glass);
   backdrop-filter: blur(7px);
@@ -163,29 +154,29 @@ h3 {
 }
 
 .card.wide {
-  width: min(1040px, 95%);
-  min-height: min(540px, calc(100vh - 120px));
-  padding: 28px;
+  width: min(980px, 95%);
+  min-height: min(430px, calc(100vh - 96px));
+  padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .card.wide > h2 {
-  font-size: 38px;
+  font-size: clamp(1.8rem, 3vw, 2.25rem);
   text-align: center;
 }
 
 .card.wide > .sub {
   margin: 0;
-  font-size: 19px;
+  font-size: 17px;
   text-align: center;
 }
 
 .card.mini {
   flex: 1;
-  min-height: 270px;
-  padding: 20px;
+  min-height: 180px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -193,24 +184,24 @@ h3 {
 }
 
 .card.mini h3 {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .card.mini p {
   margin: 0;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1.28;
   color: var(--text-sub);
 }
 
 .card.mini .glass-btn {
-  min-width: 220px;
-  height: 54px;
-  font-size: 18px;
+  min-width: 180px;
+  height: 44px;
+  font-size: 15px;
 }
 
 .center-column {
-  width: min(1060px, 92%);
+  width: min(980px, 94%);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -218,14 +209,14 @@ h3 {
 }
 
 .center-column h1 {
-  font-size: 44px;
+  font-size: clamp(2rem, 4vw, 2.75rem);
   line-height: 1.08;
 }
 
 .center-column p {
   margin: 0;
-  line-height: 1.18;
-  font-size: 24px;
+  line-height: 1.16;
+  font-size: clamp(1rem, 2vw, 1.42rem);
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -240,14 +231,14 @@ h3 {
 }
 
 .boot-card {
-  width: min(1120px, 92%);
-  padding: 44px 48px;
+  width: min(960px, 92%);
+  padding: 32px 38px;
   text-align: center;
 }
 
 .boot-card h2 {
   margin-bottom: 18px;
-  font-size: 56px;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
   letter-spacing: 1px;
 }
 
@@ -357,39 +348,32 @@ h3 {
 }
 
 .intro-card {
-  width: min(1120px, calc(100% - 72px));
-  height: min(660px, calc(100% - 72px));
-  padding: 24px;
+  width: min(920px, 92%);
+  max-height: 100%;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-items: center;
 }
 
-#btn-start-experience {
-  width: min(1030px, 100%);
-  height: 70px;
-  flex-shrink: 0;
-}
-
 .intro-card h2 {
-  font-size: clamp(52px, 5.8vw, 70px);
-  line-height: 1.05;
+  font-size: clamp(1.7rem, 3vw, 2.15rem);
 }
 
-.intro-card > .sub {
-  max-width: 900px;
-  text-align: center;
-  line-height: 1.28;
-  font-size: 18px;
+.intro-card .sub {
+  max-width: 760px;
   margin: 0;
+  text-align: center;
+  font-size: clamp(0.95rem, 1.45vw, 1.08rem);
+  line-height: 1.25;
 }
 
 #gallery-track {
-  width: min(1030px, 100%);
-  height: clamp(260px, 50vh, 340px);
+  width: min(820px, 100%);
+  height: clamp(128px, 20vh, 172px);
   overflow: hidden;
-  border-radius: 28px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(0, 0, 0, 0.14);
   position: relative;
@@ -398,18 +382,22 @@ h3 {
 #gallery-track .gallery-inner {
   position: absolute;
   left: 0;
-  top: 0;
+  top: 8px;
   display: flex;
-  gap: 16px;
+  gap: 10px;
   will-change: transform;
-  animation: glide 32s linear infinite;
+  animation: gallery-scroll 26s linear infinite;
+}
+
+#gallery-track:hover .gallery-inner {
+  animation-play-state: paused;
 }
 
 #gallery-track img {
-  width: clamp(260px, 50vh, 340px);
-  height: clamp(260px, 50vh, 340px);
-  border-radius: 28px;
-  object-fit: contain;
+  width: clamp(116px, 18vh, 156px);
+  height: clamp(116px, 18vh, 156px);
+  border-radius: 12px;
+  object-fit: cover;
   border: 1px solid rgba(255, 255, 255, 0.16);
   cursor: zoom-in;
   transition: transform 0.15s ease, border-color 0.15s ease;
@@ -423,79 +411,39 @@ h3 {
 .home-card,
 .machine-card,
 .story-card {
-  width: min(1140px, 96%);
-  height: min(700px, 95%);
-  padding: 22px;
+  width: min(1160px, 99%);
+  height: calc(100vh - 92px);
+  max-height: calc(100vh - 92px);
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-}
-
-.home-card {
-  width: min(1100px, calc(100% - 120px));
-  height: min(640px, calc(100% - 140px));
-  padding: 26px;
-  gap: 18px;
-}
-
-.home-card h2 {
-  font-size: 40px;
-  text-align: center;
-}
-
-.home-card > .sub {
-  margin: -12px 0 0;
-  text-align: center;
-  font-size: 14px;
+  gap: 10px;
+  overflow: hidden;
 }
 
 .home-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 12px;
   flex: 1;
   min-height: 0;
 }
 
 .home-option {
   min-height: 0;
-  padding: 22px;
-  border-radius: 26px;
-}
-
-.home-option h3 {
-  text-align: center;
-  font-size: 30px;
-}
-
-.home-option p {
-  font-size: 14px;
-  line-height: 1.28;
 }
 
 .home-panel-image {
   width: 100%;
-  height: 152px;
-  border-radius: 18px;
+  height: clamp(110px, 22vh, 180px);
+  border-radius: 12px;
   object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .home-option .glass-btn {
-  align-self: center;
-  min-width: 260px;
-  height: 54px;
-  font-size: 16px;
-}
-
-.home-option:nth-child(2) .glass-btn {
-  min-width: 300px;
-}
-
-.mission-option {
-  background: rgba(61, 46, 33, 0.42);
-  border-color: rgba(197, 141, 77, 0.24);
+  width: 100%;
+  min-width: 0;
 }
 
 .row {
@@ -510,15 +458,15 @@ h3 {
 
 .machine-grid {
   display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 14px;
+  grid-template-columns: 300px 1fr;
+  gap: 10px;
   flex: 1;
   min-height: 0;
 }
 
 .panel {
-  padding: 12px;
-  border-radius: 18px;
+  padding: 10px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -531,6 +479,37 @@ h3 {
 
 .machine-live-panel {
   overflow: auto;
+}
+
+.machine-config-panel .row,
+.machine-live-panel .row {
+  flex-wrap: wrap;
+}
+
+.machine-config-panel .glass-btn,
+.machine-live-panel .glass-btn {
+  min-width: 120px;
+}
+
+.machine-config-panel .row .glass-btn {
+  flex: 1 1 0;
+}
+
+.machine-config-panel .row input {
+  min-width: 0;
+  flex: 1 1 70px;
+}
+
+.machine-config-panel label input {
+  flex: none;
+  height: 32px;
+}
+
+#machine-input,
+#machine-output {
+  height: 78px;
+  min-height: 58px;
+  resize: none;
 }
 
 .live-top-row {
@@ -552,7 +531,7 @@ h3 {
 
 label {
   color: var(--text-sub);
-  font-size: 0.92rem;
+  font-size: 0.84rem;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -571,8 +550,8 @@ select,
 textarea {
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(12, 10, 8, 0.48);
-  border-radius: 10px;
-  padding: 8px;
+  border-radius: 8px;
+  padding: 6px 8px;
   outline: none;
 }
 
@@ -585,12 +564,12 @@ textarea:focus {
 
 textarea {
   resize: vertical;
-  min-height: 84px;
+  min-height: 62px;
 }
 
 #plugboard-list {
-  min-height: 60px;
-  max-height: 130px;
+  min-height: 42px;
+  max-height: 90px;
   overflow: auto;
   display: flex;
   flex-wrap: wrap;
@@ -611,17 +590,17 @@ textarea {
 .rotor-dials {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, minmax(160px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  gap: 8px;
   margin-bottom: 4px;
 }
 
 .rotor-dial {
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: linear-gradient(180deg, rgba(50, 38, 30, 0.9), rgba(20, 15, 11, 0.96));
-  border-radius: 16px;
+  border-radius: 14px;
   color: var(--text-main);
-  min-height: 176px;
+  min-height: 124px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -642,15 +621,15 @@ textarea {
 }
 
 .rotor-window {
-  width: 96px;
-  height: 96px;
+  width: 66px;
+  height: 66px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: radial-gradient(circle at 50% 40%, rgba(54, 43, 34, 0.96), rgba(15, 11, 8, 0.98));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.2rem;
+  font-size: 1.65rem;
   font-weight: 700;
 }
 
@@ -662,21 +641,21 @@ textarea {
 
 .rotor-hint {
   color: rgba(216, 202, 188, 0.82);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
 }
 
 .stream-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
 .stream-card,
 .trace-card {
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
+  border-radius: 12px;
   background: rgba(0, 0, 0, 0.18);
-  padding: 10px;
+  padding: 8px;
 }
 
 .stream-card h4,
@@ -696,7 +675,7 @@ textarea {
   font-size: 0.82rem;
   line-height: 1.26;
   color: var(--text-main);
-  max-height: 100px;
+  max-height: 72px;
   overflow: auto;
 }
 
@@ -714,8 +693,8 @@ textarea {
 
 .story-grid {
   display: grid;
-  grid-template-columns: 1fr 390px;
-  gap: 14px;
+  grid-template-columns: 1fr minmax(300px, 340px);
+  gap: 10px;
   flex: 1;
   min-height: 0;
 }
@@ -737,8 +716,8 @@ textarea {
 #story-text {
   margin: 0;
   white-space: pre-wrap;
-  line-height: 1.28;
-  font-size: 1.03rem;
+  line-height: 1.22;
+  font-size: 0.95rem;
   color: var(--text-main);
 }
 
@@ -765,7 +744,7 @@ textarea {
 .video-square {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(0, 0, 0, 0.42);
   overflow: hidden;
@@ -823,7 +802,7 @@ textarea {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 10px;
+  bottom: 6px;
   color: rgba(216, 202, 188, 0.88);
   z-index: 520;
 }
@@ -913,7 +892,7 @@ textarea {
 .modal-card {
   width: min(980px, calc(100% - 48px));
   height: min(720px, calc(100% - 48px));
-  padding: 28px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -926,7 +905,7 @@ textarea {
 }
 
 .modal-card h3 {
-  font-size: 34px;
+  font-size: 28px;
 }
 
 .credits-card p {
@@ -934,15 +913,15 @@ textarea {
   overflow: auto;
   margin: 0;
   color: var(--text-sub);
-  font-size: 24px;
+  font-size: 18px;
   line-height: 1.2;
 }
 
 .modal-card > .glass-btn,
 .settings-actions .glass-btn {
   min-width: 190px;
-  height: 58px;
-  font-size: 20px;
+  height: 48px;
+  font-size: 16px;
 }
 
 .modal-card > .glass-btn {
@@ -952,7 +931,7 @@ textarea {
 .settings-subtitle {
   margin: -4px 0 0;
   color: var(--text-sub);
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .settings-separator {
@@ -964,7 +943,6 @@ textarea {
 .settings-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: minmax(224px, auto) minmax(152px, 1fr);
   gap: 16px;
   flex: 1;
   min-height: 0;
@@ -974,7 +952,7 @@ textarea {
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(20, 17, 15, 0.94);
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -984,11 +962,10 @@ textarea {
 .settings-panel-wide {
   grid-column: 1 / -1;
   justify-content: flex-start;
-  min-height: 224px;
 }
 
 .settings-panel label {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--text-main);
   gap: 16px;
@@ -999,7 +976,7 @@ textarea {
 }
 
 .settings-heading {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .settings-theme-row {
@@ -1008,9 +985,9 @@ textarea {
 
 .settings-theme-row .glass-btn {
   flex: 1;
-  height: 54px;
-  min-width: 220px;
-  font-size: 18px;
+  height: 44px;
+  min-width: 180px;
+  font-size: 15px;
 }
 
 input[type="range"] {
@@ -1101,30 +1078,29 @@ input[type="checkbox"] {
   }
 }
 
-@keyframes glide {
+@keyframes gallery-scroll {
   from {
     transform: translateX(0);
   }
   to {
-    transform: translateX(-220px);
+    transform: translateX(calc(-50% - 5px));
   }
 }
 
 @media (max-width: 1200px) {
   .machine-grid {
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 280px 1fr;
   }
 }
 
 @media (max-width: 1100px) {
   #pages {
-    padding: 72px 16px 42px;
+    padding: 58px 14px 28px;
   }
 
   .machine-grid,
   .story-grid,
   .split,
-  .home-grid,
   .stream-grid,
   .rotor-dials {
     grid-template-columns: 1fr;
@@ -1134,19 +1110,14 @@ input[type="checkbox"] {
   .machine-card,
   .story-card {
     width: min(1120px, 99%);
-    height: 96%;
-  }
-
-  .home-card {
-    overflow: auto;
+    height: calc(100vh - 88px);
+    max-height: calc(100vh - 88px);
   }
 
   #top-buttons {
     flex-direction: row;
     top: 10px;
     right: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
   }
 
   .glass-btn {
@@ -1156,7 +1127,7 @@ input[type="checkbox"] {
   }
 
   .center-column p {
-    font-size: 21px;
+    font-size: 18px;
   }
 
   .card.wide {
@@ -1181,7 +1152,101 @@ input[type="checkbox"] {
   .card.mini .glass-btn,
   .glass-btn.big {
     min-width: 190px;
-    height: 54px;
-    font-size: 18px;
+    height: 46px;
+    font-size: 16px;
+  }
+}
+
+@media (max-height: 760px) {
+  #top-buttons {
+    top: 8px;
+    right: 10px;
+    gap: 6px;
+  }
+
+  #pages {
+    padding-top: 44px;
+    padding-bottom: 18px;
+  }
+
+  h2 {
+    font-size: clamp(1.35rem, 2vw, 1.8rem);
+  }
+
+  .home-card,
+  .machine-card,
+  .story-card {
+    padding: 12px;
+    gap: 8px;
+    height: calc(100vh - 68px);
+    max-height: calc(100vh - 68px);
+  }
+
+  .card.mini {
+    min-height: 145px;
+  }
+
+  .rotor-dial {
+    min-height: 106px;
+    gap: 5px;
+    padding: 7px 6px;
+  }
+
+  .rotor-window {
+    width: 56px;
+    height: 56px;
+    font-size: 1.45rem;
+  }
+
+  textarea {
+    min-height: 52px;
+  }
+
+  .stream-card pre,
+  .trace-card pre {
+    max-height: 54px;
+  }
+
+  .center-column {
+    gap: 14px;
+  }
+
+  .center-column p {
+    font-size: clamp(0.95rem, 1.7vw, 1.2rem);
+  }
+
+  .intro-card {
+    width: min(840px, 92%);
+    padding: 14px 16px;
+    gap: 9px;
+  }
+
+  .intro-card h2 {
+    font-size: 1.7rem;
+  }
+
+  #gallery-track {
+    height: 126px;
+  }
+
+  #gallery-track img {
+    width: 110px;
+    height: 110px;
+  }
+}
+
+@media (max-width: 760px) {
+  #top-buttons {
+    left: 8px;
+    right: 8px;
+    justify-content: center;
+  }
+
+  .glass-btn {
+    min-width: 0;
+  }
+
+  .split {
+    gap: 10px;
   }
 }
