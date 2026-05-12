@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="4096" height="4096" viewBox="-10 -10 196 196">
+  <defs>
+    <radialGradient id="discGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0" stop-color="#382e26" stop-opacity="0.94"/>
+      <stop offset="0.40" stop-color="#261f1a" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#12100d" stop-opacity="0.98"/>
+    </radialGradient>
+    <radialGradient id="hubGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0" stop-color="#524236" stop-opacity="0.96"/>
+      <stop offset="1" stop-color="#241c17" stop-opacity="0.98"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="176" height="176" rx="88" fill="url(#discGrad)" stroke="#ffffff" stroke-opacity="0.20" stroke-width="1"/>
+  <g transform="rotate(0.000000 88.000 88.000)">
+    <rect x="86.900" y="12.0" width="2.200" height="8.500" rx="1.100" fill="#c58d4d" fill-opacity="0.95"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9.8" font-weight="700" fill="#f3efe9" fill-opacity="0.95">A</text>
+  </g>
+  <g transform="rotate(13.846154 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">B</text>
+  </g>
+  <g transform="rotate(27.692308 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">C</text>
+  </g>
+  <g transform="rotate(41.538462 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">D</text>
+  </g>
+  <g transform="rotate(55.384615 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">E</text>
+  </g>
+  <g transform="rotate(69.230769 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">F</text>
+  </g>
+  <g transform="rotate(83.076923 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">G</text>
+  </g>
+  <g transform="rotate(96.923077 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">H</text>
+  </g>
+  <g transform="rotate(110.769231 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">I</text>
+  </g>
+  <g transform="rotate(124.615385 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">J</text>
+  </g>
+  <g transform="rotate(138.461538 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">K</text>
+  </g>
+  <g transform="rotate(152.307692 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">L</text>
+  </g>
+  <g transform="rotate(166.153846 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">M</text>
+  </g>
+  <g transform="rotate(180.000000 88.000 88.000)">
+    <rect x="86.900" y="12.0" width="2.200" height="8.500" rx="1.100" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9.8" font-weight="700" fill="#f3efe9" fill-opacity="0.95">N</text>
+  </g>
+  <g transform="rotate(193.846154 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">O</text>
+  </g>
+  <g transform="rotate(207.692308 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">P</text>
+  </g>
+  <g transform="rotate(221.538462 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">Q</text>
+  </g>
+  <g transform="rotate(235.384615 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">R</text>
+  </g>
+  <g transform="rotate(249.230769 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">S</text>
+  </g>
+  <g transform="rotate(263.076923 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">T</text>
+  </g>
+  <g transform="rotate(276.923077 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">U</text>
+  </g>
+  <g transform="rotate(290.769231 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">V</text>
+  </g>
+  <g transform="rotate(304.615385 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">W</text>
+  </g>
+  <g transform="rotate(318.461538 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">X</text>
+  </g>
+  <g transform="rotate(332.307692 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">Y</text>
+  </g>
+  <g transform="rotate(346.153846 88.000 88.000)">
+    <rect x="87.200" y="12.0" width="1.600" height="5.400" rx="0.800" fill="#ffffff" fill-opacity="0.4"/>
+    <text x="88.000" y="31.5" text-anchor="middle" dominant-baseline="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.1" font-weight="400" fill="#d8cabc" fill-opacity="0.74">Z</text>
+  </g>
+
+  <rect x="38" y="38" width="100" height="100" rx="50" fill="url(#hubGrad)" stroke="#ffffff" stroke-opacity="0.17" stroke-width="1"/>
+  <circle cx="88" cy="88" r="4.5" fill="#000000" fill-opacity="0.98"/>
+</svg>
