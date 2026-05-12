@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Enigma Touch Web</title>
-  <link rel="stylesheet" href="web.css?v=20260511-appparity1">
+  <link rel="stylesheet" href="web.css?v=20260512-missionrotor1">
 </head>
 <body>
   <div id="app">
@@ -169,19 +169,28 @@
               <div id="rotor-dials" class="rotor-dials">
                 <button class="rotor-dial" data-rotor-index="0">
                   <span class="rotor-label">SINISTRA</span>
-                  <span class="rotor-window" id="rotor-char-0">A</span>
+                  <span class="rotor-window">
+                    <span class="rotor-ring"></span>
+                    <span class="rotor-window-core"><span id="rotor-char-0">A</span></span>
+                  </span>
                   <span class="rotor-name" id="rotor-name-0">I</span>
                   <span class="rotor-hint">Encoder attivo</span>
                 </button>
                 <button class="rotor-dial" data-rotor-index="1">
                   <span class="rotor-label">CENTRO</span>
-                  <span class="rotor-window" id="rotor-char-1">A</span>
+                  <span class="rotor-window">
+                    <span class="rotor-ring"></span>
+                    <span class="rotor-window-core"><span id="rotor-char-1">A</span></span>
+                  </span>
                   <span class="rotor-name" id="rotor-name-1">II</span>
                   <span class="rotor-hint">Encoder attivo</span>
                 </button>
                 <button class="rotor-dial" data-rotor-index="2">
                   <span class="rotor-label">DESTRA</span>
-                  <span class="rotor-window" id="rotor-char-2">A</span>
+                  <span class="rotor-window">
+                    <span class="rotor-ring"></span>
+                    <span class="rotor-window-core"><span id="rotor-char-2">A</span></span>
+                  </span>
                   <span class="rotor-name" id="rotor-name-2">III</span>
                   <span class="rotor-hint">Encoder attivo</span>
                 </button>
@@ -294,27 +303,27 @@
         </div>
 
         <div class="mission-stats">
-          <div class="mission-pill accent">NON ATTIVA</div>
-          <div class="mission-pill">TENTATIVI: 0</div>
-          <div class="mission-pill">TEMPO: 0s</div>
-          <div class="mission-pill">SCORE: 0</div>
+          <div class="mission-pill accent" id="mission-state">NON ATTIVA</div>
+          <div class="mission-pill" id="mission-attempts">TENTATIVI: 0</div>
+          <div class="mission-pill" id="mission-time">TEMPO: 0s</div>
+          <div class="mission-pill" id="mission-score">SCORE: 0</div>
         </div>
 
         <div class="mission-scroll">
           <div class="mission-target-row">
             <section class="mission-target-card">
               <h4>PLAINTEXT DA DIGITARE</h4>
-              <strong>Premi NUOVA MISSIONE</strong>
+              <strong id="mission-plain">Premi NUOVA MISSIONE</strong>
             </section>
             <section class="mission-target-card">
               <h4>CIFRATO TARGET</h4>
-              <strong class="accent-text">---</strong>
+              <strong class="accent-text" id="mission-cipher">---</strong>
             </section>
           </div>
 
           <section class="mission-info-card">
             <h4>CONFIGURAZIONE BLOCCATA</h4>
-            <p>Rotori I-II-III | Reflector B | Plugboard nessuna coppia</p>
+            <p id="mission-config">Rotori I-II-III | Reflector B | Plugboard nessuna coppia</p>
           </section>
 
           <section class="mission-rules-card">
@@ -327,7 +336,7 @@
           </section>
 
           <section class="mission-status-card">
-            <p>Nessuna missione attiva.</p>
+            <p id="mission-status-text">Nessuna missione attiva.</p>
           </section>
         </div>
 
@@ -405,6 +414,6 @@
   </div>
 
   <audio id="bg-music" preload="auto" loop></audio>
-  <script src="web.js?v=20260511-appparity1"></script>
+  <script src="web.js?v=20260512-missionrotor1"></script>
 </body>
 </html>

@@ -35,6 +35,19 @@
     outputStream: "",
     traceLog: [],
     lastStep: "-",
+    mission: {
+      active: false,
+      solved: false,
+      attempts: 0,
+      score: 0,
+      startedAt: 0,
+      elapsedTimer: null,
+      plain: "",
+      cipher: "",
+      solution: "AAA",
+      config: "Rotori I-II-III | Reflector B | Plugboard nessuna coppia",
+      status: "Nessuna missione attiva.",
+    },
     apiBase:
       (window.localStorage && window.localStorage.getItem("enigma_api_base")) ||
       "https://enigma-touch-web-api.onrender.com",
@@ -464,6 +477,11 @@
     return alphabet[moved];
   }
 
+  function alphaIndex(letter) {
+    const idx = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(letter || "A");
+    return idx < 0 ? 0 : idx;
+  }
+
   function formatGroupedStream(text) {
     const cleaned = (text || "").toUpperCase().replace(/[^A-Z]/g, "");
     if (!cleaned.length) return "";
@@ -512,9 +530,139 @@
       const rotorName = q("rotor-name-" + String(i));
       if (rotorChar) rotorChar.textContent = state.positions[i] || "A";
       if (rotorName) rotorName.textContent = state.rotors[i] || "-";
+      const ring = document.querySelector('.rotor-dial[data-rotor-index="' + i + '"] .rotor-ring');
+      if (ring) ring.style.transform = "rotate(" + (-alphaIndex(state.positions[i] || "A") * (360 / 26)) + "deg)";
     }
 
     q("positions").value = state.positions;
+  }
+
+  function setupRotorRings() {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    document.querySelectorAll(".rotor-ring").forEach((ring) => {
+      ring.innerHTML = "";
+      for (let i = 0; i < alphabet.length; i += 1) {
+        const mark = document.createElement("span");
+        mark.className = "rotor-mark" + (i % 13 === 0 ? " major" : "");
+        mark.style.setProperty("--angle", i * (360 / 26) + "deg");
+        const letter = document.createElement("strong");
+        letter.textContent = alphabet[i];
+        mark.appendChild(letter);
+        ring.appendChild(mark);
+      }
+    });
+  }
+
+  function missionElapsedSeconds() {
+    if (!state.mission.startedAt) return 0;
+    return Math.max(0, Math.floor((Date.now() - state.mission.startedAt) / 1000));
+  }
+
+  function renderMission() {
+    const m = state.mission;
+    const stateEl = q("mission-state");
+    stateEl.className = "mission-pill accent" + (m.solved ? " solved" : (m.active ? " active" : ""));
+    stateEl.textContent = m.solved ? "COMPLETATA" : (m.active ? "ATTIVA" : "NON ATTIVA");
+    q("mission-attempts").textContent = "TENTATIVI: " + m.attempts;
+    q("mission-time").textContent = "TEMPO: " + missionElapsedSeconds() + "s";
+    q("mission-score").textContent = "SCORE: " + m.score;
+    q("mission-plain").textContent = m.plain || "Premi NUOVA MISSIONE";
+    q("mission-cipher").textContent = m.cipher || "---";
+    q("mission-config").textContent = m.config;
+    q("mission-status-text").textContent = m.status;
+  }
+
+  function stopMissionTimer() {
+    if (state.mission.elapsedTimer) {
+      window.clearInterval(state.mission.elapsedTimer);
+      state.mission.elapsedTimer = null;
+    }
+  }
+
+  async function startMission() {
+    const missionTexts = ["SCUOLA", "ENIGMA", "CODICE", "TURING", "ROTORI", "SEGRETO", "BLETCHLEY"];
+    const starts = ["DDA", "KQF", "MZT", "RAV", "LNE", "QCP"];
+    state.mission.plain = missionTexts[randomInt(0, missionTexts.length - 1)];
+    state.mission.solution = starts[randomInt(0, starts.length - 1)];
+    state.mission.active = true;
+    state.mission.solved = false;
+    state.mission.attempts = 0;
+    state.mission.score = 0;
+    state.mission.startedAt = Date.now();
+    state.mission.config = "Rotori I-II-III | Reflector B | Plugboard nessuna coppia | Start target " + state.mission.solution;
+    state.mission.status = "Missione attiva: imposta la posizione iniziale indicata, digita il plaintext e valida.";
+    state.rotors = ["I", "II", "III"];
+    state.reflector = "B";
+    state.plugboardPairs = [];
+    state.positions = state.mission.solution;
+    q("rotor-left").value = "I";
+    q("rotor-middle").value = "II";
+    q("rotor-right").value = "III";
+    q("reflector").value = "B";
+    renderPlugboard();
+    updateMachineLivePanel();
+    q("machine-input").value = state.mission.plain;
+    await runEncode("/encode");
+    state.mission.cipher = q("machine-output").value || state.mission.cipher;
+    if (!state.mission.cipher) state.mission.cipher = fallbackMissionCipher(state.mission.plain, state.mission.solution);
+    q("machine-input").value = "";
+    q("machine-output").value = "";
+    state.inputStream = "";
+    state.outputStream = "";
+    state.positions = "AAA";
+    updateMachineLivePanel();
+    refreshStreamUi();
+    setMachineStatus("Missione pronta: plaintext e target sono nel popup.");
+    pushTrace("Nuova missione generata: " + state.mission.plain + " -> " + state.mission.cipher + ".");
+    stopMissionTimer();
+    state.mission.elapsedTimer = window.setInterval(renderMission, 1000);
+    renderMission();
+  }
+
+  function validateMission() {
+    if (!state.mission.active) {
+      state.mission.status = "Premi NUOVA MISSIONE per iniziare.";
+      renderMission();
+      return;
+    }
+    state.mission.attempts += 1;
+    const current = (state.outputStream || "").replace(/\s+/g, "").slice(-state.mission.cipher.length);
+    if (current === state.mission.cipher) {
+      state.mission.solved = true;
+      state.mission.active = false;
+      state.mission.score = Math.max(10, 100 - state.mission.attempts * 8 - missionElapsedSeconds());
+      state.mission.status = "Missione completata: output target generato correttamente.";
+      stopMissionTimer();
+      setMachineStatus("Missione completata.");
+      pushTrace("Missione completata con score " + state.mission.score + ".");
+    } else {
+      state.mission.status = "Output non coincide ancora. Target: " + state.mission.cipher + ". Ultimo output: " + (current || "---");
+      setMachineStatus("Missione non ancora completata.");
+    }
+    renderMission();
+  }
+
+  function revealMissionSolution() {
+    if (!state.mission.plain) {
+      state.mission.status = "Nessuna missione da risolvere.";
+      renderMission();
+      return;
+    }
+    state.positions = state.mission.solution;
+    updateMachineLivePanel();
+    state.mission.status = "Soluzione inserita: posizione iniziale " + state.mission.solution + ". Digita " + state.mission.plain + ".";
+    setMachineStatus("Soluzione missione applicata.");
+    renderMission();
+  }
+
+  function fallbackMissionCipher(text, seed) {
+    const shift = alphaIndex((seed || "A")[0]) + 3;
+    return (text || "")
+      .toUpperCase()
+      .replace(/[^A-Z]/g, "")
+      .split("")
+      .map((letter) => alphaShift(letter, shift))
+      .join("");
   }
 
   function rotateRotor(index, delta) {
@@ -671,6 +819,22 @@
       setMachineStatus("Operazione completata. Posizioni finali: " + state.positions);
     } catch (err) {
       const msg = err && err.message ? err.message : "Errore sconosciuto";
+      if (pathLabel === "/encode") {
+        const output = fallbackMissionCipher(input, state.positions);
+        q("machine-output").value = output;
+        state.inputStream = (state.inputStream + input).slice(-2500);
+        state.outputStream = (state.outputStream + output).slice(-2500);
+        state.positions = normalizePositions(
+          alphaShift(state.positions[0], 0) + alphaShift(state.positions[1], 0) + alphaShift(state.positions[2], 1)
+        );
+        refreshStreamUi();
+        updateMachineLivePanel();
+        const step = mode + ": fallback locale";
+        setMachineLastStep(step);
+        pushTrace(step + " | API non disponibile: " + msg);
+        setMachineStatus("Modalita locale attiva. Output generato.");
+        return;
+      }
       setMachineStatus("Errore: " + msg);
       pushTrace("Errore " + mode + ": " + msg);
     }
@@ -896,7 +1060,10 @@
     q("btn-open-story").addEventListener("click", () => setPage("story"));
     q("btn-open-mission").addEventListener("click", () => {
       setPage("machine");
-      window.setTimeout(() => showModal(missionModal), 140);
+      window.setTimeout(async () => {
+        showModal(missionModal);
+        if (!state.mission.active && !state.mission.solved) await startMission();
+      }, 160);
     });
 
     q("btn-machine-mission").addEventListener("click", () => showModal(missionModal));
@@ -1033,16 +1200,15 @@
 
     q("btn-mission-new").addEventListener("click", () => {
       setPage("machine");
-      setMachineStatus("Missione guidata pronta: configura la macchina e valida il risultato.");
-      pushTrace("Missione guidata avviata dalla schermata Home.");
+      startMission();
     });
     q("btn-mission-validate").addEventListener("click", () => {
       setPage("machine");
-      setMachineStatus("Valida la missione dalla simulazione dopo aver cifrato il plaintext.");
+      validateMission();
     });
     q("btn-mission-solution").addEventListener("click", () => {
       setPage("machine");
-      setMachineStatus("Mostra soluzione disponibile nella missione originale dell'app.");
+      revealMissionSolution();
     });
 
     q("settings-theme-classic").addEventListener("click", () => setSoundtrack("classic", true));
@@ -1089,9 +1255,11 @@
     storyVideo.playsInline = true;
 
     setupGallery();
+    setupRotorRings();
     setupMachineOptions();
     loadStoryText();
     renderPlugboard();
+    renderMission();
     bindRotorDialEvents();
     bindEvents();
 
@@ -1123,6 +1291,7 @@
         updateOverlayVisibility();
       }
       showModal(missionModal);
+      startMission();
     }
   }
 
