@@ -1067,9 +1067,11 @@
     });
 
     q("btn-machine-mission").addEventListener("click", () => showModal(missionModal));
-    q("btn-machine-help").addEventListener("click", () => {
-      setMachineStatus("Prova guidata: configura i rotori, digita dalla tastiera fisica e osserva gli stream.");
-      pushTrace("Prova guidata aperta.");
+    q("btn-machine-help").addEventListener("click", async () => {
+      showModal(missionModal);
+      if (!state.mission.active && !state.mission.solved) await startMission();
+      setMachineStatus("Prova guidata avviata: segui la missione nel pannello.");
+      pushTrace("Prova guidata avviata dalla simulazione.");
     });
     q("btn-machine-home").addEventListener("click", () => setPage("home"));
 

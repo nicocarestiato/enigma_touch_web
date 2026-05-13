@@ -602,9 +602,9 @@ h3 {
 }
 
 .machine-config-panel {
-  padding: 14px;
+  padding: 12px;
   border-radius: 22px;
-  gap: 8px;
+  gap: 6px;
   overflow: hidden;
 }
 
@@ -630,7 +630,7 @@ h3 {
 .machine-live-panel h4 {
   margin: 0;
   color: var(--text-sub);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.8px;
 }
@@ -647,13 +647,13 @@ h3 {
 
 .machine-config-panel select,
 .machine-config-panel input {
-  height: 40px;
+  height: 36px;
 }
 
 .machine-config-panel .glass-btn {
-  min-width: 126px;
-  height: 36px;
-  font-size: 13px;
+  min-width: 122px;
+  height: 34px;
+  font-size: 12px;
 }
 
 .machine-config-panel .row input {
@@ -706,7 +706,7 @@ h3 {
   width: 100%;
   height: 1px;
   background: rgba(255, 255, 255, 0.11);
-  margin: 4px 0;
+  margin: 2px 0;
 }
 
 label {
@@ -748,13 +748,17 @@ textarea {
 }
 
 #plugboard-list {
-  min-height: 28px;
-  max-height: 90px;
+  min-height: 0;
+  max-height: 56px;
   overflow: auto;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   align-content: flex-start;
+}
+
+#plugboard-list:empty {
+  display: none;
 }
 
 .pair-chip {
@@ -818,18 +822,57 @@ textarea {
   aspect-ratio: 1 / 1;
   position: relative;
   border-radius: 50%;
-  border: 0;
-  background: url("ui/assets/rotore_simulazione_identico_A.svg") center / contain no-repeat;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 55px, rgba(255,255,255,0.07) 56px 56.7px, transparent 57.4px),
+    linear-gradient(180deg, rgba(56,46,38,0.94), rgba(38,31,26,0.95) 40%, rgba(18,15,13,0.98));
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: none;
+  box-shadow:
+    inset 0 1px 8px rgba(255,255,255,0.06),
+    inset 0 -14px 28px rgba(0,0,0,0.34);
   overflow: visible;
+  transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.rotor-dial:hover .rotor-window {
+  transform: scale(1.03);
+  border-width: 2px;
+  border-color: rgba(197, 141, 77, 0.65);
+  box-shadow:
+    0 0 0 10px rgba(197, 141, 77, 0.10),
+    inset 0 1px 8px rgba(255,255,255,0.08),
+    inset 0 -14px 28px rgba(0,0,0,0.36);
+}
+
+.rotor-window::before,
+.rotor-window::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  z-index: 3;
+  width: 24px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.rotor-window::before {
+  top: 7px;
+  height: 6px;
+  background: rgba(197, 141, 77, 0.86);
+}
+
+.rotor-window::after {
+  bottom: 9px;
+  height: 4px;
+  background: rgba(197, 141, 77, 0.42);
 }
 
 .rotor-ring,
 .rotor-mark {
-  display: none;
+  display: block;
   position: absolute;
   inset: 10px;
   border-radius: 50%;
@@ -895,7 +938,7 @@ textarea {
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 1px solid rgba(255,255,255,0.17);
-  background: linear-gradient(180deg, rgba(81,66,54,0.96), rgba(34,26,21,0.98));
+  background: linear-gradient(180deg, rgba(81,66,54,0.96), rgba(36,28,23,0.98));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -979,7 +1022,7 @@ textarea {
 }
 
 .trace-card pre {
-  max-height: 42px;
+  max-height: 48px;
 }
 
 #machine-last-step {
@@ -989,10 +1032,7 @@ textarea {
 }
 
 #machine-status {
-  color: var(--text-sub);
-  min-height: 22px;
-  margin: 0;
-  font-size: 13px;
+  display: none;
 }
 
 .story-grid {
@@ -1348,11 +1388,12 @@ input[type="checkbox"] {
 
 .mission-modal-card {
   width: min(860px, calc(100vw - 80px));
-  height: min(640px, calc(100vh - 70px));
-  padding: 22px;
+  height: auto;
+  max-height: calc(100vh - 70px);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   border-radius: 28px;
   background: rgba(51, 38, 28, 0.98);
   border-color: rgba(197, 141, 77, 0.34);
@@ -1365,7 +1406,7 @@ input[type="checkbox"] {
 }
 
 .mission-modal-top h3 {
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1.05;
 }
 
@@ -1373,7 +1414,7 @@ input[type="checkbox"] {
   margin: 6px 0 0;
   max-width: 560px;
   color: var(--text-sub);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.28;
 }
 
@@ -1386,14 +1427,14 @@ input[type="checkbox"] {
 
 .mission-stats {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .mission-pill {
   min-width: 130px;
-  height: 40px;
-  border-radius: 14px;
+  height: 36px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(0, 0, 0, 0.16);
   display: flex;
@@ -1420,43 +1461,43 @@ input[type="checkbox"] {
 }
 
 .mission-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
+  flex: 0 0 auto;
+  min-height: auto;
+  overflow: visible;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding-right: 4px;
+  gap: 10px;
+  padding-right: 0;
 }
 
 .mission-target-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 10px;
 }
 
 .mission-target-card,
 .mission-info-card,
 .mission-rules-card,
 .mission-status-card {
-  border-radius: 22px;
+  border-radius: 18px;
   border: 1px solid rgba(197, 141, 77, 0.24);
   background: rgba(97, 74, 56, 0.42);
-  padding: 16px;
+  padding: 12px 14px;
 }
 
 .mission-target-card h4,
 .mission-info-card h4 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: var(--text-sub);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
 }
 
 .mission-target-card strong {
   display: block;
   color: var(--text-main);
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1.08;
   word-break: break-word;
 }
@@ -1481,8 +1522,8 @@ input[type="checkbox"] {
 .mission-status-card p {
   margin: 0;
   color: var(--text-main);
-  font-size: 14px;
-  line-height: 1.3;
+  font-size: 13px;
+  line-height: 1.25;
 }
 
 .mission-actions {
@@ -1490,7 +1531,7 @@ input[type="checkbox"] {
 }
 
 .mission-actions .glass-btn {
-  height: 42px;
+  height: 40px;
   min-width: 120px;
 }
 
@@ -1668,13 +1709,58 @@ input[type="checkbox"] {
     width: min(1140px, calc(100vw - 90px));
     height: min(700px, calc(100vh - 36px));
     max-height: calc(100vh - 36px);
-    padding: 18px;
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .machine-card > .top-row h2 {
+    font-size: 30px;
+  }
+
+  .machine-top-actions .glass-btn {
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .machine-grid {
     gap: 10px;
   }
 
+  .machine-config-panel {
+    padding: 10px;
+    gap: 5px;
+  }
+
+  .machine-config-panel h3,
+  .machine-live-panel h3 {
+    font-size: 18px;
+  }
+
+  .machine-config-panel h4,
+  .machine-live-panel h4 {
+    font-size: 10px;
+  }
+
+  .machine-config-panel select,
+  .machine-config-panel input {
+    height: 32px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .machine-config-panel .glass-btn {
+    min-width: 112px;
+    height: 31px;
+    font-size: 11px;
+  }
+
+  .machine-config-panel .row {
+    gap: 6px;
+  }
+
   .machine-live-panel {
-    padding: 12px;
-    gap: 7px;
+    padding: 10px;
+    gap: 6px;
   }
 
   .machine-hint {
@@ -1761,6 +1847,82 @@ input[type="checkbox"] {
   #machine-status {
     min-height: 16px;
     font-size: 12px;
+  }
+
+  .mission-modal-card {
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .mission-modal-top h3 {
+    font-size: 22px;
+  }
+
+  .mission-modal-top p {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  .mission-modal-top .glass-btn {
+    height: 32px;
+  }
+
+  .mission-stats {
+    gap: 6px;
+  }
+
+  .mission-pill {
+    min-width: 126px;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .mission-pill.accent {
+    min-width: 150px;
+  }
+
+  .mission-scroll {
+    gap: 8px;
+  }
+
+  .mission-target-row {
+    gap: 8px;
+  }
+
+  .mission-target-card,
+  .mission-info-card,
+  .mission-rules-card,
+  .mission-status-card {
+    padding: 9px 12px;
+    border-radius: 16px;
+  }
+
+  .mission-target-card h4,
+  .mission-info-card h4 {
+    margin-bottom: 4px;
+    font-size: 10px;
+  }
+
+  .mission-target-card strong {
+    font-size: 21px;
+  }
+
+  .mission-info-card p,
+  .mission-rules-card p,
+  .mission-status-card p {
+    font-size: 12px;
+    line-height: 1.22;
+  }
+
+  .mission-actions .glass-btn {
+    height: 36px;
+    min-width: 112px;
+    font-size: 12px;
+  }
+
+  .mission-actions .glass-btn:first-child,
+  .mission-actions .glass-btn:nth-child(3) {
+    min-width: 150px;
   }
 
   .center-column {
