@@ -144,6 +144,8 @@
   }
 
   function updateOverlayVisibility() {
+    document.body.dataset.page = state.page;
+
     const hideTop = state.page === "disclaimer" || state.page === "soundtrack";
     topButtons.style.display = hideTop ? "none" : "flex";
 
@@ -154,6 +156,13 @@
       state.page === "disclaimer" ||
       state.page === "soundtrack";
     byline.style.display = hideByline ? "none" : "block";
+  }
+
+  function updateMachineScale() {
+    const machineWidth = Math.min(1140, window.innerWidth - 90);
+    const machineHeight = Math.min(700, window.innerHeight - 36);
+    document.documentElement.style.setProperty("--machine-width", `${machineWidth}px`);
+    document.documentElement.style.setProperty("--machine-height", `${machineHeight}px`);
   }
 
   function setPage(next) {
@@ -1264,6 +1273,8 @@
     renderMission();
     bindRotorDialEvents();
     bindEvents();
+    updateMachineScale();
+    window.addEventListener("resize", updateMachineScale);
 
     setMachineStatus("Configurazione iniziale pronta.");
     pushTrace("Sistema pronto.");
