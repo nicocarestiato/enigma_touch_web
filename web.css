@@ -2121,3 +2121,375 @@ body[data-page="machine"] #pages {
 .trace-card pre {
   max-height: 48px !important;
 }
+
+@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+  html,
+  body {
+    overflow: hidden;
+  }
+
+  body[data-page="machine"] #top-buttons {
+    display: none !important;
+  }
+
+  body[data-page="machine"] #pages {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    align-items: stretch;
+    padding: 8px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #page-machine {
+    min-height: 100%;
+    height: auto;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: visible;
+  }
+
+  .machine-scale-box {
+    width: calc(100vw - 16px) !important;
+    height: auto !important;
+    flex: 0 0 auto;
+  }
+
+  .machine-card {
+    width: 100% !important;
+    height: auto !important;
+    min-height: calc(100dvh - 16px) !important;
+    max-height: none !important;
+    padding: 14px !important;
+    gap: 12px !important;
+    overflow: visible !important;
+    border-radius: 20px !important;
+  }
+
+  .machine-card > .top-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .machine-card > .top-row h2 {
+    width: 100%;
+    font-size: 26px !important;
+    line-height: 1.04;
+  }
+
+  .machine-top-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 38px !important;
+    padding: 0 6px !important;
+    font-size: 11px !important;
+  }
+
+  .machine-grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px !important;
+    min-height: 0;
+  }
+
+  .machine-config-panel,
+  .machine-live-panel {
+    width: 100%;
+    min-height: 0;
+    padding: 12px !important;
+    gap: 8px !important;
+    border-radius: 18px !important;
+    overflow: visible !important;
+  }
+
+  .machine-config-panel h3 {
+    font-size: 22px !important;
+  }
+
+  .machine-config-panel h4,
+  .machine-live-panel h4,
+  .rotor-label {
+    font-size: 11px !important;
+  }
+
+  .machine-three-selects {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .machine-config-panel .row {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    flex-wrap: nowrap !important;
+    gap: 6px;
+  }
+
+  .machine-config-panel select,
+  .machine-config-panel input {
+    min-width: 0;
+    height: 38px !important;
+    font-size: 13px;
+  }
+
+  .machine-config-panel .row > input {
+    width: 100%;
+    flex: none;
+  }
+
+  #positions,
+  #plug-remove {
+    flex-basis: auto;
+  }
+
+  #plug-a,
+  #plug-b {
+    flex-basis: auto;
+  }
+
+  .machine-config-panel .glass-btn {
+    width: 100%;
+    flex: none;
+    min-width: 96px !important;
+    height: 36px !important;
+    padding: 0 8px !important;
+    font-size: 11px !important;
+  }
+
+  #btn-clear-pairs {
+    width: 100%;
+  }
+
+  .machine-live-panel .live-top-row {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  #machine-live-summary {
+    font-size: 16px !important;
+    line-height: 1.2;
+  }
+
+  #machine-reflector-summary {
+    font-size: 12px !important;
+    white-space: nowrap;
+  }
+
+  .machine-hint {
+    min-height: 0;
+    font-size: 12px;
+    line-height: 1.28;
+  }
+
+  .rotor-dials {
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 10px !important;
+    gap: 10px !important;
+  }
+
+  .rotor-dial {
+    display: grid;
+    grid-template-columns: 68px 124px minmax(58px, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 10px;
+    row-gap: 2px;
+    justify-items: center;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 124px;
+    padding: 0;
+  }
+
+  .rotor-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .rotor-window {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 124px !important;
+    height: 124px !important;
+    min-width: 124px !important;
+    min-height: 124px !important;
+    max-width: 124px !important;
+    max-height: 124px !important;
+    flex-basis: 124px !important;
+  }
+
+  .rotor-ring,
+  .rotor-mark {
+    inset: 8px;
+  }
+
+  .rotor-mark::before {
+    top: 1px;
+    height: 5px;
+  }
+
+  .rotor-mark.major::before {
+    height: 9px;
+  }
+
+  .rotor-mark strong {
+    top: 12px;
+    font-size: 7px;
+  }
+
+  .rotor-mark.major strong {
+    font-size: 8px;
+  }
+
+  .rotor-window::before {
+    top: 6px;
+    width: 20px;
+    height: 5px;
+  }
+
+  .rotor-window::after {
+    bottom: 7px;
+    width: 20px;
+  }
+
+  .rotor-window-core {
+    width: 74px !important;
+    height: 74px !important;
+    min-width: 74px !important;
+    min-height: 74px !important;
+    flex-basis: 74px !important;
+  }
+
+  .rotor-window-core span {
+    width: 56px !important;
+    height: 42px !important;
+    font-size: 35px !important;
+    border-radius: 10px;
+  }
+
+  .rotor-name {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .rotor-hint {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+    font-size: 10px;
+    line-height: 1.15;
+    white-space: normal;
+    max-width: 58px;
+    overflow-wrap: anywhere;
+  }
+
+  .stream-grid {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    min-height: 0 !important;
+    gap: 10px;
+  }
+
+  .stream-card,
+  .trace-card {
+    min-height: 96px !important;
+    padding: 10px !important;
+    border-radius: 14px !important;
+  }
+
+  .stream-head {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+  }
+
+  .stream-head .glass-btn {
+    width: 100%;
+    min-width: 72px;
+    height: 28px;
+    font-size: 10px;
+  }
+
+  .stream-card pre,
+  .trace-card pre {
+    max-height: none !important;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  #machine-status {
+    min-height: 0;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+}
+
+@media (max-width: 420px) {
+  .machine-card > .top-row h2 {
+    font-size: 22px !important;
+  }
+
+  .machine-top-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    height: 34px !important;
+  }
+
+  .machine-config-panel .row {
+    flex-wrap: wrap;
+  }
+
+  .machine-config-panel .row .glass-btn {
+    flex: 1 1 112px;
+  }
+
+  .rotor-dial {
+    grid-template-columns: 54px 112px minmax(48px, 1fr);
+    column-gap: 6px;
+  }
+
+  .rotor-window {
+    width: 112px !important;
+    height: 112px !important;
+    min-width: 112px !important;
+    min-height: 112px !important;
+    max-width: 112px !important;
+    max-height: 112px !important;
+    flex-basis: 112px !important;
+  }
+
+  .rotor-window-core {
+    width: 68px !important;
+    height: 68px !important;
+    min-width: 68px !important;
+    min-height: 68px !important;
+    flex-basis: 68px !important;
+  }
+
+  .rotor-window-core span {
+    width: 50px !important;
+    height: 38px !important;
+    font-size: 31px !important;
+  }
+}
