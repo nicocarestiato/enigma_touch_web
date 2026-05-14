@@ -824,7 +824,8 @@ textarea {
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background:
-    radial-gradient(circle at 50% 50%, transparent 0 55px, rgba(255,255,255,0.07) 56px 56.7px, transparent 57.4px),
+    radial-gradient(circle at 50% 50%, transparent 0 53px, rgba(255,255,255,0.05) 54px 54.8px, transparent 55.6px),
+    repeating-conic-gradient(from -2deg, rgba(255,255,255,0.18) 0deg 0.75deg, transparent 0.75deg 13.85deg),
     linear-gradient(180deg, rgba(56,46,38,0.94), rgba(38,31,26,0.95) 40%, rgba(18,15,13,0.98));
   display: flex;
   align-items: center;
@@ -898,21 +899,11 @@ textarea {
   height: var(--tick-height, 7px);
   border-radius: 2px;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.34);
 }
 
 .rotor-mark strong {
-  position: absolute;
-  top: 17px;
-  left: 50%;
-  width: 20px;
-  margin-left: -10px;
-  color: rgba(243, 239, 233, 0.88);
-  font-size: 10.5px;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  display: none;
 }
 
 .rotor-mark.major::before {
@@ -922,9 +913,7 @@ textarea {
 }
 
 .rotor-mark.major strong {
-  color: rgba(197, 141, 77, 0.98);
-  font-size: 11px;
-  font-weight: 800;
+  display: none;
 }
 
 .rotor-window-core {
@@ -1706,34 +1695,44 @@ input[type="checkbox"] {
   }
 
   .machine-card {
-    width: min(1140px, calc(100vw - 90px));
-    height: min(700px, calc(100vh - 36px));
-    max-height: calc(100vh - 36px);
-    padding: 16px;
-    gap: 8px;
+    width: min(1140px, calc(100vw - 64px));
+    height: min(700px, calc(100vh - 28px));
+    max-height: calc(100vh - 28px);
+    padding: 14px;
+    gap: 7px;
   }
 
   .machine-card > .top-row h2 {
-    font-size: 30px;
+    font-size: 28px;
   }
 
   .machine-top-actions .glass-btn {
-    height: 36px;
+    height: 34px;
     font-size: 12px;
   }
 
+  #btn-machine-mission,
+  #btn-machine-home {
+    width: 150px;
+  }
+
+  #btn-machine-help {
+    width: 204px;
+  }
+
   .machine-grid {
-    gap: 10px;
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: 9px;
   }
 
   .machine-config-panel {
-    padding: 10px;
-    gap: 5px;
+    padding: 9px;
+    gap: 4px;
   }
 
   .machine-config-panel h3,
   .machine-live-panel h3 {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .machine-config-panel h4,
@@ -1743,14 +1742,14 @@ input[type="checkbox"] {
 
   .machine-config-panel select,
   .machine-config-panel input {
-    height: 32px;
+    height: 30px;
     padding-top: 4px;
     padding-bottom: 4px;
   }
 
   .machine-config-panel .glass-btn {
-    min-width: 112px;
-    height: 31px;
+    min-width: 106px;
+    height: 30px;
     font-size: 11px;
   }
 
@@ -1759,18 +1758,18 @@ input[type="checkbox"] {
   }
 
   .machine-live-panel {
-    padding: 10px;
-    gap: 6px;
+    padding: 9px;
+    gap: 5px;
   }
 
   .machine-hint {
-    min-height: 24px;
+    min-height: 20px;
     line-height: 1.2;
   }
 
   .rotor-dials {
-    min-height: 190px;
-    height: 190px;
+    min-height: 174px;
+    height: 174px;
   }
 
   .home-card {
@@ -1798,27 +1797,27 @@ input[type="checkbox"] {
   }
 
   .rotor-window {
-    width: 144px;
-    height: 144px;
-    min-width: 144px;
-    min-height: 144px;
-    max-width: 144px;
-    max-height: 144px;
-    flex-basis: 144px;
+    width: 132px;
+    height: 132px;
+    min-width: 132px;
+    min-height: 132px;
+    max-width: 132px;
+    max-height: 132px;
+    flex-basis: 132px;
   }
 
   .rotor-window-core {
-    width: 80px;
-    height: 80px;
-    min-width: 80px;
-    min-height: 80px;
-    flex-basis: 80px;
+    width: 74px;
+    height: 74px;
+    min-width: 74px;
+    min-height: 74px;
+    flex-basis: 74px;
   }
 
   .rotor-window-core span {
-    width: 60px;
-    height: 46px;
-    font-size: 38px;
+    width: 56px;
+    height: 42px;
+    font-size: 35px;
   }
 
   textarea {
@@ -1831,17 +1830,17 @@ input[type="checkbox"] {
   }
 
   .stream-grid {
-    min-height: 92px;
+    min-height: 84px;
   }
 
   .stream-card,
   .trace-card {
-    min-height: 82px;
+    min-height: 76px;
     padding: 8px;
   }
 
   .trace-card pre {
-    max-height: 34px;
+    max-height: 30px;
   }
 
   #machine-status {
