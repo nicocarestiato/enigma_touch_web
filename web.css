@@ -2144,7 +2144,7 @@ body[data-page="machine"] #pages {
     min-height: 100%;
     height: auto;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-start;
     overflow: visible;
   }
 
@@ -2491,5 +2491,236 @@ body[data-page="machine"] #pages {
     width: 50px !important;
     height: 38px !important;
     font-size: 31px !important;
+  }
+}
+
+@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+  .machine-card {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+
+  .machine-card > .top-row h2 {
+    font-size: 23px !important;
+    white-space: nowrap;
+  }
+
+  .machine-top-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    height: 34px !important;
+    font-size: 9px !important;
+    padding: 0 4px !important;
+  }
+
+  .machine-live-panel {
+    order: 1;
+  }
+
+  .machine-config-panel {
+    order: 2;
+  }
+
+  .machine-live-panel {
+    padding: 10px !important;
+  }
+
+  .machine-config-panel {
+    padding: 10px !important;
+  }
+
+  .rotor-dials {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px !important;
+    padding: 8px !important;
+  }
+
+  .rotor-dial {
+    display: flex;
+    min-height: 0;
+    gap: 4px;
+  }
+
+  .rotor-label {
+    font-size: 9px !important;
+    line-height: 1;
+  }
+
+  .rotor-window {
+    width: 92px !important;
+    height: 92px !important;
+    min-width: 92px !important;
+    min-height: 92px !important;
+    max-width: 92px !important;
+    max-height: 92px !important;
+    flex-basis: 92px !important;
+  }
+
+  .rotor-ring,
+  .rotor-mark {
+    inset: 7px;
+  }
+
+  .rotor-mark::before {
+    height: 4px;
+    width: 1px;
+  }
+
+  .rotor-mark.major::before {
+    height: 7px;
+    width: 2px;
+  }
+
+  .rotor-mark strong {
+    top: 10px;
+    font-size: 6px;
+  }
+
+  .rotor-mark.major strong {
+    font-size: 7px;
+  }
+
+  .rotor-window::before {
+    top: 5px;
+    width: 18px;
+    height: 4px;
+  }
+
+  .rotor-window::after {
+    bottom: 6px;
+    width: 18px;
+    height: 3px;
+  }
+
+  .rotor-window-core {
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px !important;
+    min-height: 58px !important;
+    flex-basis: 58px !important;
+  }
+
+  .rotor-window-core span {
+    width: 44px !important;
+    height: 32px !important;
+    font-size: 27px !important;
+    border-radius: 8px;
+  }
+
+  .rotor-name {
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .rotor-hint {
+    max-width: none;
+    font-size: 8px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .machine-config-panel h3 {
+    font-size: 20px !important;
+  }
+
+  .machine-three-selects {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .machine-config-panel select,
+  .machine-config-panel input {
+    height: 34px !important;
+  }
+
+  .machine-config-panel .glass-btn {
+    height: 32px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .machine-card > .top-row h2 {
+    font-size: 20px !important;
+  }
+
+  .rotor-window {
+    width: 82px !important;
+    height: 82px !important;
+    min-width: 82px !important;
+    min-height: 82px !important;
+    max-width: 82px !important;
+    max-height: 82px !important;
+    flex-basis: 82px !important;
+  }
+
+  .rotor-window-core {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    flex-basis: 52px !important;
+  }
+
+  .rotor-window-core span {
+    width: 40px !important;
+    height: 30px !important;
+    font-size: 24px !important;
+  }
+}
+
+@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+  .machine-scale-box {
+    width: min(360px, calc(100vw - 16px)) !important;
+    max-width: calc(100vw - 16px) !important;
+    margin: 0;
+  }
+
+  .machine-card,
+  .machine-grid,
+  .machine-live-panel,
+  .machine-config-panel,
+  .machine-top-actions,
+  .rotor-dials,
+  .stream-grid,
+  .stream-card,
+  .trace-card {
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    max-width: 100% !important;
+  }
+
+  .rotor-window {
+    width: 86px !important;
+    height: 86px !important;
+    min-width: 86px !important;
+    min-height: 86px !important;
+    max-width: 86px !important;
+    max-height: 86px !important;
+    flex-basis: 86px !important;
+  }
+
+  .rotor-window-core {
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    min-height: 54px !important;
+    flex-basis: 54px !important;
+  }
+
+  .rotor-window-core span {
+    width: 40px !important;
+    height: 30px !important;
+    font-size: 24px !important;
   }
 }
