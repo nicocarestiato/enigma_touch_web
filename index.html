@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Enigma Touch Web</title>
-  <link rel="stylesheet" href="web.css?v=20260514-machine-mobile6">
+  <link rel="stylesheet" href="web.css?v=20260519-final-site2">
 </head>
 <body>
   <div id="app">
@@ -165,7 +165,7 @@
                 <p id="machine-live-summary">Posizioni: AAA | Reflector: B</p>
                 <p id="machine-reflector-summary">Reflector: B</p>
               </div>
-              <p class="machine-hint">Passa col mouse sui rotori e usa la rotellina per cambiare lettera. Digita con la tastiera fisica.</p>
+              <p class="machine-hint">Ruota i rotori col mouse o tocca le lettere dalla tastiera touch.</p>
 
               <div id="rotor-dials" class="rotor-dials">
                 <button class="rotor-dial" data-rotor-index="0">
@@ -221,6 +221,7 @@
               </div>
 
               <p id="machine-status">Configurazione iniziale pronta.</p>
+              <div class="mobile-keyboard" id="mobile-keyboard" aria-label="Tastiera touch Enigma"></div>
               <textarea id="machine-input" class="machine-hidden-field" aria-hidden="true"></textarea>
               <textarea id="machine-output" class="machine-hidden-field" aria-hidden="true" readonly></textarea>
               <button class="machine-hidden-field" id="btn-encode" type="button">CIFRA</button>
@@ -416,6 +417,6 @@
   </div>
 
   <audio id="bg-music" preload="auto" loop></audio>
-  <script src="web.js?v=20260514-machine-mobile6"></script>
+  <script src="web.js?v=20260519-final-site2"></script>
 </body>
 </html>

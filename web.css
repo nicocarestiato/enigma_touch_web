@@ -8,7 +8,6 @@
   --text-main: #f3efe9;
   --text-sub: #d8cabc;
 }
-
 * {
   box-sizing: border-box;
 }
@@ -2722,5 +2721,655 @@ body[data-page="machine"] #pages {
     width: 40px !important;
     height: 30px !important;
     font-size: 24px !important;
+  }
+}
+
+/* Definitive machine override: this block intentionally comes last. */
+body[data-page="machine"] #pages,
+#pages:has(#page-machine.active) {
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+#page-machine.active {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.machine-scale-box {
+  width: var(--machine-width, min(1544px, calc(100vw - 48px))) !important;
+  height: var(--machine-height, min(720px, calc(100vh - 22px))) !important;
+  max-width: calc(100vw - 48px) !important;
+  margin: 0 auto !important;
+}
+
+.machine-card {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 16px 22px 18px !important;
+  gap: 12px !important;
+  overflow: hidden !important;
+  border-radius: 28px !important;
+}
+
+.machine-card > .top-row {
+  flex: 0 0 auto;
+  min-height: 50px;
+  gap: 18px;
+}
+
+.machine-card > .top-row h2 {
+  font-size: clamp(30px, 2.6vw, 40px) !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.machine-top-actions {
+  justify-content: flex-end;
+  flex-wrap: nowrap !important;
+  gap: 10px !important;
+}
+
+.machine-top-actions .glass-btn,
+#btn-machine-mission,
+#btn-machine-help,
+#btn-machine-home {
+  width: clamp(150px, 13vw, 220px) !important;
+  min-width: 0 !important;
+  height: 44px !important;
+  padding: 0 10px !important;
+  font-size: 13px !important;
+  border-radius: 18px !important;
+}
+
+.machine-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid !important;
+  grid-template-columns: minmax(340px, 440px) minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+.machine-config-panel {
+  overflow: auto !important;
+  padding: 14px !important;
+  gap: 8px !important;
+  border-radius: 24px !important;
+}
+
+.machine-live-panel {
+  overflow: hidden !important;
+  padding: 16px !important;
+  gap: 10px !important;
+  border-radius: 24px !important;
+}
+
+.machine-three-selects {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.machine-config-panel .row {
+  flex-wrap: nowrap !important;
+}
+
+.machine-config-panel select,
+.machine-config-panel input {
+  min-width: 0;
+  height: 38px !important;
+}
+
+.machine-config-panel .glass-btn {
+  min-width: 118px !important;
+  height: 36px !important;
+}
+
+.rotor-dials {
+  flex: 0 0 auto;
+  height: clamp(210px, 31vh, 264px) !important;
+  min-height: 210px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.rotor-window {
+  width: clamp(140px, 13vw, 190px) !important;
+  height: clamp(140px, 13vw, 190px) !important;
+  min-width: clamp(140px, 13vw, 190px) !important;
+  min-height: clamp(140px, 13vw, 190px) !important;
+  max-width: 190px !important;
+  max-height: 190px !important;
+  flex-basis: auto !important;
+}
+
+.rotor-window-core {
+  width: clamp(82px, 7.2vw, 106px) !important;
+  height: clamp(82px, 7.2vw, 106px) !important;
+  min-width: clamp(82px, 7.2vw, 106px) !important;
+  min-height: clamp(82px, 7.2vw, 106px) !important;
+  flex-basis: auto !important;
+}
+
+.rotor-window-core span {
+  width: clamp(60px, 5.4vw, 78px) !important;
+  height: clamp(46px, 4vw, 58px) !important;
+  font-size: clamp(38px, 3.4vw, 48px) !important;
+}
+
+.stream-grid {
+  flex: 0 0 auto;
+  min-height: 112px !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.trace-card {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.stream-card pre,
+.trace-card pre {
+  max-height: none !important;
+}
+
+.trace-card pre {
+  height: calc(100% - 44px);
+  overflow: auto;
+}
+
+.mobile-keyboard {
+  display: none;
+}
+
+@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+  html,
+  body {
+    overflow: hidden;
+  }
+
+  body[data-page="machine"] #top-buttons {
+    display: none !important;
+  }
+
+  body[data-page="machine"] #pages,
+  #pages:has(#page-machine.active) {
+    display: block !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 8px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #page-machine.active {
+    display: block !important;
+    height: auto;
+    min-height: 100%;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .machine-scale-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+  }
+
+  .machine-card {
+    height: auto !important;
+    min-height: calc(100dvh - 16px) !important;
+    max-height: none !important;
+    padding: 12px !important;
+    gap: 10px !important;
+    overflow: visible !important;
+    border-radius: 20px !important;
+  }
+
+  .machine-card > .top-row {
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 0;
+    gap: 8px;
+  }
+
+  .machine-card > .top-row h2 {
+    width: 100%;
+    font-size: clamp(21px, 6.2vw, 30px) !important;
+    white-space: normal !important;
+  }
+
+  .machine-top-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    gap: 6px !important;
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    width: 100% !important;
+    height: 36px !important;
+    padding: 0 4px !important;
+    font-size: clamp(8px, 2.7vw, 11px) !important;
+    border-radius: 14px !important;
+    white-space: normal !important;
+    line-height: 1.05;
+  }
+
+  .machine-grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px !important;
+    min-height: 0;
+  }
+
+  .machine-live-panel {
+    order: 1;
+  }
+
+  .machine-config-panel {
+    order: 2;
+  }
+
+  .machine-config-panel,
+  .machine-live-panel {
+    width: 100%;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto;
+    overflow: visible !important;
+    padding: 10px !important;
+    border-radius: 18px !important;
+  }
+
+  .live-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  #machine-live-summary {
+    font-size: 15px !important;
+  }
+
+  .machine-hint {
+    min-height: 0;
+    font-size: 12px;
+  }
+
+  .rotor-dials {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 8px !important;
+    gap: 6px !important;
+  }
+
+  .rotor-dial {
+    min-height: 0 !important;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .rotor-label {
+    font-size: clamp(8px, 2.3vw, 10px) !important;
+  }
+
+  .rotor-window {
+    width: min(27vw, 98px) !important;
+    height: min(27vw, 98px) !important;
+    min-width: min(27vw, 98px) !important;
+    min-height: min(27vw, 98px) !important;
+    max-width: 98px !important;
+    max-height: 98px !important;
+  }
+
+  .rotor-ring,
+  .rotor-mark {
+    inset: 7px;
+  }
+
+  .rotor-mark::before {
+    height: 4px;
+    width: 1px;
+  }
+
+  .rotor-mark.major::before {
+    height: 7px;
+    width: 2px;
+  }
+
+  .rotor-mark strong {
+    top: 10px;
+    font-size: 6px;
+  }
+
+  .rotor-mark.major strong {
+    font-size: 7px;
+  }
+
+  .rotor-window-core {
+    width: min(16vw, 58px) !important;
+    height: min(16vw, 58px) !important;
+    min-width: min(16vw, 58px) !important;
+    min-height: min(16vw, 58px) !important;
+  }
+
+  .rotor-window-core span {
+    width: min(12vw, 44px) !important;
+    height: min(9vw, 32px) !important;
+    font-size: clamp(22px, 7vw, 27px) !important;
+    border-radius: 8px;
+  }
+
+  .rotor-name {
+    font-size: 10px;
+  }
+
+  .rotor-hint {
+    display: none !important;
+  }
+
+  .stream-grid {
+    grid-template-columns: 1fr !important;
+    min-height: 0 !important;
+  }
+
+  .stream-card,
+  .trace-card {
+    min-height: 94px !important;
+    padding: 10px !important;
+  }
+
+  .trace-card pre {
+    height: auto;
+    max-height: 180px !important;
+  }
+
+  .machine-config-panel .row {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .machine-config-panel select,
+  .machine-config-panel input,
+  .machine-config-panel .glass-btn {
+    width: 100%;
+    height: 36px !important;
+    font-size: 12px !important;
+  }
+
+  .mobile-keyboard {
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 5px;
+    margin-top: 2px;
+  }
+
+  .mobile-keyboard button {
+    border: 1px solid rgba(197, 141, 77, 0.45);
+    border-radius: 10px;
+    height: 34px;
+    background: rgba(24, 19, 15, 0.74);
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 800;
+  }
+}
+
+@media (max-width: 380px) {
+  .machine-card {
+    padding: 10px !important;
+  }
+
+  .machine-top-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    height: 32px !important;
+  }
+
+  .mobile-keyboard {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Phone polish: no clipped controls on portrait screens. */
+@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+  .machine-top-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    height: 34px !important;
+  }
+
+  .rotor-dials {
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  .rotor-dial {
+    display: grid !important;
+    grid-template-columns: 64px 112px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 8px;
+    row-gap: 2px;
+    justify-items: center;
+    align-items: center;
+    min-height: 112px !important;
+  }
+
+  .rotor-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .rotor-name {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .rotor-window {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 108px !important;
+    height: 108px !important;
+    min-width: 108px !important;
+    min-height: 108px !important;
+    max-width: 108px !important;
+    max-height: 108px !important;
+  }
+
+  .rotor-window-core {
+    width: 66px !important;
+    height: 66px !important;
+    min-width: 66px !important;
+    min-height: 66px !important;
+  }
+
+  .rotor-window-core span {
+    width: 50px !important;
+    height: 38px !important;
+    font-size: 31px !important;
+  }
+
+  .rotor-hint {
+    display: block !important;
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    justify-self: start;
+    max-width: 80px;
+    white-space: normal;
+    line-height: 1.1;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .rotor-dial {
+    grid-template-columns: 54px 98px minmax(0, 1fr);
+  }
+
+  .rotor-window {
+    width: 98px !important;
+    height: 98px !important;
+    min-width: 98px !important;
+    min-height: 98px !important;
+    max-width: 98px !important;
+    max-height: 98px !important;
+  }
+
+  .rotor-window-core {
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+  }
+
+  .rotor-window-core span {
+    width: 44px !important;
+    height: 34px !important;
+    font-size: 28px !important;
+  }
+}
+
+/* Modal polish: clean credits/settings at normal browser zoom. */
+.modal {
+  padding: 22px;
+  overflow: auto;
+}
+
+.modal-card {
+  width: min(860px, calc(100vw - 44px)) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 44px) !important;
+  overflow: hidden;
+  padding: 24px !important;
+}
+
+.credits-card p,
+.settings-card,
+.modal {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(197, 141, 77, 0.72) rgba(18, 13, 10, 0.35);
+}
+
+.credits-card p::-webkit-scrollbar,
+.settings-card::-webkit-scrollbar,
+.modal::-webkit-scrollbar {
+  width: 9px;
+}
+
+.credits-card p::-webkit-scrollbar-track,
+.settings-card::-webkit-scrollbar-track,
+.modal::-webkit-scrollbar-track {
+  background: rgba(18, 13, 10, 0.35);
+  border-radius: 999px;
+}
+
+.credits-card p::-webkit-scrollbar-thumb,
+.settings-card::-webkit-scrollbar-thumb,
+.modal::-webkit-scrollbar-thumb {
+  background: rgba(197, 141, 77, 0.72);
+  border-radius: 999px;
+}
+
+.credits-card p {
+  max-height: min(520px, calc(100dvh - 190px));
+  padding-right: 10px;
+  font-size: clamp(15px, 1.5vw, 18px) !important;
+  line-height: 1.35 !important;
+}
+
+.settings-card {
+  width: min(760px, calc(100vw - 44px)) !important;
+  overflow: auto;
+}
+
+.settings-card h3 {
+  line-height: 1;
+}
+
+.settings-subtitle {
+  font-size: 16px !important;
+}
+
+.settings-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 12px !important;
+  flex: 0 0 auto !important;
+}
+
+.settings-panel,
+.settings-panel-wide {
+  grid-column: auto !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  padding: 14px !important;
+}
+
+.settings-panel label {
+  gap: 10px !important;
+  font-size: 16px !important;
+}
+
+.settings-theme-row {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px !important;
+}
+
+.settings-theme-row .glass-btn,
+.settings-actions .glass-btn,
+#settings-defaults {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 42px !important;
+  font-size: 13px !important;
+}
+
+.settings-actions {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px !important;
+  width: 100%;
+}
+
+#settings-defaults {
+  margin-right: 0 !important;
+}
+
+@media (max-width: 560px) {
+  .modal {
+    padding: 10px;
+  }
+
+  .modal-card {
+    width: calc(100vw - 20px) !important;
+    max-height: calc(100dvh - 20px) !important;
+    padding: 16px !important;
+  }
+
+  .settings-theme-row,
+  .settings-actions {
+    grid-template-columns: 1fr !important;
   }
 }

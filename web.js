@@ -29,6 +29,7 @@
     bootRaf: null,
     rotors: ["I", "II", "III"],
     reflector: "B",
+    startPositions: "AAA",
     positions: "AAA",
     plugboardPairs: [],
     inputStream: "",
@@ -159,8 +160,15 @@
   }
 
   function updateMachineScale() {
-    const machineWidth = Math.min(1140, window.innerWidth - 90);
-    const machineHeight = Math.min(700, window.innerHeight - 36);
+    const mobileMachine = window.matchMedia("(max-width: 760px), (pointer: coarse) and (max-width: 900px)").matches;
+    if (mobileMachine) {
+      document.documentElement.style.setProperty("--machine-width", "100%");
+      document.documentElement.style.setProperty("--machine-height", "auto");
+      return;
+    }
+
+    const machineWidth = Math.min(1544, Math.max(980, window.innerWidth - 48));
+    const machineHeight = Math.min(720, Math.max(620, window.innerHeight - 22));
     document.documentElement.style.setProperty("--machine-width", `${machineWidth}px`);
     document.documentElement.style.setProperty("--machine-height", `${machineHeight}px`);
   }
@@ -491,6 +499,89 @@
     return idx < 0 ? 0 : idx;
   }
 
+  const localEnigmaData = {
+    rotors: {
+      I: { wiring: "EKMFLGDQVZNTOWYHXUSPAIBRCJ", notch: "Q" },
+      II: { wiring: "AJDKSIRUXBLHWTMCQGZNPYFVOE", notch: "E" },
+      III: { wiring: "BDFHJLCPRTXVZNYEIWGAKMUSQO", notch: "V" },
+      IV: { wiring: "ESOVPZJAYQUIRHXLNFTGKDCMWB", notch: "J" },
+      V: { wiring: "VZBRGITYUPSDNHLXAWMJQOFECK", notch: "Z" },
+    },
+    reflectors: {
+      B: "YRUHQSLDPXNGOKMIEBFZCWVJAT",
+      C: "FVPJIAOYEDRZXWGCTKUQSBNMHL",
+    },
+  };
+
+  function plugLetter(letter, pairs) {
+    for (const pair of pairs || []) {
+      const parts = String(pair).toUpperCase().split("-");
+      if (parts.length === 2) {
+        if (letter === parts[0]) return parts[1];
+        if (letter === parts[1]) return parts[0];
+      }
+    }
+    return letter;
+  }
+
+  function rotorForward(index, rotorName, position) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const rotor = localEnigmaData.rotors[rotorName] || localEnigmaData.rotors.I;
+    const shifted = (index + position) % 26;
+    const wired = alphabet.indexOf(rotor.wiring[shifted]);
+    return (wired - position + 26) % 26;
+  }
+
+  function rotorBackward(index, rotorName, position) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const rotor = localEnigmaData.rotors[rotorName] || localEnigmaData.rotors.I;
+    const shifted = (index + position) % 26;
+    const wired = rotor.wiring.indexOf(alphabet[shifted]);
+    return (wired - position + 26) % 26;
+  }
+
+  function stepLocalPositions(positionText, rotorNames) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const pos = normalizePositions(positionText).split("").map(alphaIndex);
+    const middle = localEnigmaData.rotors[rotorNames[1]] || localEnigmaData.rotors.II;
+    const right = localEnigmaData.rotors[rotorNames[2]] || localEnigmaData.rotors.III;
+    const middleAtNotch = alphabet[pos[1]] === middle.notch;
+    const rightAtNotch = alphabet[pos[2]] === right.notch;
+
+    if (middleAtNotch) pos[0] = (pos[0] + 1) % 26;
+    if (middleAtNotch || rightAtNotch) pos[1] = (pos[1] + 1) % 26;
+    pos[2] = (pos[2] + 1) % 26;
+
+    return pos.map((idx) => alphabet[idx]).join("");
+  }
+
+  function localEnigmaProcess(text, config) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const rotors = (config.rotors || ["I", "II", "III"]).slice(0, 3);
+    let positions = normalizePositions(config.positions || state.positions);
+    const reflector = localEnigmaData.reflectors[config.reflector] || localEnigmaData.reflectors.B;
+    let output = "";
+
+    String(text || "").toUpperCase().split("").forEach((raw) => {
+      if (!/^[A-Z]$/.test(raw)) return;
+      positions = stepLocalPositions(positions, rotors);
+      const pos = positions.split("").map(alphaIndex);
+      let letter = plugLetter(raw, config.plugboard_pairs);
+      let signal = alphaIndex(letter);
+      signal = rotorForward(signal, rotors[2], pos[2]);
+      signal = rotorForward(signal, rotors[1], pos[1]);
+      signal = rotorForward(signal, rotors[0], pos[0]);
+      signal = alphabet.indexOf(reflector[signal]);
+      signal = rotorBackward(signal, rotors[0], pos[0]);
+      signal = rotorBackward(signal, rotors[1], pos[1]);
+      signal = rotorBackward(signal, rotors[2], pos[2]);
+      letter = plugLetter(alphabet[signal], config.plugboard_pairs);
+      output += letter;
+    });
+
+    return { output, final_positions: positions, local: true };
+  }
+
   function formatGroupedStream(text) {
     const cleaned = (text || "").toUpperCase().replace(/[^A-Z]/g, "");
     if (!cleaned.length) return "";
@@ -543,7 +634,7 @@
       if (ring) ring.style.transform = "rotate(" + (-alphaIndex(state.positions[i] || "A") * (360 / 26)) + "deg)";
     }
 
-    q("positions").value = state.positions;
+    q("positions").value = state.startPositions;
   }
 
   function setupRotorRings() {
@@ -603,7 +694,8 @@
     state.rotors = ["I", "II", "III"];
     state.reflector = "B";
     state.plugboardPairs = [];
-    state.positions = state.mission.solution;
+    state.startPositions = state.mission.solution;
+    state.positions = state.startPositions;
     q("rotor-left").value = "I";
     q("rotor-middle").value = "II";
     q("rotor-right").value = "III";
@@ -618,6 +710,7 @@
     q("machine-output").value = "";
     state.inputStream = "";
     state.outputStream = "";
+    state.startPositions = "AAA";
     state.positions = "AAA";
     updateMachineLivePanel();
     refreshStreamUi();
@@ -657,7 +750,9 @@
       renderMission();
       return;
     }
+    state.startPositions = state.mission.solution;
     state.positions = state.mission.solution;
+    clearMachineRuntime();
     updateMachineLivePanel();
     state.mission.status = "Soluzione inserita: posizione iniziale " + state.mission.solution + ". Digita " + state.mission.plain + ".";
     setMachineStatus("Soluzione missione applicata.");
@@ -676,11 +771,60 @@
 
   function rotateRotor(index, delta) {
     if (index < 0 || index > 2) return;
-    const chars = state.positions.split("");
+    const chars = state.startPositions.split("");
     chars[index] = alphaShift(chars[index], delta);
-    state.positions = chars.join("");
+    state.startPositions = chars.join("");
+    state.positions = state.startPositions;
+    clearMachineRuntime();
     updateMachineLivePanel();
-    setMachineStatus("Posizioni aggiornate manualmente: " + state.positions);
+    setMachineStatus("Posizioni aggiornate manualmente: " + state.startPositions);
+  }
+
+  function clearMachineRuntime() {
+    q("machine-input").value = "";
+    q("machine-output").value = "";
+    state.inputStream = "";
+    state.outputStream = "";
+    refreshStreamUi();
+    setMachineLastStep("Pronto.");
+  }
+
+  function recomputeRuntimeFromInput(text) {
+    const clean = (text || "").toUpperCase().replace(/[^A-Z]/g, "");
+    state.positions = state.startPositions;
+    state.inputStream = "";
+    state.outputStream = "";
+    q("machine-input").value = "";
+    q("machine-output").value = "";
+
+    let lastStep = "Pronto.";
+    clean.split("").forEach((letter) => {
+      const beforePos = state.positions;
+      const localData = localEnigmaProcess(letter, getMachineConfig(true));
+      const output = localData.output || "";
+      state.inputStream += letter;
+      state.outputStream += output;
+      state.positions = normalizePositions(localData.final_positions || state.positions);
+      lastStep = letter + " -> " + output + " | " + beforePos + " -> " + state.positions;
+    });
+
+    q("machine-input").value = state.inputStream;
+    q("machine-output").value = state.outputStream;
+    refreshStreamUi();
+    updateMachineLivePanel();
+    setMachineLastStep(lastStep);
+  }
+
+  function backspaceInputStream() {
+    if (!state.inputStream.length) {
+      state.positions = state.startPositions;
+      updateMachineLivePanel();
+      setMachineStatus("Input stream gia vuoto.");
+      return;
+    }
+    recomputeRuntimeFromInput(state.inputStream.slice(0, -1));
+    setMachineStatus("Input stream: rimosso ultimo carattere.");
+    pushTrace("Backspace: output ricostruito da " + state.startPositions + ".");
   }
 
   function renderPlugboard() {
@@ -693,6 +837,8 @@
       chip.title = "Rimuovi " + pair;
       chip.addEventListener("click", () => {
         state.plugboardPairs = state.plugboardPairs.filter((p) => p !== pair);
+        state.positions = state.startPositions;
+        clearMachineRuntime();
         renderPlugboard();
         setMachineStatus("Rimossa coppia " + pair + ".");
         pushTrace("Plugboard: rimossa coppia " + pair + ".");
@@ -714,6 +860,8 @@
     state.plugboardPairs.sort();
     q("plug-a").value = "";
     q("plug-b").value = "";
+    state.positions = state.startPositions;
+    clearMachineRuntime();
     renderPlugboard();
     setMachineStatus("Plugboard aggiornato.");
     pushTrace("Plugboard: collegata coppia " + pair + ".");
@@ -728,6 +876,8 @@
     }
     const before = state.plugboardPairs.length;
     state.plugboardPairs = state.plugboardPairs.filter((p) => !p.includes(letter));
+    state.positions = state.startPositions;
+    clearMachineRuntime();
     renderPlugboard();
     if (state.plugboardPairs.length === before) {
       setMachineStatus("Nessuna coppia contiene la lettera " + letter + ".");
@@ -769,11 +919,11 @@
     setMachineLastStep("-");
   }
 
-  function getMachineConfig() {
+  function getMachineConfig(useCurrentPosition) {
     return {
       rotors: [q("rotor-left").value, q("rotor-middle").value, q("rotor-right").value],
       reflector: q("reflector").value,
-      positions: state.positions,
+      positions: useCurrentPosition ? state.positions : state.startPositions,
       plugboard_pairs: state.plugboardPairs.slice(),
     };
   }
@@ -782,11 +932,15 @@
     const payload = getMachineConfig();
     payload.text = text;
     const url = state.apiBase.replace(/\/+$/, "") + path;
+    const controller = window.AbortController ? new AbortController() : null;
+    const timer = controller ? window.setTimeout(() => controller.abort(), 1300) : null;
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      signal: controller ? controller.signal : undefined,
     });
+    if (timer) window.clearTimeout(timer);
 
     if (!res.ok) {
       let detail = "Errore API";
@@ -828,25 +982,43 @@
       setMachineStatus("Operazione completata. Posizioni finali: " + state.positions);
     } catch (err) {
       const msg = err && err.message ? err.message : "Errore sconosciuto";
-      if (pathLabel === "/encode") {
-        const output = fallbackMissionCipher(input, state.positions);
+      if (pathLabel === "/encode" || pathLabel === "/decode") {
+        const localData = localEnigmaProcess(input, getMachineConfig(false));
+        const output = localData.output || "";
         q("machine-output").value = output;
         state.inputStream = (state.inputStream + input).slice(-2500);
         state.outputStream = (state.outputStream + output).slice(-2500);
-        state.positions = normalizePositions(
-          alphaShift(state.positions[0], 0) + alphaShift(state.positions[1], 0) + alphaShift(state.positions[2], 1)
-        );
+        state.positions = normalizePositions(localData.final_positions || state.positions);
         refreshStreamUi();
         updateMachineLivePanel();
-        const step = mode + ": fallback locale";
+        const step = mode + ": motore locale";
         setMachineLastStep(step);
         pushTrace(step + " | API non disponibile: " + msg);
-        setMachineStatus("Modalita locale attiva. Output generato.");
+        setMachineStatus("Motore locale attivo. Output generato.");
         return;
       }
       setMachineStatus("Errore: " + msg);
       pushTrace("Errore " + mode + ": " + msg);
     }
+  }
+
+  function encodeImmediateLetter(letter) {
+    const clean = normalizeLetter(letter);
+    if (!clean) return;
+    const beforePos = state.positions;
+    const localData = localEnigmaProcess(clean, getMachineConfig(true));
+    const output = localData.output || "";
+    state.inputStream = (state.inputStream + clean).slice(-2500);
+    state.outputStream = (state.outputStream + output).slice(-2500);
+    q("machine-input").value = state.inputStream;
+    q("machine-output").value = state.outputStream;
+    state.positions = normalizePositions(localData.final_positions || state.positions);
+    refreshStreamUi();
+    updateMachineLivePanel();
+    const step = "CIFRA: " + beforePos + " -> " + state.positions;
+    setMachineLastStep(step);
+    pushTrace(step + " | " + clean + " -> " + output + " | motore locale.");
+    setMachineStatus("Lettera cifrata: " + clean + " -> " + output + ".");
   }
 
   function setDisruptionOverlay(visible, blackOnly) {
@@ -1049,6 +1221,21 @@
     });
   }
 
+  function setupMobileKeyboard() {
+    const keyboard = q("mobile-keyboard");
+    if (!keyboard) return;
+    keyboard.innerHTML = "";
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach((letter) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = letter;
+      btn.addEventListener("click", () => {
+        encodeImmediateLetter(letter);
+      });
+      keyboard.appendChild(btn);
+    });
+  }
+
   function bindEvents() {
     q("btn-disclaimer-continue").addEventListener("click", () => setPage("soundtrack"));
 
@@ -1099,26 +1286,31 @@
       }
       state.rotors = [left, middle, right];
       state.reflector = q("reflector").value;
-      state.positions = normalizePositions(q("positions").value);
+      state.startPositions = normalizePositions(q("positions").value);
+      state.positions = state.startPositions;
+      clearMachineRuntime();
       updateMachineLivePanel();
       setMachineStatus("Configurazione applicata.");
-      pushTrace("Configurazione: rotori " + state.rotors.join("-") + ", reflector " + state.reflector + ", start " + state.positions + ".");
+      pushTrace("Configurazione: rotori " + state.rotors.join("-") + ", reflector " + state.reflector + ", start " + state.startPositions + ".");
     });
 
     q("positions").addEventListener("input", () => {
       const raw = (q("positions").value || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 3);
       q("positions").value = raw;
       if (raw.length === 3) {
+        state.startPositions = raw;
         state.positions = raw;
+        clearMachineRuntime();
         updateMachineLivePanel();
       }
     });
 
     q("btn-reset-machine").addEventListener("click", () => {
-      q("positions").value = state.positions;
+      state.positions = state.startPositions;
+      clearMachineRuntime();
       updateMachineLivePanel();
-      setMachineStatus("Posizioni resettate a " + state.positions + ".");
-      pushTrace("Reset posizioni a " + state.positions + ".");
+      setMachineStatus("Posizioni resettate a " + state.startPositions + ".");
+      pushTrace("Reset posizioni a " + state.startPositions + ".");
     });
 
     q("btn-add-pair").addEventListener("click", addPlugPair);
@@ -1126,24 +1318,20 @@
 
     q("btn-clear-pairs").addEventListener("click", () => {
       state.plugboardPairs = [];
+      state.positions = state.startPositions;
+      clearMachineRuntime();
       renderPlugboard();
       setMachineStatus("Plugboard azzerato.");
       pushTrace("Plugboard azzerato.");
     });
 
     q("btn-clear-streams").addEventListener("click", () => {
-      q("machine-input").value = "";
-      q("machine-output").value = "";
-      state.inputStream = "";
-      state.outputStream = "";
-      refreshStreamUi();
+      clearMachineRuntime();
       setMachineStatus("Stream puliti.");
       pushTrace("Stream input/output puliti.");
     });
     q("btn-clear-input-stream").addEventListener("click", () => {
-      q("machine-input").value = "";
-      state.inputStream = "";
-      refreshStreamUi();
+      clearMachineRuntime();
       setMachineStatus("Input stream svuotato.");
       pushTrace("Input stream svuotato.");
     });
@@ -1250,10 +1438,24 @@
         event.preventDefault();
         finishDisruption();
       }
+      const tag = event.target && event.target.tagName ? event.target.tagName.toLowerCase() : "";
+      const editingConfig =
+        tag === "input" ||
+        tag === "select" ||
+        tag === "textarea" ||
+        (event.target && event.target.isContentEditable);
+      if (state.page === "machine" && event.key === "Backspace" && !editingConfig) {
+        event.preventDefault();
+        backspaceInputStream();
+        return;
+      }
+      if (state.page === "machine" && (event.key === "Delete" || event.key === "Tab") && !editingConfig) {
+        event.preventDefault();
+        return;
+      }
       if (state.page === "machine" && !event.ctrlKey && !event.altKey && !event.metaKey && /^[a-zA-Z]$/.test(event.key)) {
-        const letter = event.key.toUpperCase();
-        q("machine-input").value = letter;
-        runEncode("/encode");
+        if (editingConfig) return;
+        encodeImmediateLetter(event.key);
       }
     });
   }
@@ -1267,6 +1469,7 @@
 
     setupGallery();
     setupRotorRings();
+    setupMobileKeyboard();
     setupMachineOptions();
     loadStoryText();
     renderPlugboard();
@@ -1295,6 +1498,13 @@
       pages.get(state.page).classList.add("active");
       updateOverlayVisibility();
       if (state.page === "story") startStoryTicker();
+    }
+    const debugModal = params.get("modal");
+    if (debugModal === "settings") {
+      syncSettingsUi();
+      showModal(settingsModal);
+    } else if (debugModal === "credits") {
+      showModal(creditsModal);
     }
     if (params.get("mission") === "1") {
       if (state.page !== "machine") {
