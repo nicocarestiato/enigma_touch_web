@@ -3423,3 +3423,563 @@ body[data-page="machine"] #pages,
     overflow-y: auto;
   }
 }
+
+/* ============================================================
+   PORTRAIT PHONE — layout dedicato verticale
+   (touch + larghezza ≤600px + orientamento portrait)
+   ============================================================ */
+@media (pointer: coarse) and (max-width: 600px) and (orientation: portrait) {
+
+  #pages {
+    padding: 52px 8px 10px !important;
+  }
+
+  #top-buttons {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    justify-content: space-between;
+    gap: 5px;
+  }
+
+  #top-buttons .glass-btn {
+    flex: 1;
+    width: auto;
+    height: 32px;
+    font-size: 10px;
+    min-width: 0;
+    padding: 0 6px;
+    border-radius: 12px;
+  }
+
+  body[data-page="machine"] #top-buttons {
+    display: none !important;
+  }
+
+  /* DISCLAIMER */
+  .center-column {
+    width: calc(100vw - 32px) !important;
+    gap: 16px;
+  }
+
+  .center-column h1 { font-size: 28px; }
+  .center-column p  { font-size: 16px; line-height: 1.4; }
+
+  .glass-btn.big {
+    width: 100% !important;
+    height: 52px !important;
+    font-size: 16px !important;
+  }
+
+  /* SOUNDTRACK */
+  .card.wide {
+    width: calc(100vw - 16px) !important;
+    height: calc(100dvh - 70px) !important;
+    padding: 18px !important;
+    gap: 12px !important;
+    overflow-y: auto;
+  }
+
+  .split { grid-template-columns: 1fr !important; gap: 10px; }
+
+  .card.mini .glass-btn {
+    width: 100% !important;
+    height: 52px !important;
+    font-size: 15px !important;
+  }
+
+  /* HOME */
+  .home-card {
+    width: calc(100vw - 16px) !important;
+    height: calc(100dvh - 70px) !important;
+    max-height: none !important;
+    padding: 16px !important;
+    gap: 12px !important;
+    overflow-y: auto !important;
+  }
+
+  .home-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    overflow: visible !important;
+  }
+
+  .home-option {
+    padding: 16px !important;
+    gap: 10px !important;
+    min-height: 0 !important;
+  }
+
+  .home-panel-image { height: 110px !important; }
+
+  .home-option h3 { font-size: 20px !important; }
+  .home-option p  { font-size: 13px !important; }
+
+  .home-option .glass-btn {
+    width: 100% !important;
+    height: 52px !important;
+    font-size: 15px !important;
+    margin-top: 4px;
+  }
+
+  /* STORIA */
+  .story-card {
+    width: calc(100vw - 16px) !important;
+    height: calc(100dvh - 70px) !important;
+    max-height: none !important;
+    padding: 14px !important;
+    gap: 10px !important;
+    overflow-y: auto !important;
+  }
+
+  .story-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .video-square { aspect-ratio: 16 / 9 !important; }
+
+  .story-text-scroll { max-height: 200px; }
+
+  .story-actions .glass-btn {
+    flex: 1 !important;
+    min-width: 0 !important;
+    height: 48px !important;
+    font-size: 15px !important;
+  }
+
+  /* MACCHINA */
+  body[data-page="machine"] #pages {
+    padding: 8px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    display: block !important;
+  }
+
+  .machine-scale-box {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .machine-card {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 12px !important;
+    gap: 10px !important;
+    overflow: visible !important;
+    border-radius: 18px !important;
+  }
+
+  .machine-card > .top-row {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+  }
+
+  .machine-card > .top-row h2 {
+    font-size: 17px !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+  }
+
+  .machine-top-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    width: auto !important;
+    min-width: 0 !important;
+    height: 30px !important;
+    font-size: 9px !important;
+    padding: 0 6px !important;
+    border-radius: 10px !important;
+  }
+
+  .machine-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  /* Live panel SOPRA, config SOTTO */
+  .machine-live-panel { order: 1 !important; padding: 10px !important; gap: 8px !important; }
+  .machine-config-panel { order: 2 !important; padding: 10px !important; gap: 6px !important; }
+
+  .live-top-row { flex-direction: row !important; justify-content: space-between !important; flex-wrap: wrap; }
+
+  #machine-live-summary  { font-size: 13px !important; }
+  #machine-reflector-summary { font-size: 11px !important; }
+  .machine-hint { display: none !important; }
+
+  /* Rotori: 3 in fila compatti */
+  .rotor-dials {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 8px !important;
+  }
+
+  .rotor-dial {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    min-height: 0 !important;
+  }
+
+  .rotor-window {
+    width: min(27vw, 100px) !important;
+    height: min(27vw, 100px) !important;
+    min-width: min(27vw, 100px) !important;
+    min-height: min(27vw, 100px) !important;
+    max-width: 100px !important;
+    max-height: 100px !important;
+    flex-basis: auto !important;
+  }
+
+  .rotor-window-core {
+    width: min(16vw, 60px) !important;
+    height: min(16vw, 60px) !important;
+    min-width: min(16vw, 60px) !important;
+    min-height: min(16vw, 60px) !important;
+    flex-basis: auto !important;
+  }
+
+  .rotor-window-core span {
+    width: min(12vw, 44px) !important;
+    height: min(9vw, 34px) !important;
+    font-size: clamp(22px, 7vw, 28px) !important;
+    border-radius: 8px !important;
+  }
+
+  .rotor-label, .rotor-name { font-size: 10px !important; }
+  .rotor-hint { display: none !important; }
+
+  /* Tastiera prominente */
+  .mobile-keyboard {
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    margin-top: 4px !important;
+  }
+
+  .mobile-keyboard button {
+    height: 46px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Stream compatti */
+  .stream-grid {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+    min-height: 0 !important;
+  }
+
+  .stream-card, .trace-card { min-height: 70px !important; padding: 8px !important; }
+  .stream-card pre, .trace-card pre { max-height: none !important; font-size: 12px !important; }
+
+  /* Config panel */
+  .machine-config-panel h3 { font-size: 16px !important; }
+  .machine-config-panel h4 { font-size: 10px !important; }
+
+  .machine-three-selects {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .machine-config-panel select,
+  .machine-config-panel input {
+    height: 40px !important;
+    font-size: 16px !important;
+  }
+
+  .machine-config-panel .glass-btn {
+    width: 100% !important;
+    height: 38px !important;
+    font-size: 13px !important;
+    min-width: 0 !important;
+  }
+
+  .machine-config-panel .row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+  }
+
+  #plugboard-list { max-height: 72px !important; }
+  #machine-status { font-size: 11px !important; min-height: 0 !important; }
+}
+
+/* ============================================================
+   LANDSCAPE PHONE — layout dedicato orizzontale
+   (touch + altezza ≤500px + orientamento landscape)
+   ============================================================ */
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
+
+  #pages {
+    padding: 4px !important;
+  }
+
+  #top-buttons {
+    top: 4px;
+    right: 6px;
+    gap: 4px;
+  }
+
+  #top-buttons .glass-btn {
+    height: 26px;
+    font-size: 9px;
+    min-width: 60px;
+    padding: 0 6px;
+    border-radius: 10px;
+    width: auto;
+  }
+
+  body[data-page="machine"] #top-buttons {
+    display: none !important;
+  }
+
+  /* HOME landscape */
+  .home-card {
+    width: calc(100vw - 8px) !important;
+    height: calc(100dvh - 8px) !important;
+    max-height: none !important;
+    padding: 8px !important;
+    gap: 6px !important;
+    overflow-y: auto !important;
+  }
+
+  .home-card > h2 { font-size: 18px !important; }
+  .home-card > .sub { font-size: 11px !important; }
+
+  .home-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    overflow: visible !important;
+  }
+
+  .home-option { padding: 10px !important; gap: 6px !important; }
+  .home-panel-image { height: 56px !important; }
+  .home-option h3 { font-size: 13px !important; }
+  .home-option p  { font-size: 10px !important; }
+  .home-option .glass-btn { width: 100% !important; height: 34px !important; font-size: 11px !important; }
+
+  /* STORIA landscape */
+  .story-card {
+    width: calc(100vw - 8px) !important;
+    height: calc(100dvh - 8px) !important;
+    max-height: none !important;
+    padding: 8px !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+  }
+
+  .story-grid { grid-template-columns: 1fr 260px !important; gap: 6px !important; }
+  .story-text-scroll { max-height: none; }
+  .story-actions .glass-btn { flex: 1 !important; min-width: 0 !important; height: 36px !important; font-size: 12px !important; }
+
+  /* MACCHINA landscape — 2 colonne */
+  body[data-page="machine"] #pages {
+    padding: 4px !important;
+    overflow: hidden !important;
+    display: block !important;
+  }
+
+  .machine-scale-box { width: 100% !important; height: auto !important; }
+
+  .machine-card {
+    width: 100% !important;
+    height: calc(100dvh - 8px) !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 8px) !important;
+    padding: 6px 8px !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+    border-radius: 12px !important;
+  }
+
+  .machine-card > .top-row {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-height: 0 !important;
+  }
+
+  .machine-card > .top-row h2 {
+    font-size: 15px !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+  }
+
+  .machine-top-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    width: auto !important;
+    min-width: 0 !important;
+    height: 26px !important;
+    font-size: 9px !important;
+    padding: 0 6px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Griglia 2 colonne: config sinistra, live destra */
+  .machine-grid {
+    display: grid !important;
+    grid-template-columns: 200px minmax(0, 1fr) !important;
+    gap: 6px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .machine-config-panel {
+    order: 1 !important;
+    padding: 7px !important;
+    gap: 4px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    min-height: 0 !important;
+    height: 100%;
+  }
+
+  .machine-live-panel {
+    order: 2 !important;
+    padding: 7px !important;
+    gap: 4px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    min-height: 0 !important;
+    height: 100%;
+  }
+
+  .live-top-row { flex-direction: row !important; justify-content: space-between !important; }
+  #machine-live-summary  { font-size: 11px !important; }
+  #machine-reflector-summary { font-size: 10px !important; }
+  .machine-hint { display: none !important; }
+
+  /* Rotori compatti in fila */
+  .rotor-dials {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 4px !important;
+  }
+
+  .rotor-dial {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 2px !important;
+    min-height: 0 !important;
+  }
+
+  .rotor-window {
+    width: min(13vw, 68px) !important;
+    height: min(13vw, 68px) !important;
+    min-width: min(13vw, 68px) !important;
+    min-height: min(13vw, 68px) !important;
+    max-width: 68px !important;
+    max-height: 68px !important;
+    flex-basis: auto !important;
+  }
+
+  .rotor-window-core {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    flex-basis: auto !important;
+  }
+
+  .rotor-window-core span {
+    width: 30px !important;
+    height: 22px !important;
+    font-size: 19px !important;
+    border-radius: 5px !important;
+  }
+
+  .rotor-label, .rotor-name { font-size: 8px !important; line-height: 1 !important; }
+  .rotor-hint { display: none !important; }
+
+  /* Tastiera landscape: 13 colonne su 2 righe */
+  .mobile-keyboard {
+    grid-template-columns: repeat(13, minmax(0, 1fr)) !important;
+    gap: 3px !important;
+    margin-top: 2px !important;
+  }
+
+  .mobile-keyboard button {
+    height: 30px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+  }
+
+  /* Stream minimali */
+  .stream-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 4px !important;
+    min-height: 0 !important;
+  }
+
+  .stream-card, .trace-card { min-height: 0 !important; padding: 5px !important; }
+  .stream-card pre, .trace-card pre { max-height: 40px !important; font-size: 10px !important; }
+  .trace-card { display: none !important; }
+
+  /* Config panel compatto */
+  .machine-config-panel h3 { font-size: 12px !important; }
+  .machine-config-panel h4 { font-size: 9px !important; }
+
+  .machine-three-selects {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 3px !important;
+  }
+
+  .machine-config-panel select,
+  .machine-config-panel input {
+    height: 28px !important;
+    font-size: 13px !important;
+    padding: 2px 4px !important;
+  }
+
+  .machine-config-panel .glass-btn {
+    width: 100% !important;
+    height: 26px !important;
+    font-size: 10px !important;
+    min-width: 0 !important;
+    border-radius: 8px !important;
+  }
+
+  .machine-config-panel .row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 3px !important;
+  }
+
+  .panel-sep { margin: 2px 0 !important; }
+  #plugboard-list { max-height: 46px !important; }
+  #machine-status { font-size: 9px !important; min-height: 0 !important; display: block !important; }
+}
