@@ -2121,7 +2121,7 @@ body[data-page="machine"] #pages {
   max-height: 48px !important;
 }
 
-@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+@media (max-width: 760px), (pointer: coarse) {
   html,
   body {
     overflow: hidden;
@@ -2493,7 +2493,7 @@ body[data-page="machine"] #pages {
   }
 }
 
-@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+@media (max-width: 760px), (pointer: coarse) {
   .machine-card {
     padding: 12px !important;
     gap: 10px !important;
@@ -2672,7 +2672,7 @@ body[data-page="machine"] #pages {
   }
 }
 
-@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+@media (max-width: 760px), (pointer: coarse) {
   .machine-scale-box {
     width: min(360px, calc(100vw - 16px)) !important;
     max-width: calc(100vw - 16px) !important;
@@ -2888,7 +2888,7 @@ body[data-page="machine"] #pages,
   display: none;
 }
 
-@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+@media (max-width: 760px), (pointer: coarse) {
   html,
   body {
     overflow: hidden;
@@ -3105,7 +3105,7 @@ body[data-page="machine"] #pages,
   .machine-config-panel .glass-btn {
     width: 100%;
     height: 36px !important;
-    font-size: 12px !important;
+    font-size: 16px !important;
   }
 
   .mobile-keyboard {
@@ -3148,7 +3148,7 @@ body[data-page="machine"] #pages,
 }
 
 /* Phone polish: no clipped controls on portrait screens. */
-@media (max-width: 760px), (pointer: coarse) and (max-width: 900px) {
+@media (max-width: 760px), (pointer: coarse) {
   .machine-top-actions {
     grid-template-columns: 1fr !important;
   }

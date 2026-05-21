@@ -160,7 +160,7 @@
   }
 
   function updateMachineScale() {
-    const mobileMachine = window.matchMedia("(max-width: 760px), (pointer: coarse) and (max-width: 900px)").matches;
+    const mobileMachine = window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
     if (mobileMachine) {
       document.documentElement.style.setProperty("--machine-width", "100%");
       document.documentElement.style.setProperty("--machine-height", "auto");
@@ -1336,8 +1336,13 @@
       pushTrace("Input stream svuotato.");
     });
     q("btn-copy-output-stream").addEventListener("click", async () => {
-      await navigator.clipboard?.writeText(state.outputStream || "").catch(() => {});
-      setMachineStatus("Output copiato negli appunti.");
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(state.outputStream || "")
+          .then(() => setMachineStatus("Output copiato negli appunti."))
+          .catch(() => setMachineStatus("Copia non riuscita: seleziona il testo manualmente."));
+      } else {
+        setMachineStatus("Clipboard non supportata su questo browser.");
+      }
     });
 
     q("btn-encode").addEventListener("click", () => runEncode("/encode"));
@@ -1370,14 +1375,18 @@
       });
     });
 
-    q("btn-fullscreen").addEventListener("click", async () => {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        await document.exitFullscreen().catch(() => {});
-      }
-      q("btn-fullscreen").textContent = document.fullscreenElement ? "WINDOW" : "FULLSCREEN";
-    });
+    if (!document.documentElement.requestFullscreen) {
+      q("btn-fullscreen").style.display = "none";
+    } else {
+      q("btn-fullscreen").addEventListener("click", async () => {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          await document.exitFullscreen().catch(() => {});
+        }
+        q("btn-fullscreen").textContent = document.fullscreenElement ? "WINDOW" : "FULLSCREEN";
+      });
+    }
 
     q("btn-credits").addEventListener("click", () => showModal(creditsModal));
     q("btn-settings").addEventListener("click", () => {

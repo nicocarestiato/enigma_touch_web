@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Enigma Touch Web</title>
-  <link rel="stylesheet" href="web.css?v=20260519-final-site2">
+  <link rel="stylesheet" href="web.css?v=20260521-mobile-fix1">
 </head>
 <body>
   <div id="app">
@@ -132,7 +132,7 @@
               <select id="reflector"></select>
               <h4>POSIZIONI INIZIALI (ES. DDA)</h4>
               <div class="row">
-                <input id="positions" maxlength="3" value="AAA">
+                <input id="positions" maxlength="3" value="AAA" autocapitalize="characters" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false">
                 <button class="glass-btn" id="btn-apply-config">APPLICA</button>
               </div>
 
@@ -140,12 +140,12 @@
 
               <h4>PLUGBOARD</h4>
               <div class="row">
-                <input id="plug-a" maxlength="1" placeholder="A">
-                <input id="plug-b" maxlength="1" placeholder="M">
+                <input id="plug-a" maxlength="1" placeholder="A" autocapitalize="characters" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false">
+                <input id="plug-b" maxlength="1" placeholder="M" autocapitalize="characters" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false">
                 <button class="glass-btn" id="btn-add-pair">COLLEGA</button>
               </div>
               <div class="row">
-                <input id="plug-remove" maxlength="1" placeholder="Lettera da scollegare">
+                <input id="plug-remove" maxlength="1" placeholder="Lettera da scollegare" autocapitalize="characters" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false">
                 <button class="glass-btn" id="btn-remove-pair">RIMUOVI</button>
               </div>
               <button class="glass-btn" id="btn-clear-pairs">AZZERA PLUG</button>
@@ -417,6 +417,6 @@
   </div>
 
   <audio id="bg-music" preload="auto" loop></audio>
-  <script src="web.js?v=20260519-final-site2"></script>
+  <script src="web.js?v=20260521-mobile-fix1"></script>
 </body>
 </html>
