@@ -3,7 +3,7 @@
   --accent-soft: rgba(197, 141, 77, 0.24);
   --bg-tint: #1a120c;
   --glass: rgba(42, 31, 24, 0.55);
-  --glass-stroke: rgba(90, 71, 56, 0.82);
+  --glass-stroke: rgba(90, 71, 56, 0.65);
   --glass-deep: rgba(10, 8, 7, 0.8);
   --text-main: #f3efe9;
   --text-sub: #d8cabc;
@@ -20,7 +20,7 @@ body {
   overflow: hidden;
   font-family: "Segoe UI", Tahoma, Arial, sans-serif;
   color: var(--text-main);
-  background: #0d0906;
+  background: #1a120c;
 }
 
 #app {
@@ -214,10 +214,12 @@ h3 {
 
 .center-column {
   width: min(1060px, calc(100vw - 120px));
+  max-height: calc(100vh - 80px);
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: 22px;
+  overflow-y: auto;
 }
 
 .center-column h1 {
@@ -444,6 +446,7 @@ h3 {
   flex-direction: column;
   gap: 10px;
   overflow: hidden;
+  overflow-y: auto;
 }
 
 .machine-card {
@@ -601,17 +604,19 @@ h3 {
 }
 
 .machine-config-panel {
-  padding: 12px;
+  padding: 14px;
   border-radius: 22px;
-  gap: 6px;
-  overflow: hidden;
+  gap: 7px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .machine-live-panel {
   padding: 18px;
   border-radius: 22px;
   gap: 10px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .machine-config-panel .row,
@@ -676,11 +681,14 @@ h3 {
 
 .live-top-row {
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 #machine-live-summary,
 #machine-reflector-summary {
   margin: 0;
+  white-space: nowrap;
 }
 
 #machine-live-summary {
@@ -697,7 +705,7 @@ h3 {
 
 .machine-hint {
   margin: 0;
-  min-height: 38px;
+  min-height: 0;
   line-height: 1.28;
 }
 
@@ -2121,7 +2129,7 @@ body[data-page="machine"] #pages {
   max-height: 48px !important;
 }
 
-@media (max-width: 760px), (pointer: coarse) {
+@media (max-width: 760px), (pointer: coarse) and (max-width: 1024px) {
   html,
   body {
     overflow: hidden;
@@ -2493,7 +2501,7 @@ body[data-page="machine"] #pages {
   }
 }
 
-@media (max-width: 760px), (pointer: coarse) {
+@media (max-width: 760px), (pointer: coarse) and (max-width: 1024px) {
   .machine-card {
     padding: 12px !important;
     gap: 10px !important;
@@ -2672,7 +2680,7 @@ body[data-page="machine"] #pages {
   }
 }
 
-@media (max-width: 760px), (pointer: coarse) {
+@media (max-width: 760px), (pointer: coarse) and (max-width: 1024px) {
   .machine-scale-box {
     width: min(360px, calc(100vw - 16px)) !important;
     max-width: calc(100vw - 16px) !important;
@@ -2888,7 +2896,7 @@ body[data-page="machine"] #pages,
   display: none;
 }
 
-@media (max-width: 760px), (pointer: coarse) {
+@media (max-width: 760px), (pointer: coarse) and (max-width: 1024px) {
   html,
   body {
     overflow: hidden;
@@ -3148,7 +3156,7 @@ body[data-page="machine"] #pages,
 }
 
 /* Phone polish: no clipped controls on portrait screens. */
-@media (max-width: 760px), (pointer: coarse) {
+@media (max-width: 760px), (pointer: coarse) and (max-width: 1024px) {
   .machine-top-actions {
     grid-template-columns: 1fr !important;
   }
@@ -3371,5 +3379,47 @@ body[data-page="machine"] #pages,
   .settings-theme-row,
   .settings-actions {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* Tastiera touch visibile su TUTTI i dispositivi touch (anche iPad grande) */
+@media (pointer: coarse) {
+  .mobile-keyboard {
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 5px;
+    margin-top: 6px;
+    width: 100%;
+  }
+
+  .mobile-keyboard button {
+    border: 1px solid rgba(197, 141, 77, 0.45);
+    border-radius: 10px;
+    height: 44px;
+    background: rgba(24, 19, 15, 0.74);
+    color: var(--text-main);
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.08s ease;
+  }
+
+  .mobile-keyboard button:active {
+    background: rgba(197, 141, 77, 0.28);
+  }
+
+  /* Su touch, ingrandisci rotori per tap più facile */
+  .rotor-dial {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Pagine con scroll su touch */
+  #page-disclaimer.active,
+  #page-soundtrack.active,
+  #page-intro.active,
+  #page-home.active,
+  #page-story.active {
+    overflow-y: auto;
   }
 }

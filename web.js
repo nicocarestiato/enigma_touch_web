@@ -160,7 +160,7 @@
   }
 
   function updateMachineScale() {
-    const mobileMachine = window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
+    const mobileMachine = window.matchMedia("(max-width: 760px), (pointer: coarse) and (max-width: 1024px)").matches;
     if (mobileMachine) {
       document.documentElement.style.setProperty("--machine-width", "100%");
       document.documentElement.style.setProperty("--machine-height", "auto");
