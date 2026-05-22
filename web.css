@@ -3167,20 +3167,23 @@ body[data-page="machine"] #pages,
   #btn-machine-mission,
   #btn-machine-help,
   #btn-machine-home {
-    height: 34px !important;
-    font-size: clamp(9px, 2.4vw, 12px) !important;
-    padding: 0 4px !important;
+    height: 36px !important;
+    font-size: clamp(10px, 2.8vw, 13px) !important;
+    padding: 0 6px !important;
     white-space: nowrap !important;
+    overflow: hidden !important;
   }
 
+  /* Titolo sopra, bottoni sotto su riga separata */
   .machine-card > .top-row {
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
   }
 
   .machine-card > .top-row h2 {
-    font-size: clamp(16px, 4.5vw, 24px) !important;
+    font-size: clamp(18px, 5vw, 26px) !important;
+    text-align: center !important;
     white-space: nowrap !important;
   }
 
