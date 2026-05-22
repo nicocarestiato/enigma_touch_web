@@ -3155,10 +3155,12 @@ body[data-page="machine"] #pages,
   }
 }
 
-/* Phone polish: no clipped controls on portrait screens. */
+/* Phone portrait: 3 bottoni in riga, rotori 3 in fila compatti */
 @media (max-width: 760px), (pointer: coarse) and (max-width: 1024px) {
   .machine-top-actions {
-    grid-template-columns: 1fr !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
   }
 
   .machine-top-actions .glass-btn,
@@ -3166,68 +3168,180 @@ body[data-page="machine"] #pages,
   #btn-machine-help,
   #btn-machine-home {
     height: 34px !important;
+    font-size: clamp(9px, 2.4vw, 12px) !important;
+    padding: 0 4px !important;
+    white-space: nowrap !important;
   }
 
+  .machine-card > .top-row {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .machine-card > .top-row h2 {
+    font-size: clamp(16px, 4.5vw, 24px) !important;
+    white-space: nowrap !important;
+  }
+
+  /* Rotori: 3 cerchi affiancati compatti */
   .rotor-dials {
-    display: flex !important;
-    flex-direction: column;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    gap: 6px !important;
+    padding: 8px !important;
   }
 
   .rotor-dial {
-    display: grid !important;
-    grid-template-columns: 64px 112px minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    column-gap: 8px;
-    row-gap: 2px;
-    justify-items: center;
-    align-items: center;
-    min-height: 112px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    min-height: 0 !important;
   }
 
-  .rotor-label {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .rotor-name {
-    grid-column: 1;
-    grid-row: 2;
-  }
+  .rotor-label { font-size: 10px !important; }
+  .rotor-name  { font-size: 10px !important; }
+  .rotor-hint  { display: none !important; }
 
   .rotor-window {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    width: 108px !important;
-    height: 108px !important;
-    min-width: 108px !important;
-    min-height: 108px !important;
+    width: min(28vw, 108px) !important;
+    height: min(28vw, 108px) !important;
+    min-width: min(28vw, 108px) !important;
+    min-height: min(28vw, 108px) !important;
     max-width: 108px !important;
     max-height: 108px !important;
+    flex-basis: auto !important;
   }
 
   .rotor-window-core {
-    width: 66px !important;
-    height: 66px !important;
-    min-width: 66px !important;
-    min-height: 66px !important;
+    width: min(17vw, 64px) !important;
+    height: min(17vw, 64px) !important;
+    min-width: min(17vw, 64px) !important;
+    min-height: min(17vw, 64px) !important;
+    flex-basis: auto !important;
   }
 
   .rotor-window-core span {
-    width: 50px !important;
-    height: 38px !important;
-    font-size: 31px !important;
+    width: min(13vw, 48px) !important;
+    height: min(10vw, 36px) !important;
+    font-size: clamp(24px, 8vw, 30px) !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* Landscape phone: 2 colonne, tutto in schermo */
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 520px) {
+  body[data-page="machine"] #pages {
+    padding: 4px !important;
+    overflow: hidden !important;
+    display: block !important;
   }
 
-  .rotor-hint {
-    display: block !important;
-    grid-column: 3;
-    grid-row: 1 / span 2;
-    justify-self: start;
-    max-width: 80px;
-    white-space: normal;
-    line-height: 1.1;
-    font-size: 10px;
+  .machine-scale-box { width: 100% !important; height: auto !important; }
+
+  .machine-card {
+    width: 100% !important;
+    height: calc(100dvh - 8px) !important;
+    max-height: calc(100dvh - 8px) !important;
+    min-height: 0 !important;
+    padding: 6px 8px !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+    border-radius: 12px !important;
   }
+
+  .machine-card > .top-row {
+    flex-direction: row !important;
+    align-items: center !important;
+    min-height: 0 !important;
+    gap: 6px !important;
+  }
+
+  .machine-card > .top-row h2 {
+    font-size: 15px !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+  }
+
+  .machine-top-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 4px !important;
+  }
+
+  .machine-top-actions .glass-btn,
+  #btn-machine-mission,
+  #btn-machine-help,
+  #btn-machine-home {
+    width: auto !important;
+    min-width: 0 !important;
+    height: 26px !important;
+    font-size: 9px !important;
+    padding: 0 6px !important;
+    border-radius: 8px !important;
+  }
+
+  .machine-grid {
+    display: grid !important;
+    grid-template-columns: 195px minmax(0, 1fr) !important;
+    gap: 6px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .machine-live-panel { order: 2 !important; padding: 7px !important; gap: 4px !important; overflow-y: auto !important; min-height: 0 !important; }
+  .machine-config-panel { order: 1 !important; padding: 7px !important; gap: 4px !important; overflow-y: auto !important; min-height: 0 !important; }
+
+  .machine-hint { display: none !important; }
+  .live-top-row { flex-direction: row !important; }
+  #machine-live-summary { font-size: 11px !important; }
+  #machine-reflector-summary { font-size: 10px !important; }
+
+  .rotor-dials {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    height: auto !important; min-height: 0 !important;
+    padding: 4px !important; gap: 4px !important;
+  }
+
+  .rotor-dial { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 2px !important; min-height: 0 !important; }
+  .rotor-hint { display: none !important; }
+  .rotor-label, .rotor-name { font-size: 8px !important; line-height: 1 !important; }
+
+  .rotor-window {
+    width: min(14vw, 68px) !important; height: min(14vw, 68px) !important;
+    min-width: min(14vw, 68px) !important; min-height: min(14vw, 68px) !important;
+    max-width: 68px !important; max-height: 68px !important; flex-basis: auto !important;
+  }
+
+  .rotor-window-core { width: 40px !important; height: 40px !important; min-width: 40px !important; min-height: 40px !important; flex-basis: auto !important; }
+  .rotor-window-core span { width: 30px !important; height: 22px !important; font-size: 19px !important; border-radius: 5px !important; }
+
+  .mobile-keyboard {
+    grid-template-columns: repeat(13, minmax(0, 1fr)) !important;
+    gap: 3px !important; margin-top: 3px !important;
+  }
+
+  .mobile-keyboard button { height: 30px !important; font-size: 12px !important; border-radius: 6px !important; }
+
+  .stream-grid { grid-template-columns: 1fr 1fr !important; gap: 4px !important; min-height: 0 !important; }
+  .stream-card, .trace-card { min-height: 0 !important; padding: 5px !important; }
+  .stream-card pre, .trace-card pre { max-height: 38px !important; font-size: 10px !important; }
+  .trace-card { display: none !important; }
+  #machine-status { font-size: 9px !important; min-height: 0 !important; display: block !important; }
+
+  .machine-config-panel h3 { font-size: 12px !important; }
+  .machine-config-panel h4 { font-size: 9px !important; }
+  .machine-three-selects { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 3px !important; }
+  .machine-config-panel select, .machine-config-panel input { height: 28px !important; font-size: 13px !important; padding: 2px 4px !important; }
+  .machine-config-panel .glass-btn { width: 100% !important; height: 26px !important; font-size: 10px !important; min-width: 0 !important; }
+  .machine-config-panel .row { display: grid !important; grid-template-columns: 1fr !important; gap: 3px !important; }
+  .panel-sep { margin: 2px 0 !important; }
+  #plugboard-list { max-height: 44px !important; }
 }
 
 @media (max-width: 360px) {
