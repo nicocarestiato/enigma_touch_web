@@ -3540,3 +3540,66 @@ body[data-page="machine"] #pages,
     overflow-y: auto;
   }
 }
+
+/* ================================================================
+   MOBILE EXTRA FIXES — phone + touch overrides
+   ================================================================ */
+
+@media (max-width: 760px), (pointer: coarse) and (max-width: 1024px) {
+
+  /* SOUNDTRACK: prevent glass-btn overflow inside .card.mini */
+  .card.mini .glass-btn,
+  .glass-btn.big {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    height: 40px !important;
+    font-size: 14px !important;
+  }
+
+  /* SOUNDTRACK: #btn-theme-war fixed width → fluid */
+  #btn-theme-war {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* HOME: shrink hero image so it doesn't eat all vertical space */
+  .home-panel-image {
+    height: 80px !important;
+    min-height: 0 !important;
+  }
+
+  /* HOME: hide scrollbars on inner containers */
+  .home-card,
+  .home-grid {
+    scrollbar-width: none;
+  }
+
+  .home-card::-webkit-scrollbar,
+  .home-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* MISSION modal: 2-column pill grid (avoids 4 pills stacking vertically) */
+  .mission-stats {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+
+  .mission-pill,
+  .mission-pill.accent {
+    min-width: 0 !important;
+    width: 100% !important;
+    height: 32px !important;
+  }
+
+  /* TOP BUTTONS: tighter on small screens */
+  #top-buttons .glass-btn {
+    min-width: 0 !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+    height: 34px !important;
+  }
+}
